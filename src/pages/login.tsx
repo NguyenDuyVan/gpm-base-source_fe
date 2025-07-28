@@ -34,8 +34,9 @@ import {
   resetLoginFlag,
 } from "@/slices/auth/login/thunk";
 import NonAuthLayout from "@/Layouts/NonAuthLayout";
+import { NextPageWithLayout } from "./_app";
 
-const Login = (props: any) => {
+const Login: NextPageWithLayout = (props: any) => {
   const dispatch: any = useDispatch();
 
   const selectLayoutState = (state: any) => state;
@@ -106,7 +107,7 @@ const Login = (props: any) => {
   }, [dispatch, errorMsg]);
 
   return (
-    <NonAuthLayout>
+    <React.Fragment>
       <Head>
         <title>
           Đăng nhập cơ bản | Velzon - Mẫu Quản trị & Bảng điều khiển React
@@ -307,8 +308,12 @@ const Login = (props: any) => {
           </Container>
         </div>
       </ParticlesAuth>
-    </NonAuthLayout>
+    </React.Fragment>
   );
+};
+
+Login.getLayout = function getLayout(page: React.ReactElement) {
+  return <NonAuthLayout>{page}</NonAuthLayout>;
 };
 
 export default withRouter(Login);

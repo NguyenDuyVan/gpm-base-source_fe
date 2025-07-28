@@ -1,21 +1,20 @@
 import AuthProtected from "@/components/auth/AuthProtected";
+import MainList from "@/components/Blogs/ListView/MainList";
+import Sidepanel from "@/components/Blogs/ListView/Sidepanel";
 import BreadCrumb from "@/components/Common/BreadCrumb";
-import UpgradeAccountNotise from "@/components/DashboardAnalytics/UpgradeAccountNotise";
-import Widget from "@/components/DashboardAnalytics/Widget";
+import MainLayout from "@/Layouts/MainLayout";
 import React, { ReactElement } from "react";
-import { Col, Row } from "reactstrap";
-import MainLayout from "../Layouts/MainLayout";
-import { NextPageWithLayout } from "./_app";
+import { Row } from "reactstrap";
+import { NextPageWithLayout } from "../_app";
 
 const Page: NextPageWithLayout = () => {
   return (
     <React.Fragment>
-      <BreadCrumb title="Analytics" pageTitle="Dashboards" />
+      <BreadCrumb title="List View" pageTitle="Blogs" />
       <Row>
-        <Col>
-          <UpgradeAccountNotise />
-          <Widget />
-        </Col>
+        <Sidepanel />
+
+        <MainList />
       </Row>
     </React.Fragment>
   );

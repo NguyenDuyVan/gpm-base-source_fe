@@ -43,7 +43,7 @@ const LanguageDropdown = () => {
           tag="button"
         >
           <img
-            src={get(languages, `${selectedLang}.flag`)}
+            src={get(languages, `${selectedLang}.flag.src`)}
             alt="Header Language"
             height="20"
             className="rounded"
@@ -59,7 +59,7 @@ const LanguageDropdown = () => {
               }`}
             >
               <img
-                src={get(languages, `${key}.flag`)}
+                src={get(languages, `${key}.flag.src`)}
                 alt="Skote"
                 className="me-2 rounded"
                 height="18"

@@ -21,8 +21,6 @@ import { useFormik } from "formik";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// action
-
 //redux
 import { useSelector, useDispatch } from "react-redux";
 
@@ -34,8 +32,9 @@ import ParticlesAuth from "@/components/AuthenticationInner/ParticlesAuth";
 import Link from "next/link";
 import NonAuthLayout from "@/Layouts/NonAuthLayout";
 import Head from "next/head";
+import { NextPageWithLayout } from "./_app";
 
-const Register = () => {
+const Register: NextPageWithLayout = () => {
   const router = useRouter();
   const dispatch: any = useDispatch();
   const [loader, setLoader] = useState<boolean>(false);
@@ -343,6 +342,10 @@ const Register = () => {
       </ParticlesAuth>
     </NonAuthLayout>
   );
+};
+
+Register.getLayout = function getLayout(page: React.ReactElement) {
+  return <NonAuthLayout>{page}</NonAuthLayout>;
 };
 
 export default Register;

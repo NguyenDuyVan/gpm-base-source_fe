@@ -154,10 +154,7 @@ const SearchOption = () => {
             {filterData.map((menuItem: any, index) => (
               <React.Fragment key={index}>
                 {!menuItem.subItems ? (
-                  <Link
-                    href={menuItem.link}
-                    className="dropdown-item notify-item"
-                  >
+                  <Link href="/" className="dropdown-item notify-item">
                     <i
                       className={
                         menuItem.icon + " align-middle fs-xl text-muted me-2"

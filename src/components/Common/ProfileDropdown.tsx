@@ -77,45 +77,12 @@ const ProfileDropdown = () => {
             </Link>
           </DropdownItem>
           <DropdownItem className="p-0">
-            <Link href="/apps-chat" className="dropdown-item">
-              <i className="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">Messages</span>
-            </Link>
-          </DropdownItem>
-          <DropdownItem className="p-0">
-            <Link href="#" className="dropdown-item">
-              <i className="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">Taskboard</span>
-            </Link>
-          </DropdownItem>
-          <DropdownItem className="p-0">
-            <Link href="/pages-faqs" className="dropdown-item">
-              <i className="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">Help</span>
-            </Link>
-          </DropdownItem>
-          <div className="dropdown-divider"></div>
-          <DropdownItem className="p-0">
-            <Link href="/pages-profile" className="dropdown-item">
-              <i className="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">
-                Balance : <b>$5971.67</b>
-              </span>
-            </Link>
-          </DropdownItem>
-          <DropdownItem className="p-0">
-            <Link href="/pages-profile-settings" className="dropdown-item">
+            <Link href="/profile/setting" className="dropdown-item">
               <span className="badge bg-success-subtle text-success mt-1 float-end">
                 New
               </span>
               <i className="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i>{" "}
               <span className="align-middle">Settings</span>
-            </Link>
-          </DropdownItem>
-          <DropdownItem className="p-0">
-            <Link href="/auth-lockscreen-basic" className="dropdown-item">
-              <i className="mdi mdi-lock text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">Lock screen</span>
             </Link>
           </DropdownItem>
           <DropdownItem className="p-0">

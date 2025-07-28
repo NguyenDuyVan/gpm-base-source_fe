@@ -8,14 +8,25 @@ import { queryClient } from "@/utils/queryClient";
 import { Provider } from "react-redux";
 import rootReducer from "@/slices";
 import { configureStore } from "@reduxjs/toolkit";
+import { NextPage } from "next";
+import { ReactElement, ReactNode } from "react";
 
-export default function App({ Component, pageProps }: AppProps) {
+export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const store = configureStore({ reducer: rootReducer, devTools: true });
+  const getLayout = Component.getLayout ?? ((page) => page);
 
   return (
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
-        <Component {...pageProps} />
+        {getLayout(<Component {...pageProps} />)}
         <ReactQueryDevtools initialIsOpen={false} />
       </Provider>
     </QueryClientProvider>

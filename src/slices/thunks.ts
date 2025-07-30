@@ -24,8 +24,9 @@ export * from "./auth/profile/thunk";
 
 // //TicketsList
 // export * from "./tickets/thunk";
-// //Crm
-// export * from "./crm/thunk";
+
+//Crm
+export * from "./crm/thunk";
 
 // //Invoice
 // export * from "./invoice/thunk";

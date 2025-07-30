@@ -1,6 +1,5 @@
 import "@/assets/scss/themes.scss";
 
-// import "tailwindcss";
 import type { AppProps } from "next/app";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";

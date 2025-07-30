@@ -30,6 +30,17 @@ const Navdata = () => {
       },
     },
     {
+      id: "permission",
+      label: "Permission",
+      icon: "ri-lock-line",
+      link: "/permission",
+      stateVariables: isUserManagement,
+      click: function (e: any) {
+        e.preventDefault();
+        setIsUserManagement(!isUserManagement);
+      },
+    },
+    {
       id: "blog",
       label: "Blog",
       icon: "ri-article-line",

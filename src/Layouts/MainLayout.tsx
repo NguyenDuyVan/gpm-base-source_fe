@@ -163,8 +163,6 @@ const Layout = (props: any) => {
           <div className="page-content">
             <Container fluid>{props.children}</Container>
           </div>
-
-          <Footer />
         </div>
       </div>
     </React.Fragment>

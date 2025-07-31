@@ -1,7 +1,8 @@
 import { listData } from "@/common/data";
 import Link from "next/link";
 import React, { useMemo, useState } from "react";
-import { Card, CardBody, Col, Pagination, Row } from "reactstrap";
+import { Card, CardBody, Pagination, Table } from "reactstrap";
+import CommonModal from "../../Common/CommonModal";
 
 const MainList = () => {
   //pagination
@@ -14,9 +15,28 @@ const MainList = () => {
     [indexOfFirst, indexOfLast]
   );
 
+  // Delete Modal state
+  const [deleteModal, setDeleteModal] = useState<boolean>(false);
+  const [blogToDelete, setBlogToDelete] = useState<any>(null);
+
+  // Handle delete button click
+  const handleDeleteClick = (blog: any) => {
+    setBlogToDelete(blog);
+    setDeleteModal(true);
+  };
+
+  // Handle confirmation of deletion
+  const handleDeleteBlog = () => {
+    // Implement your delete logic here
+    console.log("Deleting blog:", blogToDelete);
+    // After deletion logic is complete, close the modal
+    setDeleteModal(false);
+    setBlogToDelete(null);
+  };
+
   return (
     <React.Fragment>
-      <div className="col-xxl-9">
+      <div>
         <div className="row g-4 mb-3">
           <div className="col-sm-auto">
             <div>
@@ -53,67 +73,115 @@ const MainList = () => {
           </div>
         </div>
 
-        <Row className="gx-4">
-          {currentdata.map((item, idx) => (
-            <Col xxl={12} key={idx}>
-              <Card>
-                <CardBody>
-                  <div className="row g-4">
-                    <div className="col-xxl-3 col-lg-5">
-                      <img
-                        src={item.image.src}
-                        alt=""
-                        className="img-fluid rounded w-100 object-fit-cover"
-                      />
-                    </div>
-                    <div className="col-xxl-9 col-lg-7">
-                      <p className="mb-2 text-primary text-uppercase">
-                        {item.category}
-                      </p>
-                      <Link href="/pages-blog-overview">
-                        <h5 className="fs-15 fw-semibold">{item.title}</h5>
-                      </Link>
-                      <div className="d-flex align-items-center gap-2 mb-3 flex-wrap">
-                        <span className="text-muted">
-                          <i className="ri-calendar-event-line me-1"></i>{" "}
-                          {item.date}
-                        </span>{" "}
-                        |{" "}
-                        <span className="text-muted">
-                          <i className="ri-eye-line me-1"></i> {item.views}
-                        </span>{" "}
-                        |{" "}
-                        <Link href="/profile">
-                          <i className="ri-user-3-line me-1"></i> Admin
-                        </Link>
-                      </div>
-                      <p className="text-muted mb-2">{item.description}</p>
-                      <Link
-                        href="/blog/overview"
-                        className="text-decoration-underline"
-                      >
-                        Read more <i className="ri-arrow-right-line"></i>
-                      </Link>
-                      <div className="d-flex align-items-center gap-2 mt-3 flex-wrap">
-                        {item.tags.map((item, idx) => (
-                          <Link
-                            href="#!"
-                            key={idx}
-                            className="badge text-success bg-success-subtle"
-                          >
-                            {item}
+        <Card>
+          <CardBody>
+            <div className="table-responsive table-card">
+              <Table className="table-centered align-middle table-nowrap mb-0">
+                <thead className="text-muted table-light">
+                  <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Views</th>
+                    <th scope="col">Tags</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentdata.map((item, idx) => (
+                    <tr key={idx}>
+                      <td>{idx + 1}</td>
+                      <td>
+                        <div style={{ width: "75px", height: "45px" }}>
+                          <img
+                            src={item.image.src}
+                            alt=""
+                            className="img-fluid rounded object-fit-cover"
+                            style={{ width: "100%", height: "100%" }}
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <h5 className="fs-14 fw-semibold">
+                          <Link href="/blog/overview" className="text-dark">
+                            {item.title}
                           </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+                        </h5>
+                        <p className="text-muted mb-0 fs-12">
+                          {item.description.substring(0, 60)}...
+                        </p>
+                      </td>
+                      <td>
+                        <span className="badge badge-soft-primary">
+                          {item.category}
+                        </span>
+                      </td>
+                      <td>
+                        <i className="ri-calendar-event-line me-1 text-muted"></i>
+                        {item.date}
+                      </td>
+                      <td>
+                        <i className="ri-eye-line me-1 text-muted"></i>
+                        {item.views}
+                      </td>
+                      <td>
+                        <div className="d-flex gap-1">
+                          {item.tags.slice(0, 2).map((tag, tagIdx) => (
+                            <Link
+                              href="#!"
+                              key={tagIdx}
+                              className="badge badge-soft-success"
+                            >
+                              {tag}
+                            </Link>
+                          ))}
+                          {item.tags.length > 2 && (
+                            <span className="badge badge-soft-dark">
+                              +{item.tags.length - 2}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="hstack gap-2">
+                          <Link
+                            href="/blog/overview"
+                            className="btn btn-sm btn-soft-info"
+                            title="View"
+                          >
+                            <i className="ri-eye-fill"></i>
+                          </Link>
+                          <Link
+                            href="#"
+                            className="btn btn-sm btn-soft-success"
+                            title="Edit"
+                          >
+                            <i className="ri-pencil-fill"></i>
+                          </Link>
+                          <Link
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDeleteClick(item);
+                            }}
+                            className="btn btn-sm btn-soft-danger"
+                            title="Delete"
+                          >
+                            <i className="ri-delete-bin-2-fill"></i>
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          </CardBody>
+        </Card>
 
-        <div className="row g-0 text-center text-sm-start align-items-center mb-4">
+        <div className="row g-0 text-center text-sm-start align-items-center mb-4 mt-4">
           <div className="col-sm-6">
             <div>
               <p className="mb-sm-0 text-muted">
@@ -135,6 +203,15 @@ const MainList = () => {
             />
           </div>
         </div>
+
+        {/* Delete Confirmation Modal */}
+        <CommonModal
+          isOpen={deleteModal}
+          toggle={() => setDeleteModal(false)}
+          modalType="delete"
+          onConfirm={handleDeleteBlog}
+          itemName={blogToDelete?.title}
+        />
       </div>
     </React.Fragment>
   );

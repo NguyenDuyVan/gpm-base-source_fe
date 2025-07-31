@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 //import Components
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import Footer from "./Footer";
 
 //import actions
 import {

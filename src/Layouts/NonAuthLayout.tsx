@@ -1,36 +1,26 @@
-import React, { useEffect } from 'react'
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { createSelector } from "reselect";
 const NonAuthLayout = ({ children }: any) => {
-    const selectLayoutState = (state: any) => state.Layout;
-    const selectLayoutProperties = createSelector(
-        selectLayoutState,
-        (layout) => ({
-            layoutThemeType: layout.layoutThemeType,
-            layoutModeType: layout.layoutModeType,
-        })
-    );
-    // Inside your component
-    const {
-        layoutModeType,
-        layoutThemeType,
-    } = useSelector(selectLayoutProperties);
-    useEffect(() => {
-        document.body.setAttribute("data-theme", layoutThemeType);
-        if (layoutModeType === "dark") {
-            document.body.setAttribute("data-bs-theme", "dark");
-        } else {
-            document.body.setAttribute("data-bs-theme", "light");
-        }
-        return () => {
-            document.body.removeAttribute("data-bs-theme");
-            document.body.removeAttribute("data-theme");
-        };
-    }, [layoutModeType,layoutThemeType]);
-    return (
-        <div>
-            {children}
-        </div>
-    )
-}
-export default NonAuthLayout
+  const selectLayoutState = (state: any) => state.Layout;
+  const selectLayoutProperties = createSelector(
+    selectLayoutState,
+    (layout) => ({
+      layoutModeType: layout.layoutModeType,
+    })
+  );
+  // Inside your component
+  const { layoutModeType } = useSelector(selectLayoutProperties);
+  useEffect(() => {
+    if (layoutModeType === "dark") {
+      document.body.setAttribute("data-bs-theme", "dark");
+    } else {
+      document.body.setAttribute("data-bs-theme", "light");
+    }
+    return () => {
+      document.body.removeAttribute("data-bs-theme");
+    };
+  }, [layoutModeType]);
+  return <div>{children}</div>;
+};
+export default NonAuthLayout;

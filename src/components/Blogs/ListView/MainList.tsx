@@ -20,7 +20,7 @@ const MainList = () => {
         <div className="row g-4 mb-3">
           <div className="col-sm-auto">
             <div>
-              <Link href="/apps-projects-create" className="btn btn-success">
+              <Link href="/blog/create" className="btn btn-success">
                 <i className="ri-add-line align-bottom me-1"></i> Add New
               </Link>
             </div>
@@ -89,7 +89,7 @@ const MainList = () => {
                       </div>
                       <p className="text-muted mb-2">{item.description}</p>
                       <Link
-                        href="/pages-blog-overview"
+                        href="/blog/overview"
                         className="text-decoration-underline"
                       >
                         Read more <i className="ri-arrow-right-line"></i>

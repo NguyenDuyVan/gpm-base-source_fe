@@ -85,10 +85,10 @@ const Page: NextPageWithLayout = () => {
           );
           return (
             <div className="d-flex align-items-center">
-              <span className="badge !text-xs bg-soft-info text-info me-2">
+              <span className="badge fs-6  bg-soft-info text-info me-2">
                 {uniqueEndpoints.size} APIs
               </span>
-              <span className="badge !text-xs bg-soft-primary text-primary">
+              <span className="badge fs-6  bg-soft-primary text-primary">
                 {permissions.length} Methods
               </span>
             </div>

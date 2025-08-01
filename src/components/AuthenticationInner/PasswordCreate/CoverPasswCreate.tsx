@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Button, Card, Col, Container, Row, Form, Label, Input, FormFeedback } from 'reactstrap';
 
 import AuthSlider from '../authCarousel';
@@ -119,7 +119,7 @@ const CoverPasswCreate = () => {
                                                 </div>
 
                                                 <div className="mt-5 text-center">
-                                                    <p className="mb-0">Wait, I remember my password... <Link to="/auth-signin-cover" className="fw-semibold text-primary text-decoration-underline"> Click here </Link> </p>
+                                                    <p className="mb-0">Wait, I remember my password... <Link href="/auth-signin-cover" className="fw-semibold text-primary text-decoration-underline"> Click here </Link> </p>
                                                 </div>
                                             </div>
                                         </Col>

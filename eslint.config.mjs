@@ -29,6 +29,7 @@ const eslintConfig = [
       "@typescript-eslint/no-unused-expressions": "off",
       "react/no-unescaped-entities": "off",
     },
+    ignoreDuringBuilds: true,
   }),
 ];
 

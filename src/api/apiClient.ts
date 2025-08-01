@@ -56,7 +56,7 @@ export async function fetchApi<T>(
       ...fetchOptions,
       headers,
     });
-  } catch (error) {
+  } catch (_error) {
     throw new ApiException("Network error", 0);
   }
 

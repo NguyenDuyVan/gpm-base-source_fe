@@ -16,7 +16,6 @@ import {
 } from "@tanstack/react-table";
 
 import { rankItem } from "@tanstack/match-sorter-utils";
-
 import {
   ProductsGlobalFilter,
   CustomersGlobalFilter,
@@ -29,7 +28,7 @@ import {
   TicketsListGlobalFilter,
   NFTRankingGlobalFilter,
   TaskListGlobalFilter,
-} from "../../Components/Common/GlobalSearchFilter";
+} from "./GlobalSearchFilter";
 
 // Column Filter
 const Filter = ({

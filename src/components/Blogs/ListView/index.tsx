@@ -1,6 +1,5 @@
 import React from "react";
 import { Container, Row } from "reactstrap";
-import Sidepanel from "./Sidepanel";
 import MainList from "./MainList";
 import BreadCrumb from "@/components/Common/BreadCrumb";
 
@@ -13,8 +12,6 @@ const BlogListView = () => {
         <Container fluid>
           <BreadCrumb title="List View" pageTitle="Blogs" />
           <Row>
-            <Sidepanel />
-
             <MainList />
           </Row>
         </Container>

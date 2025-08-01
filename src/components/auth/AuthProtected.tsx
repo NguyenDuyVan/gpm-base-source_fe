@@ -22,7 +22,7 @@ const AuthProtected = (props: any) => {
     Navigate is un-auth access protected routes via url
     */
 
-  if (!userProfile && loading && !token && typeof window !== "undefined") {
+  if (!userProfile && loading && !token) {
     router.push("/login");
     return (
       <div className="flex items-center justify-center min-h-screen">

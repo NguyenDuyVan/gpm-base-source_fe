@@ -5,7 +5,7 @@ import useChartColors from "../Common/useChartColors";
 const AudiencesCharts = ({ chartId, series }: any) => {
   const chartAudienceColumnChartsColors = useChartColors(chartId);
 
-  var options: any = {
+  const options: any = {
     chart: {
       type: "bar",
       height: 309,
@@ -108,7 +108,7 @@ const AudiencesCharts = ({ chartId, series }: any) => {
 const AudiencesSessionsCharts = ({ chartId, series }: any) => {
   const chartHeatMapBasicColors = useChartColors(chartId);
 
-  var options: any = {
+  const options: any = {
     chart: {
       height: 400,
       type: "heatmap",
@@ -195,7 +195,7 @@ const AudiencesSessionsCharts = ({ chartId, series }: any) => {
 const CountriesCharts = ({ chartId, series }: any) => {
   const barchartCountriesColors = useChartColors(chartId);
 
-  var options: any = {
+  const options: any = {
     chart: {
       type: "bar",
       height: 436,

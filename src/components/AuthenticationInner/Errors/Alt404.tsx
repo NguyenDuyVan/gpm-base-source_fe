@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Card, CardBody, Col, Container, Row } from 'reactstrap';
 
 const Alt404 = () => {
@@ -19,7 +19,7 @@ const Alt404 = () => {
                                             <h1 className="text-primary mb-4">Oops !</h1>
                                             <h4 className="text-uppercase">Sorry, Page not Found 😭</h4>
                                             <p className="text-muted mb-4">The page you are looking for not available!</p>
-                                            <Link to="/dashboard" className="btn btn-success"><i className="mdi mdi-home me-1"></i>Back to home</Link>
+                                            <Link href="/dashboard" className="btn btn-success"><i className="mdi mdi-home me-1"></i>Back to home</Link>
                                         </div>
                                     </CardBody>
                                 </Card>

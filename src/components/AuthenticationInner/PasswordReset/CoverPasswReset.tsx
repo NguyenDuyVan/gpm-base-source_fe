@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Button, Card, Col, Container, Row, Form, FormFeedback, Label, Input } from 'reactstrap';
 
 import AuthSlider from '../authCarousel';
@@ -75,7 +75,7 @@ const CoverPasswReset = () => {
                                                 </div>
 
                                                 <div className="mt-5 text-center">
-                                                    <p className="mb-0">Wait, I remember my password... <Link to="/auth-signin-cover" className="fw-bold text-primary text-decoration-underline"> Click here </Link> </p>
+                                                    <p className="mb-0">Wait, I remember my password... <Link href="/auth-signin-cover" className="fw-bold text-primary text-decoration-underline"> Click here </Link> </p>
                                                 </div>
                                             </div>
                                         </Col>

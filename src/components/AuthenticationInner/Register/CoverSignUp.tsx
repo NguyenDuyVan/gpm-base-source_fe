@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Card, Col, Container, Row, Form, FormFeedback, Input, Button } from 'reactstrap';
 
 //formik
@@ -120,7 +120,7 @@ const CoverSignUp = () => {
                                                         </div>
 
                                                         <div className="mb-4">
-                                                            <p className="mb-0 fs-12 text-muted fst-italic">By registering you agree to the Velzon <Link to="#" className="text-primary text-decoration-underline fst-normal fw-medium">Terms of Use</Link></p>
+                                                            <p className="mb-0 fs-12 text-muted fst-italic">By registering you agree to the Velzon <Link href="#" className="text-primary text-decoration-underline fst-normal fw-medium">Terms of Use</Link></p>
                                                         </div>
 
                                                         <div id="password-contain" className="p-3 bg-light mb-2 rounded">
@@ -151,7 +151,7 @@ const CoverSignUp = () => {
                                                 </div>
 
                                                 <div className="mt-5 text-center">
-                                                    <p className="mb-0">Already have an account ? <Link to="/auth-signin-cover" className="fw-semibold text-primary text-decoration-underline"> Signin</Link> </p>
+                                                    <p className="mb-0">Already have an account ? <Link href="/auth-signin-cover" className="fw-semibold text-primary text-decoration-underline"> Signin</Link> </p>
                                                 </div>
                                             </div>
                                         </Col>

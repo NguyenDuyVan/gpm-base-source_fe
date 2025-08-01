@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Card, Col, Container, Input, Label, Row, Button, Form, FormFeedback } from 'reactstrap';
 
 // Formik validation
@@ -76,7 +76,7 @@ const CoverSignIn = () => {
 
                                                         <div className="mb-3">
                                                             <div className="float-end">
-                                                                <Link to="/auth-pass-reset-cover" className="text-muted">Forgot password?</Link>
+                                                                <Link href="/auth-pass-reset-cover" className="text-muted">Forgot password?</Link>
                                                             </div>
                                                             <Label className="form-label" htmlFor="password-input">Password</Label>
                                                             <div className="position-relative auth-pass-inputgroup mb-3">

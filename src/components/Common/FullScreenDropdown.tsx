@@ -4,7 +4,7 @@ const FullScreenDropdown: React.FC = () => {
     const [isFullScreenMode, setIsFullScreenMode] = useState<boolean>(true);
 
     const toggleFullscreen = () => {
-        let document : any = window.document;
+        const document : any = window.document;
         document.body.classList.add("fullscreen-enable");
 
         if (

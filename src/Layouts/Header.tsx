@@ -7,11 +7,6 @@ import logoDark from "../assets/images/logo-dark.png";
 import logoLight from "../assets/images/logo-light.png";
 
 //import Components
-import SearchOption from "@/components/Common/SearchOption";
-import LanguageDropdown from "@/components/Common/LanguageDropdown";
-import WebAppsDropdown from "@/components/Common/WebAppsDropdown";
-import MyCartDropdown from "@/components/Common/MyCartDropdown";
-import FullScreenDropdown from "@/components/Common/FullScreenDropdown";
 import NotificationDropdown from "@/components/Common/NotificationDropdown";
 import ProfileDropdown from "@/components/Common/ProfileDropdown";
 import LightDark from "@/components/Common/LightDark";

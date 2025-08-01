@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Card, Col, Container, Row } from 'reactstrap';
 
 import AuthSlider from '../authCarousel';
@@ -31,7 +31,7 @@ document.title ="Success Message | Velzon - React Admin & Dashboard Template";
                                                     <h4>Well done !</h4>
                                                     <p className="text-muted mx-4">Aww yeah, you successfully read this important message.</p>
                                                     <div className="mt-4">
-                                                        <Link to="/auth-signin-basic" className="btn btn-success w-100">Back to Dashboard</Link>
+                                                        <Link href="/auth-signin-basic" className="btn btn-success w-100">Back to Dashboard</Link>
                                                     </div>
                                                 </div>
                                             </div>

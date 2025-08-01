@@ -1,5 +1,5 @@
+import { withRouter } from "next/router";
 import React from "react";
-import withRouter from "../../Components/Common/withRouter";
 
 const ParticlesAuth = ({ children }: any) => {
   return (

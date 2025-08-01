@@ -37,7 +37,7 @@ const TopReferrals = () => {
               </Col>
               <Col xs={6}>
                 <div className="text-center">
-                  {/* <img src={illustrator} className="img-fluid" alt="" /> */}
+                  {/* <img src={illustrator.src} className="img-fluid" alt="" /> */}
                 </div>
               </Col>
             </Row>

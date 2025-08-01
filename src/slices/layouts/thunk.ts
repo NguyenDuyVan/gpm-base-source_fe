@@ -30,7 +30,9 @@ export const changeLayout = (layout: any) => async (dispatch: any) => {
     }
     changeHTMLAttribute("data-layout", layout);
     dispatch(changeLayoutAction(layout));
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 /**
@@ -41,7 +43,9 @@ export const changeLayoutMode = (layoutMode: any) => async (dispatch: any) => {
   try {
     changeHTMLAttribute("data-bs-theme", layoutMode);
     dispatch(changeLayoutModeAction(layoutMode));
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 /**
@@ -49,7 +53,6 @@ export const changeLayoutMode = (layoutMode: any) => async (dispatch: any) => {
  * @param {*} param0
  */
 // export const changeLayoutTheme = (layoutTheme : any) => async (dispatch : any) => {
-//     console.log('layoutTheme: ', layoutTheme);
 //     try {
 //         changeHTMLAttribute("data-theme", layoutTheme);
 //         dispatch(changeLayoutThemeAction(layoutTheme));
@@ -65,7 +68,9 @@ export const changeLayoutTheme =
       }
       changeHTMLAttribute("data-theme", layoutTheme);
       dispatch(changeLayoutThemeAction(layoutTheme));
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
 /**
@@ -77,7 +82,9 @@ export const changeLayoutThemeColor =
     try {
       changeHTMLAttribute("data-theme-colors", layoutThemeColor);
       dispatch(changeLayoutThemeColorAction(layoutThemeColor));
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
 /**
@@ -89,7 +96,7 @@ export const changeSidebarTheme = (theme: any) => async (dispatch: any) => {
     changeHTMLAttribute("data-sidebar", theme);
     dispatch(changeSidebarThemeAction(theme));
   } catch (error) {
-    // console.log(error);
+    console.log(error);
   }
 };
 
@@ -121,7 +128,7 @@ export const changeLayoutPosition =
       changeHTMLAttribute("data-layout-position", layoutposition);
       dispatch(changeLayoutPositionAction(layoutposition));
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
   };
 
@@ -135,7 +142,7 @@ export const changeTopbarTheme =
       changeHTMLAttribute("data-topbar", topbarTheme);
       dispatch(changeTopbarThemeAction(topbarTheme));
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
   };
 
@@ -149,7 +156,7 @@ export const changeSidebarImageType =
       changeHTMLAttribute("data-sidebar-image", leftsidebarImagetype);
       dispatch(changeSidebarImageTypeAction(leftsidebarImagetype));
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
   };
 
@@ -163,7 +170,7 @@ export const changePreLoader =
       changeHTMLAttribute("data-preloader", preloaderTypes);
       dispatch(changePreLoaderAction(preloaderTypes));
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
   };
 
@@ -192,7 +199,7 @@ export const changeLeftsidebarSizeType =
       }
       dispatch(changeLeftsidebarSizeTypeAction(leftsidebarSizetype));
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
   };
 
@@ -205,7 +212,7 @@ export const changeLeftsidebarViewType =
     try {
       dispatch(changeLeftsidebarViewTypeAction(leftsidebarViewtype));
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
   };
 

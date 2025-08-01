@@ -54,7 +54,7 @@ const Page: NextPageWithLayout = () => {
                     </div>
                     <div className="flex-grow-1">
                       <h5 className="mb-1">
-                        <Link to="#!">Nancy Martino</Link>
+                        <Link href="#!">Nancy Martino</Link>
                       </h5>
                       <p className="mb-2">Creative Designer</p>
                       <p className="text-muted mb-0">2 hours ago</p>
@@ -293,7 +293,7 @@ const Page: NextPageWithLayout = () => {
                             I am getting message from customers that when they
                             place order always get error message .
                           </p>
-                          <Link to="#" className="badge text-muted bg-light">
+                          <Link href="#" className="badge text-muted bg-light">
                             <i className="mdi mdi-reply"></i> Reply
                           </Link>
                           <div className="d-flex mt-4">
@@ -344,12 +344,12 @@ const Page: NextPageWithLayout = () => {
                           <p className="text-muted">
                             If you have further questions, please contact
                             Customer Support from the “Action Menu” on your{" "}
-                            <Link to="#" className="text-decoration-underline">
+                            <Link href="#" className="text-decoration-underline">
                               Online Order Support
                             </Link>
                             .
                           </p>
-                          <Link to="#" className="badge text-muted bg-light">
+                          <Link href="#" className="badge text-muted bg-light">
                             <i className="mdi mdi-reply"></i> Reply
                           </Link>
                         </div>
@@ -371,7 +371,7 @@ const Page: NextPageWithLayout = () => {
                           </h5>
                           <p className="text-muted">
                             Your{" "}
-                            <Link to="#" className="text-decoration-underline">
+                            <Link href="#" className="text-decoration-underline">
                               Online Order Support
                             </Link>{" "}
                             provides you with the most current status of your
@@ -395,7 +395,7 @@ const Page: NextPageWithLayout = () => {
                               />
                             </div>
                           </div>
-                          <Link to="#" className="badge text-muted bg-light">
+                          <Link href="#" className="badge text-muted bg-light">
                             <i className="mdi mdi-reply"></i> Reply
                           </Link>
                           <div className="d-flex mt-4">
@@ -466,7 +466,7 @@ const Page: NextPageWithLayout = () => {
                           >
                             <i className="ri-attachment-line fs-16"></i>
                           </button>
-                          <Link to="#" className="btn btn-success">
+                          <Link href="#" className="btn btn-success">
                             Post Comments
                           </Link>
                         </div>

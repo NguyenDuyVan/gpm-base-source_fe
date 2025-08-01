@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Button, Card, Col, Container, Row } from 'reactstrap';
 
 //import images
@@ -102,7 +102,7 @@ const CoverTwosVerify = () => {
                                                 </div>
 
                                                 <div className="mt-5 text-center">
-                                                    <p className="mb-0">Didn't receive a code ? <Link to="/auth-pass-reset-cover" className="fw-semibold text-primary text-decoration-underline">Resend</Link> </p>
+                                                    <p className="mb-0">Didn't receive a code ? <Link href="/auth-pass-reset-cover" className="fw-semibold text-primary text-decoration-underline">Resend</Link> </p>
                                                 </div>
                                             </div>
                                         </Col>

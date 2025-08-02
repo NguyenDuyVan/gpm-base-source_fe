@@ -1,4 +1,3 @@
-import { withRouter } from "next/router";
 import React from "react";
 
 const ParticlesAuth = ({ children }: any) => {
@@ -27,4 +26,4 @@ const ParticlesAuth = ({ children }: any) => {
   );
 };
 
-export default withRouter(ParticlesAuth);
+export default ParticlesAuth;

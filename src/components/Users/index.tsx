@@ -33,7 +33,6 @@ import {
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import TableContainer from "@/components/Common/TableContainer";
-import DeleteModal from "@/components/Common/DeleteModal";
 import CrmFilter from "./CrmFilter";
 
 // Formik
@@ -44,6 +43,7 @@ import Loader from "@/components/Common/Loader";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createSelector } from "reselect";
+import CommonModal from "../Common/CommonModal";
 
 const CrmLeads = () => {
   const dispatch: any = useDispatch();
@@ -406,18 +406,18 @@ const CrmLeads = () => {
   return (
     <React.Fragment>
       <div>
-        <DeleteModal
-          show={deleteModal}
-          onDeleteClick={handleDeleteLead}
-          onCloseClick={() => setDeleteModal(false)}
+        <CommonModal
+          isOpen={deleteModal}
+          toggle={() => setDeleteModal(false)}
+          modalType="delete"
+          onConfirm={handleDeleteLead}
         />
-        <DeleteModal
-          show={deleteModalMulti}
-          onDeleteClick={() => {
-            deleteMultiple();
-            setDeleteModalMulti(false);
-          }}
-          onCloseClick={() => setDeleteModalMulti(false)}
+
+        <CommonModal
+          isOpen={deleteModalMulti}
+          toggle={() => setDeleteModalMulti(false)}
+          modalType="delete"
+          onConfirm={handleDeleteLead}
         />
 
         <Row>

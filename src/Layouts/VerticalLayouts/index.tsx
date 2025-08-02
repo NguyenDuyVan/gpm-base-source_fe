@@ -7,7 +7,7 @@ import navdata from "../LayoutMenuData";
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import Link from "next/link";
-import { useRouter, withRouter } from "next/router";
+import { useRouter } from "next/router";
 import { withTranslation } from "react-i18next";
 
 const VerticalLayout = (props: any) => {
@@ -371,4 +371,4 @@ VerticalLayout.propTypes = {
   t: PropTypes.any,
 };
 
-export default withTranslation()(withRouter(VerticalLayout));
+export default withTranslation()(VerticalLayout);

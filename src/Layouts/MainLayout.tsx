@@ -24,7 +24,6 @@ import {
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
-import { withRouter } from "next/router";
 import { Container } from "reactstrap";
 
 const Layout = (props: any) => {
@@ -172,4 +171,4 @@ Layout.propTypes = {
   children: PropTypes.object,
 };
 
-export default withRouter(Layout);
+export default Layout;

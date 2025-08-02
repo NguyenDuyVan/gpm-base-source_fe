@@ -6,7 +6,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 const EditorWrapper = () => {
   return (
     <CKEditor
-      editor={ClassicEditor}
+      editor={ClassicEditor as any}
       data="<p>Hello from CKEditor 5!</p>"
       onReady={() => {
         // You can store the "editor" and use when it is needed.

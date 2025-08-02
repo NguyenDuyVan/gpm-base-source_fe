@@ -5,13 +5,12 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { createSelector } from "reselect";
-import { useRouter } from "next/router";
 import { logoutUser } from "@/slices/thunks";
 import NonAuthLayout from "@/Layouts/NonAuthLayout";
+import { redirect } from "next/navigation";
 
 const Logout = () => {
   const dispatch: any = useDispatch();
-  const router = useRouter();
 
   const logoutData = createSelector(
     (state) => state.Login,
@@ -26,7 +25,7 @@ const Logout = () => {
   }, [dispatch]);
 
   if (isUserLogout) {
-    router.push("/login");
+    redirect("/login");
     return;
   }
 

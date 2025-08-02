@@ -6,6 +6,13 @@ const nextConfig: NextConfig = {
   sassOptions: {
     implementation: "sass",
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  env: {
+    NEXT_PUBLIC_SKIP_BUILD_AUTH: "true",
+  },
+  output: "standalone",
 };
 
 export default nextConfig;

@@ -27,7 +27,6 @@ import { useFormik } from "formik";
 import { createSelector } from "reselect";
 import Link from "next/link";
 import ParticlesAuth from "@/components/AuthenticationInner/ParticlesAuth";
-import { withRouter } from "next/router";
 import {
   loginUser,
   socialLogin,
@@ -316,4 +315,4 @@ Login.getLayout = function getLayout(page: React.ReactElement) {
   return <NonAuthLayout>{page}</NonAuthLayout>;
 };
 
-export default withRouter(Login);
+export default Login;

@@ -1,21 +1,20 @@
 import { setAuthorization } from "@/helpers/api_helper";
-import { logoutUser } from "@/slices/auth/login/thunk";
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { useProfile } from "../Hooks/UserHooks";
 import { redirect } from "next/navigation";
+import { useAuthHooks } from "../Hooks/AuthHooks";
 
 const AuthProtected = (props: any) => {
-  const dispatch: any = useDispatch();
   const { userProfile, loading, token } = useProfile();
+  const { logoutUser } = useAuthHooks();
 
   useEffect(() => {
     if (userProfile && !loading && token) {
       setAuthorization(token);
     } else if (!userProfile && loading && !token) {
-      dispatch(logoutUser());
+      logoutUser();
     }
-  }, [token, userProfile, loading, dispatch]);
+  }, [token, userProfile, loading, logoutUser]);
 
   if (process.env.NEXT_PUBLIC_SKIP_BUILD_AUTH === "true") {
     return <>{props.children}</>;

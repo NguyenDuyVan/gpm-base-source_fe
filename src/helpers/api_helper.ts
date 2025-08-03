@@ -4,15 +4,9 @@ import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 const { api } = config;
 
 // default
-axios.defaults.baseURL = api.API_URL;
+axios.defaults.baseURL = `${api.API_URL}/api/${api.version}`;
 // content type
 axios.defaults.headers.post["Content-Type"] = "application/json";
-
-// content type
-const authUser: any =
-  typeof window !== "undefined" ? sessionStorage.getItem("authUser") : null;
-const token = JSON.parse(authUser) ? JSON.parse(authUser).token : null;
-if (token) axios.defaults.headers.common["Authorization"] = "Bearer " + token;
 
 // intercepting to capture errors
 axios.interceptors.response.use(
@@ -100,10 +94,4 @@ class APIClient {
   };
 }
 
-const getLoggedinUser = (): any | null => {
-  if (typeof window === "undefined") return null;
-  const user = sessionStorage.getItem("authUser");
-  return user ? JSON.parse(user) : null;
-};
-
-export { APIClient, setAuthorization, getLoggedinUser };
+export { APIClient, setAuthorization };

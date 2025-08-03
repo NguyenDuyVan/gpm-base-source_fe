@@ -10,6 +10,7 @@ interface FacebookConfig {
 
 interface ApiConfig {
   API_URL: string;
+  version: string;
 }
 
 interface Config {
@@ -28,7 +29,8 @@ const config: Config = {
     APP_ID: "",
   },
   api: {
-    API_URL: "https://api-node.themesbrand.website",
+    API_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
+    version: process.env.NEXT_PUBLIC_API_VERSION || "v1",
   },
 };
 

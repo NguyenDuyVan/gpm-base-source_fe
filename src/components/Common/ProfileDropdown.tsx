@@ -23,13 +23,13 @@ const ProfileDropdown = () => {
   const [userName, setUserName] = useState("Admin");
 
   useEffect(() => {
-    const authUSer: any = sessionStorage.getItem("authUser");
+    const authUSer: any = localStorage.getItem("authUser");
     if (authUSer) {
       const obj: any = JSON.parse(authUSer);
       setUserName(
         process.env.NEXT_PUBLIC_DEFAULTAUTH === "fake"
           ? obj.username === undefined
-            ? user.first_name || obj.data.first_name || "Admin" // Use || to provide a fallback
+            ? user.first_name || obj.fullName || "Admin" // Use || to provide a fallback
             : "Admin"
           : process.env.NEXT_PUBLIC_DEFAULTAUTH === "firebase"
           ? obj.email || "Admin" // Use || to provide a fallback

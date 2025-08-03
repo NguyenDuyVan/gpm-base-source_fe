@@ -27,16 +27,17 @@ import { useFormik } from "formik";
 import { createSelector } from "reselect";
 import Link from "next/link";
 import ParticlesAuth from "@/components/AuthenticationInner/ParticlesAuth";
-import {
-  loginUser,
-  socialLogin,
-  resetLoginFlag,
-} from "@/slices/auth/login/thunk";
+import { socialLogin, resetLoginFlag } from "@/slices/auth/login/thunk";
 import NonAuthLayout from "@/Layouts/NonAuthLayout";
 import { NextPageWithLayout } from "./_app";
+import { useRouter } from "next/router";
+import { useLoginMutation } from "@/api/mutations/useAuthMutation";
+import { apiError, loginSuccess } from "@/slices/auth/login/reducer";
 
-const Login: NextPageWithLayout = (props: any) => {
+const Login: NextPageWithLayout = () => {
   const dispatch: any = useDispatch();
+  const router = useRouter();
+  const { mutateAsync: handleLogin } = useLoginMutation();
 
   const selectLayoutState = (state: any) => state;
   const loginpageData = createSelector(selectLayoutState, (state) => ({
@@ -53,18 +54,10 @@ const Login: NextPageWithLayout = (props: any) => {
   const [loader, setLoader] = useState<boolean>(false);
 
   useEffect(() => {
-    if (user && user) {
-      const updatedUserData =
-        process.env.NEXT_PUBLIC_DEFAULTAUTH === "firebase"
-          ? user.multiFactor.user.email
-          : user.email;
-      const updatedUserPassword =
-        process.env.NEXT_PUBLIC_DEFAULTAUTH === "firebase"
-          ? ""
-          : user.confirm_password;
+    if (user) {
       setUserLogin({
-        email: updatedUserData,
-        password: updatedUserPassword,
+        email: user.email,
+        password: user.confirm_password,
       });
     }
   }, [user]);
@@ -74,21 +67,30 @@ const Login: NextPageWithLayout = (props: any) => {
     enableReinitialize: true,
 
     initialValues: {
-      email: userLogin.email || "admin@themesbrand.com" || "",
-      password: userLogin.password || "123456" || "",
+      email: userLogin.email,
+      password: userLogin.password,
     },
     validationSchema: Yup.object({
       email: Yup.string().required("Please Enter Your Email"),
       password: Yup.string().required("Please Enter Your Password"),
     }),
-    onSubmit: (values) => {
-      dispatch(loginUser(values, props.router.push));
+    onSubmit: async (values) => {
+      const { data } = await handleLogin(values, {
+        onError: (error: any) => {
+          dispatch(apiError(error));
+        },
+      });
+
+      localStorage.setItem("authUser", JSON.stringify(data.user));
+      localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
+      dispatch(loginSuccess(data));
+      router.push("/");
       setLoader(true);
     },
   });
 
   const signIn = (type: any) => {
-    dispatch(socialLogin(type, props.router.push));
+    dispatch(socialLogin(type, router.push));
   };
 
   //for facebook and google authentication
@@ -130,7 +132,7 @@ const Login: NextPageWithLayout = (props: any) => {
                     <div className="text-center mt-2">
                       <h5 className="text-primary">Chào mừng trở lại!</h5>
                       <p className="text-muted">
-                        Đăng nhập để tiếp tục sử dụng Velzon.
+                        Đăng nhập để tiếp tục sử dụng GPM.
                       </p>
                     </div>
                     {error && error ? (

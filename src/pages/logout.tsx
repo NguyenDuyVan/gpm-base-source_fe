@@ -2,15 +2,16 @@ import PropTypes from "prop-types";
 import React, { useEffect } from "react";
 
 //redux
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { createSelector } from "reselect";
-import { logoutUser } from "@/slices/thunks";
 import NonAuthLayout from "@/Layouts/NonAuthLayout";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/router";
+import { useAuthHooks } from "@/components/Hooks/AuthHooks";
 
 const Logout = () => {
-  const dispatch: any = useDispatch();
+  const router = useRouter();
+  const { logoutUser } = useAuthHooks();
 
   const logoutData = createSelector(
     (state) => state.Login,
@@ -21,12 +22,12 @@ const Logout = () => {
   const isUserLogout = useSelector(logoutData);
 
   useEffect(() => {
-    dispatch(logoutUser());
-  }, [dispatch]);
+    logoutUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (isUserLogout) {
-    redirect("/login");
-    return;
+    return router.push("/login");
   }
 
   return <React.Fragment></React.Fragment>;

@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { getLoggedinUser } from "../../helpers/api_helper";
+
+const getLoggedinUser = (): any | null => {
+  if (typeof window === "undefined") return null;
+  const user = localStorage.getItem("authUser");
+  return user ? JSON.parse(user) : null;
+};
 
 const useProfile = () => {
   const userProfileSession = getLoggedinUser();

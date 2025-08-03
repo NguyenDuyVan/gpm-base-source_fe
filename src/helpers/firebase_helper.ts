@@ -1,4 +1,4 @@
-import firebase from 'firebase/compat/app';
+import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
 
@@ -23,38 +23,42 @@ class FirebaseAuthBackend {
         .auth()
         .createUserWithEmailAndPassword(email, password)
         .then(
-          user => {
+          (user) => {
             resolve(firebase.auth().currentUser);
           },
-          error => {
+          (error) => {
             reject(this._handleError(error));
           }
         );
     });
   };
 
-  editProfileAPI = (username: any, idx: any) => {
+  editProfileAPI = (username: any) => {
     return new Promise((resolve, reject) => {
       const currentUser = firebase.auth().currentUser;
 
       if (currentUser) {
-        // Update the display name        
-        currentUser.updateProfile({
-          displayName: username
-        })
+        // Update the display name
+        currentUser
+          .updateProfile({
+            displayName: username,
+          })
           .then(() => {
             const data = (currentUser as any).multiFactor.user.displayName;
 
-            resolve({ data: { username: data }, status: "Profile Updated Successfully" });
+            resolve({
+              data: { username: data },
+              status: "Profile Updated Successfully",
+            });
           })
           .catch((error) => {
             reject(error);
           });
       } else {
-        reject(new Error('User not authenticated'));
+        reject(new Error("User not authenticated"));
       }
     });
-  }
+  };
 
   loginUser = (email: any, password: any) => {
     return new Promise((resolve, reject) => {
@@ -62,10 +66,10 @@ class FirebaseAuthBackend {
         .auth()
         .signInWithEmailAndPassword(email, password)
         .then(
-          user => {
+          () => {
             resolve(firebase.auth().currentUser);
           },
-          error => {
+          (error) => {
             reject(this._handleError(error));
           }
         );
@@ -82,7 +86,7 @@ class FirebaseAuthBackend {
         .then(() => {
           resolve(true);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(this._handleError(error));
         });
     });
@@ -96,7 +100,7 @@ class FirebaseAuthBackend {
         .then(() => {
           resolve(true);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(this._handleError(error));
         });
     });
@@ -114,7 +118,7 @@ class FirebaseAuthBackend {
         const result = await firebase.auth().signInWithPopup(provider);
         const user = result.user;
         return user;
-      } catch (error : any) {
+      } catch (error: any) {
         throw this._handleError(error);
       }
     }
@@ -142,7 +146,7 @@ class FirebaseAuthBackend {
   };
 
   getAuthenticatedUser = (): firebase.User | null => {
-    const authUser = sessionStorage.getItem("authUser");
+    const authUser = localStorage.getItem("authUser");
     if (!authUser) return null;
     return JSON.parse(authUser);
   };

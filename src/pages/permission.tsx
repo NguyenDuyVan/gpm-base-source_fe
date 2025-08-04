@@ -5,53 +5,137 @@ import { NextPageWithLayout } from "./_app";
 import { ReactElement, useCallback, useMemo } from "react";
 import TableContainer from "@/components/Common/TableContainer";
 import RoleModal from "@/components/Permission/RoleModal";
-
+import { useRolesWithPermissionsQuery } from "@/api/queries/useRoleQuery";
+import {
+  useCreateRoleMutation,
+  useUpdateRoleMutation,
+  useDeleteRoleMutation,
+  useAssignPermissionsMutation,
+} from "@/api/mutations/useRoleMutation";
+import { toast } from "react-toastify";
 import { useState } from "react";
 import React from "react";
+import CommonModal from "@/components/Common/CommonModal";
 
 const Page: NextPageWithLayout = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [modal, setModal] = useState<boolean>(false);
   const [selectedRole, setSelectedRole] = useState<any>(null);
+  const [deleteModal, setDeleteModal] = useState<boolean>(false);
+  const [roleToDelete, setRoleToDelete] = useState<any>(null);
+
+  // Fetch roles and permissions using React Query
+  const { data: rolesData, isLoading, error } = useRolesWithPermissionsQuery();
+
+  // Get roles data with fallback to empty array
+  const roles = rolesData?.roles || [];
+  const permissions = rolesData?.permissions || [];
+
+  // Mutations
+  const createRoleMutation = useCreateRoleMutation();
+  const updateRoleMutation = useUpdateRoleMutation();
+  const deleteRoleMutation = useDeleteRoleMutation();
+  const assignPermissionsMutation = useAssignPermissionsMutation();
 
   // Add the handleEditRole function
-  const handleEditRole = (leadData: any) => {
+  const handleEditRole = useCallback((roleData: any) => {
     setIsEdit(true);
-    setSelectedRole(leadData);
+    setSelectedRole(roleData);
     setModal(true);
-  };
+  }, []);
 
   // Add the onClickDelete function
-  const onClickDelete = (leadData: any) => {
-    // Implement delete logic here
-    // For now, just close the modal or show an alert
-    alert(`Delete role: ${leadData.role}`);
-  };
+  const onClickDelete = useCallback((roleData: any) => {
+    setRoleToDelete(roleData);
+    setDeleteModal(true);
+  }, []);
+
+  // Handle role deletion confirmation
+  const handleDeleteRole = useCallback(async () => {
+    if (roleToDelete) {
+      try {
+        await deleteRoleMutation.mutateAsync(roleToDelete.id);
+        toast("Role deleted successfully", {
+          position: "top-center",
+          className: " text-success-600",
+          type: "success",
+        });
+        setDeleteModal(false);
+        setRoleToDelete(null);
+      } catch (_error) {
+        toast("Failed to delete role", {
+          position: "top-center",
+          className: " text-danger-600",
+          type: "error",
+        });
+      }
+    }
+  }, [roleToDelete, deleteRoleMutation]);
 
   // Handle form submission
-  const handleRoleSubmit = (data: any) => {
-    if (isEdit) {
-      // Update existing role logic
-      console.log("Updating role:", data);
-      console.log("Role name:", data.role);
-      console.log("Permissions:", data.permissions);
-      console.log("Selected permissions count:", data.permissions?.length || 0);
-    } else {
-      // Add new role logic
-      console.log("Adding new role:", data);
-      console.log("Role name:", data.role);
-      console.log("Permissions:", data.permissions);
-      console.log("Selected permissions count:", data.permissions?.length || 0);
-    }
+  const handleRoleSubmit = useCallback(
+    async (data: any) => {
+      try {
+        const roleData = {
+          name: data.role || data.name,
+          description: data.description || "",
+          isActive: data.isActive !== undefined ? data.isActive : true,
+        };
 
-    // Here you would typically make an API call to save the role
-    // Example:
-    // if (isEdit) {
-    //   updateRole(selectedRole.id, data);
-    // } else {
-    //   createRole(data);
-    // }
-  };
+        if (isEdit && selectedRole) {
+          // Update existing role
+          await updateRoleMutation.mutateAsync({
+            id: selectedRole.id,
+            ...roleData,
+          });
+          // Assign permissions if any are selected
+          if (
+            data.selectedPermissions &&
+            data.selectedPermissions.length >= 0
+          ) {
+            await assignPermissionsMutation.mutateAsync({
+              roleId: selectedRole.id,
+              permissionIds: data.selectedPermissions,
+            });
+          }
+          toast("Role updated successfully", {
+            position: "top-center",
+            className: " text-success-600",
+            type: "success",
+          });
+        } else {
+          // Create new role
+          const newRole = await createRoleMutation.mutateAsync(roleData);
+          // If permissions were selected, assign them to the new role
+          if (data.selectedPermissions && data.selectedPermissions.length > 0) {
+            await assignPermissionsMutation.mutateAsync({
+              roleId: newRole.id,
+              permissionIds: data.selectedPermissions,
+            });
+          }
+          toast("Role created successfully", {
+            position: "top-center",
+            className: " text-success-600",
+            type: "success",
+          });
+        }
+        setModal(false);
+      } catch (_error) {
+        toast("An error occurred", {
+          position: "top-center",
+          className: " text-danger-600",
+          type: "error",
+        });
+      }
+    },
+    [
+      isEdit,
+      selectedRole,
+      updateRoleMutation,
+      createRoleMutation,
+      assignPermissionsMutation,
+    ]
+  );
 
   const toggle = useCallback(() => {
     if (modal) {
@@ -71,33 +155,33 @@ const Page: NextPageWithLayout = () => {
       },
       {
         header: "Role",
-        accessorKey: "role",
+        accessorKey: "name",
         enableColumnFilter: false,
       },
       {
         header: "Permissions",
-        accessorKey: "permissions",
+        accessorKey: "rolePermissions",
         enableColumnFilter: false,
         cell: (cellProps: any) => {
-          const permissions = cellProps.row.original.permissions || [];
-          const uniqueEndpoints = new Set(
-            permissions.map((p: string) => p.split(":")[0])
+          const rolePermissions = cellProps.row.original.rolePermissions || [];
+          const uniqueModules = new Set(
+            rolePermissions.map((rp: any) => rp.permission.module)
           );
           return (
             <div className="d-flex align-items-center">
               <span className="badge fs-6  bg-soft-info text-info me-2">
-                {uniqueEndpoints.size} APIs
+                {uniqueModules.size} Modules
               </span>
               <span className="badge fs-6  bg-soft-primary text-primary">
-                {permissions.length} Methods
+                {rolePermissions.length} Permissions
               </span>
             </div>
           );
         },
       },
       {
-        header: "Created At",
-        accessorKey: "createdAt",
+        header: "Description",
+        accessorKey: "description",
         enableColumnFilter: false,
       },
       {
@@ -132,128 +216,42 @@ const Page: NextPageWithLayout = () => {
         },
       },
     ],
-    []
+    [handleEditRole, onClickDelete]
   );
 
-  const sortingTable = [
-    {
-      id: "1",
-      role: "Admin",
-      createdAt: "2023-01-10",
-      permissions: [
-        "auth:GET",
-        "auth:POST",
-        "profile:GET",
-        "profile:PUT",
-        "profile:PATCH",
-        "users:GET",
-        "users:POST",
-        "users:PUT",
-        "users:DELETE",
-        "roles:GET",
-        "roles:POST",
-        "roles:PUT",
-        "roles:DELETE",
-        "products:GET",
-        "products:POST",
-        "products:PUT",
-        "products:DELETE",
-        "orders:GET",
-        "orders:POST",
-        "orders:PUT",
-        "orders:DELETE",
-        "contacts:GET",
-        "contacts:POST",
-        "contacts:PUT",
-        "contacts:DELETE",
-        "companies:GET",
-        "companies:POST",
-        "companies:PUT",
-        "companies:DELETE",
-        "tasks:GET",
-        "tasks:POST",
-        "tasks:PUT",
-        "tasks:DELETE",
-        "projects:GET",
-        "projects:POST",
-        "projects:PUT",
-        "projects:DELETE",
-      ],
-    },
-    {
-      id: "2",
-      role: "Editor",
-      createdAt: "2023-02-15",
-      permissions: [
-        "auth:GET",
-        "auth:POST",
-        "profile:GET",
-        "profile:PUT",
-        "products:GET",
-        "products:POST",
-        "products:PUT",
-        "orders:GET",
-        "orders:POST",
-        "contacts:GET",
-        "contacts:POST",
-        "tasks:GET",
-        "tasks:POST",
-      ],
-    },
-    {
-      id: "3",
-      role: "Viewer",
-      createdAt: "2023-03-20",
-      permissions: [
-        "auth:GET",
-        "auth:POST",
-        "profile:GET",
-        "products:GET",
-        "orders:GET",
-        "contacts:GET",
-        "tasks:GET",
-      ],
-    },
-    {
-      id: "4",
-      role: "Manager",
-      createdAt: "2023-04-05",
-      permissions: [
-        "auth:GET",
-        "auth:POST",
-        "profile:GET",
-        "profile:PUT",
-        "users:GET",
-        "products:GET",
-        "products:POST",
-        "products:PUT",
-        "orders:GET",
-        "orders:PUT",
-        "contacts:GET",
-        "contacts:POST",
-        "contacts:PUT",
-        "tasks:GET",
-        "tasks:POST",
-        "tasks:PUT",
-      ],
-    },
-    {
-      id: "5",
-      role: "Contributor",
-      createdAt: "2023-05-12",
-      permissions: [
-        "auth:GET",
-        "auth:POST",
-        "profile:GET",
-        "products:GET",
-        "products:POST",
-        "contacts:GET",
-        "contacts:POST",
-        "tasks:GET",
-        "tasks:POST",
-      ],
-    },
-  ];
+  // Show loading state
+  if (isLoading) {
+    return (
+      <React.Fragment>
+        <Card>
+          <CardBody>
+            <div className="text-center">
+              <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p className="mt-2">Loading roles...</p>
+            </div>
+          </CardBody>
+        </Card>
+      </React.Fragment>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <React.Fragment>
+        <Card>
+          <CardBody>
+            <div className="text-center text-danger">
+              <i className="ri-error-warning-line fs-1"></i>
+              <p className="mt-2">Failed to load roles. Please try again.</p>
+            </div>
+          </CardBody>
+        </Card>
+      </React.Fragment>
+    );
+  }
 
   return (
     <React.Fragment>
@@ -278,9 +276,9 @@ const Page: NextPageWithLayout = () => {
         <CardBody>
           <TableContainer
             columns={columns || []}
-            data={sortingTable || []}
+            data={roles || []}
             customPageSize={5}
-            SearchPlaceholder="Search Products..."
+            SearchPlaceholder="Search Roles..."
           />
         </CardBody>
       </Card>
@@ -290,6 +288,15 @@ const Page: NextPageWithLayout = () => {
         isEdit={isEdit}
         roleData={selectedRole}
         onSubmit={handleRoleSubmit}
+        permissions={permissions}
+      />
+
+      <CommonModal
+        isOpen={deleteModal}
+        toggle={() => setDeleteModal(false)}
+        modalType="delete"
+        onConfirm={handleDeleteRole}
+        itemName={roleToDelete?.name}
       />
     </React.Fragment>
   );

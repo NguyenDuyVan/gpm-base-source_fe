@@ -41,7 +41,7 @@ import { User } from "@/types/api";
 
 const Users = () => {
   // React Query hooks
-  const { data: users = [], isLoading } = useUsersQuery();
+  const { data: users = [] } = useUsersQuery();
   const { data: roles = [] } = useRolesQuery();
   const createUserMutation = useCreateUserMutation();
   const updateUserMutation = useUpdateUserMutation();
@@ -91,18 +91,17 @@ const Users = () => {
     setIsInfoDetails(!isInfoDetails);
   };
 
-  // Form validation with password field for creating new users
+  // Form validation
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
       fullName: (selectedUser && selectedUser.fullName) || "",
       email: (selectedUser && selectedUser.email) || "",
       phoneNumber: (selectedUser && selectedUser.phoneNumber) || "",
-      password: "",
       address: (selectedUser && selectedUser.address) || "",
       taxCode: (selectedUser && selectedUser.taxCode) || "",
       roleId: (selectedUser && selectedUser.roleId) || "",
-      isActive: (selectedUser && selectedUser.isActive) || true,
+      password: "",
     },
     validationSchema: Yup.object({
       fullName: Yup.string().required("Please Enter Full Name"),
@@ -117,12 +116,12 @@ const Users = () => {
         const userData = {
           fullName: values.fullName,
           email: values.email,
-          password: values.password!, // Make password required
+          password: values.password!, // Make password required for create
           phoneNumber: values.phoneNumber,
           address: values.address,
           taxCode: values.taxCode,
           roleId: values.roleId ? Number(values.roleId) : null,
-          isActive: values.isActive,
+          isActive: true,
           isSuperAdmin: false,
         };
 
@@ -217,7 +216,7 @@ const Users = () => {
             <input
               type="checkbox"
               className="usersCheckBox form-check-input"
-              value={cell.row.original.id}
+              value={cell.getValue()}
               onChange={() => deleteCheckbox()}
             />
           );
@@ -229,20 +228,6 @@ const Users = () => {
         header: "Name",
         accessorKey: "fullName",
         enableColumnFilter: false,
-        cell: (cell: any) => (
-          <>
-            <div className="d-flex align-items-center">
-              <div className="flex-shrink-0">
-                <div className="avatar-xs">
-                  <div className="avatar-title bg-primary-subtle text-primary rounded-circle">
-                    {cell.getValue().charAt(0).toUpperCase()}
-                  </div>
-                </div>
-              </div>
-              <div className="flex-grow-1 ms-2 name">{cell.getValue()}</div>
-            </div>
-          </>
-        ),
       },
       {
         header: "Email",
@@ -253,40 +238,15 @@ const Users = () => {
         header: "Phone",
         accessorKey: "phoneNumber",
         enableColumnFilter: false,
-        cell: (cell: any) => cell.getValue() || "N/A",
       },
       {
-        header: "Status",
-        accessorKey: "isActive",
+        header: "Role",
+        accessorKey: "role.name",
         enableColumnFilter: false,
         cell: (cell: any) => (
           <>
-            <span
-              className={`badge ${
-                cell.getValue()
-                  ? "bg-success-subtle text-success"
-                  : "bg-danger-subtle text-danger"
-              } me-1`}
-            >
-              {cell.getValue() ? "Active" : "Inactive"}
-            </span>
-          </>
-        ),
-      },
-      {
-        header: "Super Admin",
-        accessorKey: "isSuperAdmin",
-        enableColumnFilter: false,
-        cell: (cell: any) => (
-          <>
-            <span
-              className={`badge ${
-                cell.getValue()
-                  ? "bg-warning-subtle text-warning"
-                  : "bg-secondary-subtle text-secondary"
-              } me-1`}
-            >
-              {cell.getValue() ? "Yes" : "No"}
+            <span className="badge bg-primary-subtle text-primary me-1">
+              {cell.getValue() || "No Role"}
             </span>
           </>
         ),
@@ -303,7 +263,7 @@ const Users = () => {
         header: "Action",
         cell: (cellProps: any) => {
           return (
-            <ul className="list-inline hstack gap-2 mb-0">
+            <ul className="list-inline hstack gap-2 mb-0 ">
               <li className="list-inline-item" title="Edit">
                 <span
                   className="edit-item-btn"
@@ -391,12 +351,11 @@ const Users = () => {
                         id="create-btn"
                         onClick={() => {
                           setIsEdit(false);
-                          setSelectedUser(null);
                           toggle();
                         }}
                       >
                         <i className="ri-add-line align-bottom me-1"></i> Add
-                        User
+                        Users
                       </button>
                     </div>
                   </div>
@@ -404,9 +363,7 @@ const Users = () => {
               </CardHeader>
               <CardBody className="pt-3">
                 <div>
-                  {isLoading ? (
-                    <Loader />
-                  ) : users && users.length ? (
+                  {users && users.length ? (
                     <TableContainer
                       columns={columns}
                       data={users || []}
@@ -418,9 +375,7 @@ const Users = () => {
                       isLeadsFilter={false}
                     />
                   ) : (
-                    <div className="text-center py-4">
-                      <p>No users found</p>
-                    </div>
+                    <Loader />
                   )}
                 </div>
 
@@ -437,7 +392,26 @@ const Users = () => {
                     }}
                   >
                     <ModalBody>
+                      <Input type="hidden" id="id-field" />
                       <Row className="g-3">
+                        <Col lg={12}>
+                          <div className="text-center">
+                            <div className="position-relative d-inline-block">
+                              <div className="position-absolute bottom-0 end-0">
+                                <Label
+                                  htmlFor="user-image-input"
+                                  className="mb-0"
+                                >
+                                  <div className="avatar-xs cursor-pointer">
+                                    <div className="avatar-title bg-light border rounded-circle text-muted">
+                                      <i className="ri-image-fill"></i>
+                                    </div>
+                                  </div>
+                                </Label>
+                              </div>
+                            </div>
+                          </div>
+                        </Col>
                         <Col lg={12}>
                           <div>
                             <Label
@@ -501,15 +475,12 @@ const Users = () => {
                         </Col>
                         <Col lg={6}>
                           <div>
-                            <Label
-                              htmlFor="phoneNumber-field"
-                              className="form-label"
-                            >
-                              Phone Number
+                            <Label htmlFor="phone-field" className="form-label">
+                              Phone
                             </Label>
                             <Input
-                              name="phoneNumber"
-                              id="phoneNumber-field"
+                              name="phone"
+                              id="phone-field"
                               className="form-control"
                               placeholder="Enter Phone Number"
                               type="text"
@@ -534,79 +505,20 @@ const Users = () => {
                         <Col lg={12}>
                           <div>
                             <Label
-                              htmlFor="password-field"
+                              htmlFor="location-field"
                               className="form-label"
                             >
-                              Password{" "}
-                              {!isEdit && (
-                                <span className="text-danger">*</span>
-                              )}
+                              Location
                             </Label>
                             <Input
-                              name="password"
-                              id="password-field"
+                              name="location"
+                              id="location-field"
                               className="form-control"
-                              placeholder={
-                                isEdit
-                                  ? "Leave blank to keep current password"
-                                  : "Enter Password"
-                              }
-                              type="password"
-                              onChange={validation.handleChange}
-                              onBlur={validation.handleBlur}
-                              value={validation.values.password || ""}
-                              invalid={
-                                validation.touched.password &&
-                                validation.errors.password
-                                  ? true
-                                  : false
-                              }
-                            />
-                            {validation.touched.password &&
-                            validation.errors.password ? (
-                              <FormFeedback type="invalid">
-                                {validation.errors.password}
-                              </FormFeedback>
-                            ) : null}
-                          </div>
-                        </Col>
-                        <Col lg={12}>
-                          <div>
-                            <Label
-                              htmlFor="address-field"
-                              className="form-label"
-                            >
-                              Address
-                            </Label>
-                            <Input
-                              name="address"
-                              id="address-field"
-                              className="form-control"
-                              placeholder="Enter Address"
+                              placeholder="Enter Location"
                               type="text"
                               onChange={validation.handleChange}
                               onBlur={validation.handleBlur}
                               value={validation.values.address || ""}
-                            />
-                          </div>
-                        </Col>
-                        <Col lg={12}>
-                          <div>
-                            <Label
-                              htmlFor="taxCode-field"
-                              className="form-label"
-                            >
-                              Tax Code
-                            </Label>
-                            <Input
-                              name="taxCode"
-                              id="taxCode-field"
-                              className="form-control"
-                              placeholder="Enter Tax Code"
-                              type="text"
-                              onChange={validation.handleChange}
-                              onBlur={validation.handleBlur}
-                              value={validation.values.taxCode || ""}
                             />
                           </div>
                         </Col>
@@ -649,24 +561,6 @@ const Users = () => {
                             />
                           </div>
                         </Col>
-                        <Col lg={12}>
-                          <div className="form-check">
-                            <Input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="isActive"
-                              name="isActive"
-                              checked={validation.values.isActive}
-                              onChange={validation.handleChange}
-                            />
-                            <Label
-                              className="form-check-label"
-                              htmlFor="isActive"
-                            >
-                              Active User
-                            </Label>
-                          </div>
-                        </Col>
                       </Row>
                     </ModalBody>
                     <ModalFooter>
@@ -684,20 +578,8 @@ const Users = () => {
                           type="submit"
                           className="btn btn-success"
                           id="add-btn"
-                          disabled={
-                            createUserMutation.isPending ||
-                            updateUserMutation.isPending
-                          }
                         >
-                          {createUserMutation.isPending ||
-                          updateUserMutation.isPending ? (
-                            <>
-                              <i className="spinner-border spinner-border-sm me-1"></i>
-                              {!!isEdit ? "Updating..." : "Adding..."}
-                            </>
-                          ) : (
-                            <>{!!isEdit ? "Update User" : "Add User"}</>
-                          )}
+                          {!!isEdit ? "Update" : "Add User"}
                         </button>
                       </div>
                     </ModalFooter>

@@ -83,7 +83,7 @@ const Login: NextPageWithLayout = () => {
 
       localStorage.setItem("authUser", JSON.stringify(data.user));
       localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
-      dispatch(loginSuccess(data));
+      dispatch(loginSuccess(data.user));
       router.push("/");
       setLoader(true);
     },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Modal,
   ModalBody,
@@ -11,14 +11,8 @@ import {
   Label,
   Badge,
 } from "reactstrap";
-
-interface ApiEndpoint {
-  id: string;
-  name: string;
-  url: string;
-  methods: string[];
-  category: string;
-}
+import { Permission } from "@/types/api";
+import { useAssignPermissionsMutation } from "@/api/mutations/useRoleMutation";
 
 interface RoleModalProps {
   modal: boolean;
@@ -26,6 +20,7 @@ interface RoleModalProps {
   isEdit: boolean;
   roleData?: any;
   onSubmit?: (data: any) => void;
+  permissions?: Permission[];
 }
 
 const RoleModal: React.FC<RoleModalProps> = ({
@@ -34,211 +29,149 @@ const RoleModal: React.FC<RoleModalProps> = ({
   isEdit,
   roleData,
   onSubmit,
+  permissions = [],
 }) => {
-  const [selectedPermissions, setSelectedPermissions] = useState<Set<string>>(
+  const [selectedPermissions, setSelectedPermissions] = useState<Set<number>>(
     new Set()
   );
   const [selectAll, setSelectAll] = useState(false);
+  const [roleName, setRoleName] = useState("");
 
-  // Sample API endpoints with multiple methods
-  const apiEndpoints: ApiEndpoint[] = useMemo(
-    () => [
-      // Auth endpoints
-      {
-        id: "auth",
-        name: "Authentication",
-        url: "/auth",
-        methods: ["GET", "POST"],
-        category: "Authentication",
-      },
-      {
-        id: "profile",
-        name: "User Profile",
-        url: "/user",
-        methods: ["GET", "PUT", "PATCH"],
-        category: "Authentication",
-      },
+  // Mutation for assigning permissions
+  const assignPermissionsMutation = useAssignPermissionsMutation();
 
-      // User Management
-      {
-        id: "users",
-        name: "User Management",
-        url: "/users",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        category: "User Management",
-      },
-      {
-        id: "roles",
-        name: "Role Management",
-        url: "/roles",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        category: "User Management",
-      },
-
-      // Products
-      {
-        id: "products",
-        name: "Product Management",
-        url: "/apps/product",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        category: "E-commerce",
-      },
-      {
-        id: "categories",
-        name: "Product Categories",
-        url: "/categories",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        category: "E-commerce",
-      },
-
-      // Orders
-      {
-        id: "orders",
-        name: "Order Management",
-        url: "/apps/order",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        category: "E-commerce",
-      },
-      {
-        id: "payments",
-        name: "Payment Processing",
-        url: "/payments",
-        methods: ["GET", "POST"],
-        category: "E-commerce",
-      },
-
-      // CRM
-      {
-        id: "contacts",
-        name: "Contact Management",
-        url: "/apps/contact",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        category: "CRM",
-      },
-      {
-        id: "companies",
-        name: "Company Management",
-        url: "/apps/company",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        category: "CRM",
-      },
-      {
-        id: "leads",
-        name: "Lead Management",
-        url: "/leads",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        category: "CRM",
-      },
-
-      // Tasks
-      {
-        id: "tasks",
-        name: "Task Management",
-        url: "/apps/task",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        category: "Project Management",
-      },
-      {
-        id: "projects",
-        name: "Project Management",
-        url: "/projects",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        category: "Project Management",
-      },
-    ],
-    []
-  );
-
-  // Group endpoints by category
-  const groupedEndpoints = apiEndpoints.reduce((acc, endpoint) => {
-    if (!acc[endpoint.category]) {
-      acc[endpoint.category] = [];
+  // Utility function to generate module name from apiPath
+  const getModuleName = (apiPath: string): string => {
+    const pathParts = apiPath
+      .split("/")
+      .filter((part) => part && !part.includes(":"));
+    if (pathParts.length >= 3) {
+      const moduleName = pathParts[2]; // e.g., "permissions" or "roles"
+      return moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
     }
-    acc[endpoint.category].push(endpoint);
-    return acc;
-  }, {} as Record<string, ApiEndpoint[]>);
+    return "General";
+  };
 
-  // Get all possible permission combinations
-  const getAllPermissions = useCallback(() => {
-    const permissions: string[] = [];
-    apiEndpoints.forEach((endpoint) => {
-      endpoint.methods.forEach((method) => {
-        permissions.push(`${endpoint.id}:${method}`);
-      });
-    });
-    return permissions;
-  }, [apiEndpoints]);
+  // Utility function to generate permission name from apiPath and method
+  const getPermissionName = (apiPath: string, method: string): string => {
+    const pathParts = apiPath
+      .split("/")
+      .filter((part) => part && !part.includes(":"));
+    if (pathParts.length >= 3) {
+      const resource = pathParts[2]; // e.g., "permissions" or "roles"
+      const action = method.toLowerCase();
+
+      // Handle special cases
+      if (apiPath.includes("assign-permissions")) {
+        return `Assign ${resource} permissions`;
+      }
+
+      // Standard CRUD operations
+      switch (action) {
+        case "get":
+          return apiPath.includes("/:")
+            ? `View ${resource}`
+            : `List ${resource}`;
+        case "post":
+          return `Create ${resource}`;
+        case "put":
+        case "patch":
+          return `Update ${resource}`;
+        case "delete":
+          return `Delete ${resource}`;
+        default:
+          return `${action} ${resource}`;
+      }
+    }
+    return `${method} ${apiPath}`;
+  };
+
+  // Group permissions by module (derived from apiPath)
+  const groupedPermissions = useMemo(() => {
+    return permissions.reduce((acc, permission) => {
+      const moduleName = getModuleName(permission.apiPath);
+      if (!acc[moduleName]) {
+        acc[moduleName] = [];
+      }
+
+      // Add generated name if not provided
+      const enhancedPermission = {
+        ...permission,
+        name: getPermissionName(permission.apiPath, permission.method),
+        module: moduleName,
+      };
+
+      acc[moduleName].push(enhancedPermission);
+      return acc;
+    }, {} as Record<string, (Permission & { name: string; module: string })[]>);
+  }, [permissions]);
 
   // Initialize permissions when modal opens or roleData changes
   useEffect(() => {
     if (modal) {
-      if (isEdit && roleData?.permissions) {
-        const permissions = new Set<string>(roleData.permissions);
-        setSelectedPermissions(permissions);
-        setSelectAll(permissions.size === getAllPermissions().length);
+      if (isEdit && roleData) {
+        setRoleName(roleData.name || "");
+        // Get currently assigned permission IDs from rolePermissions
+        const currentPermissionIds =
+          roleData.rolePermissions?.map((rp: any) => rp.permission.id) || [];
+        setSelectedPermissions(new Set(currentPermissionIds));
+        setSelectAll(currentPermissionIds.length === permissions.length);
       } else {
+        setRoleName("");
         setSelectedPermissions(new Set());
         setSelectAll(false);
       }
     }
-  }, [modal, isEdit, roleData, getAllPermissions]);
+  }, [modal, isEdit, roleData, permissions.length]);
 
-  const handlePermissionChange = (permissionKey: string, checked: boolean) => {
+  const handlePermissionChange = (permissionId: number, checked: boolean) => {
     const newPermissions = new Set(selectedPermissions);
     if (checked) {
-      newPermissions.add(permissionKey);
+      newPermissions.add(permissionId);
     } else {
-      newPermissions.delete(permissionKey);
+      newPermissions.delete(permissionId);
     }
     setSelectedPermissions(newPermissions);
-    setSelectAll(newPermissions.size === getAllPermissions().length);
+    setSelectAll(newPermissions.size === permissions.length);
   };
 
-  const handleEndpointSelectAll = (endpointId: string, checked: boolean) => {
-    const endpoint = apiEndpoints.find((ep) => ep.id === endpointId);
-    if (!endpoint) return;
-
+  const handleModuleSelectAll = (
+    modulePermissions: Permission[],
+    checked: boolean
+  ) => {
     const newPermissions = new Set(selectedPermissions);
-    endpoint.methods.forEach((method) => {
-      const permissionKey = `${endpointId}:${method}`;
+    modulePermissions.forEach((permission) => {
       if (checked) {
-        newPermissions.add(permissionKey);
+        newPermissions.add(permission.id);
       } else {
-        newPermissions.delete(permissionKey);
+        newPermissions.delete(permission.id);
       }
     });
     setSelectedPermissions(newPermissions);
-    setSelectAll(newPermissions.size === getAllPermissions().length);
+    setSelectAll(newPermissions.size === permissions.length);
   };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      const allPermissions = new Set(getAllPermissions());
-      setSelectedPermissions(allPermissions);
+      const allPermissionIds = new Set(permissions.map((p) => p.id));
+      setSelectedPermissions(allPermissionIds);
     } else {
       setSelectedPermissions(new Set());
     }
     setSelectAll(checked);
   };
 
-  const isEndpointFullySelected = (endpointId: string) => {
-    const endpoint = apiEndpoints.find((ep) => ep.id === endpointId);
-    if (!endpoint) return false;
-    return endpoint.methods.every((method) =>
-      selectedPermissions.has(`${endpointId}:${method}`)
+  const isModuleFullySelected = (modulePermissions: Permission[]) => {
+    return modulePermissions.every((permission) =>
+      selectedPermissions.has(permission.id)
     );
   };
 
-  const isEndpointPartiallySelected = (endpointId: string) => {
-    const endpoint = apiEndpoints.find((ep) => ep.id === endpointId);
-    if (!endpoint) return false;
-    const selectedMethods = endpoint.methods.filter((method) =>
-      selectedPermissions.has(`${endpointId}:${method}`)
-    );
-    return (
-      selectedMethods.length > 0 &&
-      selectedMethods.length < endpoint.methods.length
-    );
+  const isModulePartiallySelected = (modulePermissions: Permission[]) => {
+    const selectedCount = modulePermissions.filter((permission) =>
+      selectedPermissions.has(permission.id)
+    ).length;
+    return selectedCount > 0 && selectedCount < modulePermissions.length;
   };
 
   const getMethodBadgeColor = (method: string) => {
@@ -258,36 +191,55 @@ const RoleModal: React.FC<RoleModalProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Get form data
-    const formData = new FormData(e.target as HTMLFormElement);
+
     const data = {
-      role: formData.get("role"),
-      permissions: Array.from(selectedPermissions),
+      name: roleName,
+      description: "",
+      isActive: true,
     };
 
-    if (onSubmit) {
-      onSubmit(data);
-    }
+    if (isEdit && roleData) {
+      // For editing, first update the role, then assign permissions
+      if (onSubmit) {
+        onSubmit(data);
+      }
 
-    toggle(); // Close modal after submit
-    return false;
+      // Assign permissions to the role
+      try {
+        await assignPermissionsMutation.mutateAsync({
+          roleId: roleData.id,
+          permissionIds: Array.from(selectedPermissions),
+        });
+        toggle();
+      } catch (error) {
+        console.error("Error assigning permissions:", error);
+      }
+    } else {
+      // For creating new role, submit the role data with selected permissions
+      if (onSubmit) {
+        onSubmit({
+          ...data,
+          selectedPermissions: Array.from(selectedPermissions),
+        });
+      }
+      toggle();
+    }
   };
 
   return (
     <Modal id="showModal" isOpen={modal} toggle={toggle} centered size="xl">
       <ModalHeader className="bg-light p-3" toggle={toggle}>
-        {!!isEdit ? "Edit Role" : "Add Role"}
+        {isEdit ? "Edit Role" : "Add Role"}
       </ModalHeader>
       <Form className="tablelist-form" onSubmit={handleSubmit}>
         <ModalBody>
-          <Input type="hidden" id="id-field" value={roleData?.id || ""} />
           <Row className="g-3">
             <Col lg={12}>
               <div>
                 <Label htmlFor="role-field" className="form-label">
-                  Role Name
+                  Role Name <span className="text-danger">*</span>
                 </Label>
                 <Input
                   name="role"
@@ -295,166 +247,166 @@ const RoleModal: React.FC<RoleModalProps> = ({
                   className="form-control"
                   placeholder="Enter Role Name"
                   type="text"
-                  defaultValue={roleData?.role || ""}
-                  validate={{
-                    required: { value: true },
-                  }}
+                  value={roleName}
+                  onChange={(e) => setRoleName(e.target.value)}
+                  required
                 />
               </div>
             </Col>
           </Row>
 
-          <Row className="mt-4">
-            <Col lg={12}>
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5 className="mb-0">API Permissions</h5>
-                <div className="form-check">
-                  <Input
-                    type="checkbox"
-                    className="form-check-input"
-                    id="select-all"
-                    checked={selectAll}
-                    onChange={(e) => handleSelectAll(e.target.checked)}
-                  />
-                  <Label className="form-check-label" htmlFor="select-all">
-                    Select All APIs & Methods
-                  </Label>
+          {permissions.length > 0 && (
+            <Row className="mt-4">
+              <Col lg={12}>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h5 className="mb-0">Permissions</h5>
+                  <div className="form-check">
+                    <Input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="select-all"
+                      checked={selectAll}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
+                    />
+                    <Label className="form-check-label" htmlFor="select-all">
+                      Select All Permissions
+                    </Label>
+                  </div>
                 </div>
-              </div>
 
-              <div
-                className="border rounded p-3"
-                style={{ maxHeight: "500px", overflowY: "auto" }}
-              >
-                {Object.entries(groupedEndpoints).map(
-                  ([category, endpoints]) => (
-                    <div key={category} className="mb-4">
-                      <h6 className="text-primary mb-3 border-bottom pb-2">
-                        <i className="mdi mdi-folder-outline me-1"></i>
-                        {category}
-                      </h6>
-
-                      {endpoints.map((endpoint) => (
-                        <div
-                          key={endpoint.id}
-                          className="border rounded mb-3 p-3 bg-light"
-                        >
-                          <div className="d-flex justify-content-between align-items-center mb-2">
-                            <div className="d-flex align-items-center">
-                              <div className="form-check me-3">
-                                <Input
-                                  type="checkbox"
-                                  className="form-check-input"
-                                  id={`endpoint-${endpoint.id}`}
-                                  checked={isEndpointFullySelected(endpoint.id)}
-                                  ref={(input) => {
-                                    if (input) {
-                                      const inputElement = input as any;
-                                      inputElement.indeterminate =
-                                        isEndpointPartiallySelected(
-                                          endpoint.id
-                                        );
-                                    }
-                                  }}
-                                  onChange={(e) =>
-                                    handleEndpointSelectAll(
-                                      endpoint.id,
-                                      e.target.checked
-                                    )
-                                  }
-                                />
-                              </div>
-                              <div>
-                                <Label
-                                  htmlFor={`endpoint-${endpoint.id}`}
-                                  className="form-check-label mb-0 fw-medium"
-                                >
-                                  {endpoint.name}
-                                </Label>
-                                <div>
-                                  <code className="text-muted small">
-                                    {endpoint.url}
-                                  </code>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="mt-2">
-                            <small className="text-muted mb-2 d-block">
-                              Available Methods:
-                            </small>
-                            <div className="d-flex flex-wrap gap-2">
-                              {endpoint.methods.map((method) => {
-                                const permissionKey = `${endpoint.id}:${method}`;
-                                const isSelected =
-                                  selectedPermissions.has(permissionKey);
-
-                                return (
-                                  <div
-                                    key={method}
-                                    className="form-check form-check-inline"
-                                  >
-                                    <Input
-                                      type="checkbox"
-                                      className="form-check-input"
-                                      id={`permission-${permissionKey}`}
-                                      checked={isSelected}
-                                      onChange={(e) =>
-                                        handlePermissionChange(
-                                          permissionKey,
-                                          e.target.checked
-                                        )
-                                      }
-                                    />
-                                    <Label
-                                      htmlFor={`permission-${permissionKey}`}
-                                      className="form-check-label"
-                                    >
-                                      <Badge
-                                        color={
-                                          isSelected
-                                            ? getMethodBadgeColor(method)
-                                            : "light"
-                                        }
-                                        className={`font-size-10 ${
-                                          isSelected
-                                            ? "text-white"
-                                            : "text-muted"
-                                        }`}
-                                      >
-                                        {method}
-                                      </Badge>
-                                    </Label>
-                                  </div>
-                                );
-                              })}
-                            </div>
+                <div
+                  className="border rounded p-3"
+                  style={{ maxHeight: "500px", overflowY: "auto" }}
+                >
+                  {Object.entries(groupedPermissions).map(
+                    ([moduleName, modulePermissions]) => (
+                      <div key={moduleName} className="mb-4">
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                          <h6 className="text-primary mb-0 border-bottom pb-2">
+                            <i className="mdi mdi-folder-outline me-1"></i>
+                            {moduleName}
+                          </h6>
+                          <div className="form-check">
+                            <Input
+                              type="checkbox"
+                              className="form-check-input"
+                              id={`module-${moduleName}`}
+                              checked={isModuleFullySelected(modulePermissions)}
+                              ref={(input) => {
+                                if (input) {
+                                  const inputElement = input as any;
+                                  inputElement.indeterminate =
+                                    isModulePartiallySelected(
+                                      modulePermissions
+                                    );
+                                }
+                              }}
+                              onChange={(e) =>
+                                handleModuleSelectAll(
+                                  modulePermissions,
+                                  e.target.checked
+                                )
+                              }
+                            />
+                            <Label
+                              className="form-check-label"
+                              htmlFor={`module-${moduleName}`}
+                            >
+                              Select All {moduleName}
+                            </Label>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  )
-                )}
-              </div>
 
-              <div className="mt-3 p-2 bg-light rounded">
-                <small className="text-muted">
+                        <div className="row">
+                          {modulePermissions.map((permission) => (
+                            <div
+                              key={permission.id}
+                              className="col-md-6 col-lg-4 mb-3"
+                            >
+                              <div className="border rounded p-3 h-100">
+                                <div className="form-check mb-2">
+                                  <Input
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    id={`permission-${permission.id}`}
+                                    checked={selectedPermissions.has(
+                                      permission.id
+                                    )}
+                                    onChange={(e) =>
+                                      handlePermissionChange(
+                                        permission.id,
+                                        e.target.checked
+                                      )
+                                    }
+                                  />
+                                  <Label
+                                    htmlFor={`permission-${permission.id}`}
+                                    className="form-check-label fw-medium"
+                                  >
+                                    {permission.name}
+                                  </Label>
+                                </div>
+                                <div className="text-muted small mb-2">
+                                  <code>{permission.apiPath}</code>
+                                </div>
+                                <Badge
+                                  color={getMethodBadgeColor(permission.method)}
+                                  className="font-size-10"
+                                >
+                                  {permission.method}
+                                </Badge>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
+
+                <div className="mt-3 p-2 bg-light rounded">
+                  <small className="text-muted">
+                    <i className="mdi mdi-information-outline me-1"></i>
+                    Selected {selectedPermissions.size} of {permissions.length}{" "}
+                    permissions
+                  </small>
+                </div>
+              </Col>
+            </Row>
+          )}
+
+          {permissions.length === 0 && (
+            <Row className="mt-4">
+              <Col lg={12}>
+                <div className="text-center text-muted">
                   <i className="mdi mdi-information-outline me-1"></i>
-                  Selected {selectedPermissions.size} of{" "}
-                  {getAllPermissions().length} API method permissions
-                </small>
-              </div>
-            </Col>
-          </Row>
+                  No permissions available. Please make sure permissions are
+                  loaded.
+                </div>
+              </Col>
+            </Row>
+          )}
         </ModalBody>
         <ModalFooter>
           <div className="hstack gap-2 justify-content-end">
-            <button type="button" className="btn btn-light" onClick={toggle}>
+            <button
+              type="button"
+              className="btn btn-light"
+              onClick={toggle}
+              disabled={assignPermissionsMutation.isPending}
+            >
               Close
             </button>
-            <button type="submit" className="btn btn-success" id="add-btn">
-              {!!isEdit ? "Update Role" : "Add Role"}
+            <button
+              type="submit"
+              className="btn btn-success"
+              disabled={!roleName.trim() || assignPermissionsMutation.isPending}
+            >
+              {assignPermissionsMutation.isPending
+                ? "Processing..."
+                : isEdit
+                ? "Update Role"
+                : "Add Role"}
             </button>
           </div>
         </ModalFooter>

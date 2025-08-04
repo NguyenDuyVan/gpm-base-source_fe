@@ -12,3 +12,11 @@ export const AUTH_PATH_LOGIN = `/v1/auth/login`;
 export const AUTH_PATH_REGISTER = `/v1/auth/register`;
 export const AUTH_PATH_LOGOUT = `/v1/auth/logout`;
 export const AUTH_PATH_CURRENT_USER = `/v1/auth/me`;
+
+// Role paths
+export const ROLES_PATH = `/v1/roles`;
+export const ROLES_PATH_BY_ID = (id: string | number) => `/v1/roles/${id}`;
+
+// User paths
+export const USERS_PATH = `/v1/users`;
+export const USERS_PATH_BY_ID = (id: string | number) => `/v1/users/${id}`;

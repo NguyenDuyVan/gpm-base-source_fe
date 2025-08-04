@@ -27,8 +27,6 @@ import ProfileReducer from "./auth/profile/reducer";
 
 // //TicketsList
 // import TicketsReducer from "./tickets/reducer";
-//Crm
-import CrmReducer from "./crm/reducer";
 
 // //Invoice
 // import InvoiceReducer from "./invoice/reducer";
@@ -78,7 +76,6 @@ const rootReducer = combineReducers({
   Login: LoginReducer,
   ForgetPassword: ForgetPasswordReducer,
   Profile: ProfileReducer,
-  Crm: CrmReducer,
 
   // Calendar: CalendarReducer,
   // Chat: chatReducer,

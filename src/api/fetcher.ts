@@ -12,10 +12,6 @@ export type Response<T> = {
   statusCode: number;
 };
 
-export type PatchResponse = {
-  affected?: number;
-};
-
 const api = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,
   withCredentials: true,
@@ -104,8 +100,12 @@ export const appPutter = async <T = unknown>(
   return (await api.put<T>(url, data, config)).data;
 };
 
-export const appPatchter = async (url: string, data?: unknown, config = {}) => {
-  return (await api.patch(url, data, config)) as PatchResponse;
+export const appPatchter = async <T = unknown>(
+  url: string,
+  data?: unknown,
+  config = {}
+) => {
+  return (await api.patch<T>(url, data, config)).data;
 };
 
 export const appDeleter = async <T = unknown>(

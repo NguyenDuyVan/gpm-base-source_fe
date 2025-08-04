@@ -91,18 +91,17 @@ const Users = () => {
     setIsInfoDetails(!isInfoDetails);
   };
 
-  // Form validation with password field for creating new users
+  // Form validation
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
       fullName: (selectedUser && selectedUser.fullName) || "",
       email: (selectedUser && selectedUser.email) || "",
       phoneNumber: (selectedUser && selectedUser.phoneNumber) || "",
-      password: "",
       address: (selectedUser && selectedUser.address) || "",
       taxCode: (selectedUser && selectedUser.taxCode) || "",
       roleId: (selectedUser && selectedUser.roleId) || "",
-      isActive: (selectedUser && selectedUser.isActive) || true,
+      password: "",
     },
     validationSchema: Yup.object({
       fullName: Yup.string().required("Please Enter Full Name"),
@@ -117,12 +116,12 @@ const Users = () => {
         const userData = {
           fullName: values.fullName,
           email: values.email,
-          password: values.password!, // Make password required
+          password: values.password!, // Make password required for create
           phoneNumber: values.phoneNumber,
           address: values.address,
           taxCode: values.taxCode,
           roleId: values.roleId ? Number(values.roleId) : null,
-          isActive: values.isActive,
+          isActive: true,
           isSuperAdmin: false,
         };
 
@@ -502,38 +501,6 @@ const Users = () => {
                         <Col lg={6}>
                           <div>
                             <Label
-                              htmlFor="phoneNumber-field"
-                              className="form-label"
-                            >
-                              Phone Number
-                            </Label>
-                            <Input
-                              name="phoneNumber"
-                              id="phoneNumber-field"
-                              className="form-control"
-                              placeholder="Enter Phone Number"
-                              type="text"
-                              onChange={validation.handleChange}
-                              onBlur={validation.handleBlur}
-                              value={validation.values.phoneNumber || ""}
-                              invalid={
-                                validation.touched.phoneNumber &&
-                                validation.errors.phoneNumber
-                                  ? true
-                                  : false
-                              }
-                            />
-                            {validation.touched.phoneNumber &&
-                            validation.errors.phoneNumber ? (
-                              <FormFeedback type="invalid">
-                                {validation.errors.phoneNumber}
-                              </FormFeedback>
-                            ) : null}
-                          </div>
-                        </Col>
-                        <Col lg={12}>
-                          <div>
-                            <Label
                               htmlFor="password-field"
                               className="form-label"
                             >
@@ -566,6 +533,38 @@ const Users = () => {
                             validation.errors.password ? (
                               <FormFeedback type="invalid">
                                 {validation.errors.password}
+                              </FormFeedback>
+                            ) : null}
+                          </div>
+                        </Col>
+                        <Col lg={6}>
+                          <div>
+                            <Label
+                              htmlFor="phoneNumber-field"
+                              className="form-label"
+                            >
+                              Phone Number
+                            </Label>
+                            <Input
+                              name="phoneNumber"
+                              id="phoneNumber-field"
+                              className="form-control"
+                              placeholder="Enter Phone Number"
+                              type="text"
+                              onChange={validation.handleChange}
+                              onBlur={validation.handleBlur}
+                              value={validation.values.phoneNumber || ""}
+                              invalid={
+                                validation.touched.phoneNumber &&
+                                validation.errors.phoneNumber
+                                  ? true
+                                  : false
+                              }
+                            />
+                            {validation.touched.phoneNumber &&
+                            validation.errors.phoneNumber ? (
+                              <FormFeedback type="invalid">
+                                {validation.errors.phoneNumber}
                               </FormFeedback>
                             ) : null}
                           </div>
@@ -647,24 +646,6 @@ const Users = () => {
                               placeholder="Select Role"
                               className="mb-0"
                             />
-                          </div>
-                        </Col>
-                        <Col lg={12}>
-                          <div className="form-check">
-                            <Input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="isActive"
-                              name="isActive"
-                              checked={validation.values.isActive}
-                              onChange={validation.handleChange}
-                            />
-                            <Label
-                              className="form-check-label"
-                              htmlFor="isActive"
-                            >
-                              Active User
-                            </Label>
                           </div>
                         </Col>
                       </Row>

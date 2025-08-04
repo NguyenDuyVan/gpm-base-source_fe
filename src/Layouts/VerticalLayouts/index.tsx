@@ -1,19 +1,18 @@
 import React, { useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import { Collapse } from "reactstrap";
-// Import Data
-import navdata from "../LayoutMenuData";
 //i18n
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { withTranslation } from "react-i18next";
+import { useSidebar } from "@/components/Hooks/useSidebar";
 
 const VerticalLayout = (props: any) => {
   const router = useRouter();
-  const navData = navdata().props.children;
   const path = router.pathname;
+  const { menuItems } = useSidebar();
 
   /*
  layout settings
@@ -181,7 +180,7 @@ const VerticalLayout = (props: any) => {
   return (
     <React.Fragment>
       {/* menu Items */}
-      {(navData || []).map((item: any, key: number) => {
+      {(menuItems || []).map((item: any, key: number) => {
         return (
           <React.Fragment key={key}>
             {/* Main Header */}

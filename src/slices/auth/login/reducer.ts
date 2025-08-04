@@ -11,6 +11,7 @@ export const initialState = {
 const loginSlice = createSlice({
   name: "login",
   initialState,
+
   reducers: {
     apiError(state, action) {
       state.error = action.payload.data;

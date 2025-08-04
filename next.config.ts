@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   env: {
-    NEXT_PUBLIC_SKIP_BUILD_AUTH: "true",
+    NEXT_PUBLIC_SKIP_BUILD_AUTH: process.env.NEXT_PUBLIC_SKIP_BUILD_AUTH,
   },
   output: "standalone",
 };

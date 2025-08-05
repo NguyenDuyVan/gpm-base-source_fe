@@ -4,8 +4,8 @@ import UpgradeAccountNotise from "@/components/DashboardAnalytics/UpgradeAccount
 import Widget from "@/components/DashboardAnalytics/Widget";
 import React, { ReactElement } from "react";
 import { Col, Row } from "reactstrap";
-import MainLayout from "../Layouts/MainLayout";
-import { NextPageWithLayout } from "./_app";
+import MainLayout from "../../Layouts/MainLayout";
+import { NextPageWithLayout } from "../_app";
 
 const Page: NextPageWithLayout = () => {
   return (

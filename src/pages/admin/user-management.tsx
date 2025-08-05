@@ -1,8 +1,8 @@
 import AuthProtected from "@/components/auth/AuthProtected";
 import MainLayout from "@/Layouts/MainLayout";
-import { NextPageWithLayout } from "./_app";
+import { NextPageWithLayout } from "../_app";
 import { ReactElement } from "react";
-import Users from "@/components/Users/NewUsers";
+import Users from "@/components/Users";
 import BreadCrumb from "@/components/Common/BreadCrumb";
 import React from "react";
 

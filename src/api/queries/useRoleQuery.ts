@@ -14,10 +14,10 @@ export const useRolesQuery = () => {
   return useQuery({
     queryKey: ROLES_QUERY_KEY,
     queryFn: async (): Promise<Role[]> => {
-      const response = await appFetcher<{ data: Role[] }>(ROLES_PATH, {
+      const response = await appFetcher<Role[]>(ROLES_PATH, {
         requireAuth: true,
       });
-      return response.data;
+      return response;
     },
   });
 };
@@ -27,10 +27,10 @@ export const useRoleByIdQuery = (id: string | number, enabled = true) => {
   return useQuery({
     queryKey: ROLE_BY_ID_QUERY_KEY(id),
     queryFn: async (): Promise<Role> => {
-      const response = await appFetcher<{ data: Role }>(`${ROLES_PATH}/${id}`, {
+      const response = await appFetcher<Role>(`${ROLES_PATH}/${id}`, {
         requireAuth: true,
       });
-      return response.data;
+      return response;
     },
     enabled: enabled && !!id,
   });
@@ -41,13 +41,10 @@ export const usePermissionsQuery = () => {
   return useQuery({
     queryKey: PERMISSIONS_QUERY_KEY,
     queryFn: async (): Promise<Permission[]> => {
-      const response = await appFetcher<{ data: Permission[] }>(
-        "/v1/permissions",
-        {
-          requireAuth: true,
-        }
-      );
-      return response.data;
+      const response = await appFetcher<Permission[]>("/v1/permissions", {
+        requireAuth: true,
+      });
+      return response;
     },
   });
 };

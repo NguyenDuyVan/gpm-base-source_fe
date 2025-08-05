@@ -11,7 +11,7 @@ import BreadCrumb from "@/components/Common/BreadCrumb";
 import { Link } from "feather-icons-react";
 import AuthProtected from "@/components/auth/AuthProtected";
 import MainLayout from "@/Layouts/MainLayout";
-import { NextPageWithLayout } from "../_app";
+import { NextPageWithLayout } from "../../_app";
 
 const Page: NextPageWithLayout = () => {
   return (
@@ -344,7 +344,10 @@ const Page: NextPageWithLayout = () => {
                           <p className="text-muted">
                             If you have further questions, please contact
                             Customer Support from the “Action Menu” on your{" "}
-                            <Link href="#" className="text-decoration-underline">
+                            <Link
+                              href="#"
+                              className="text-decoration-underline"
+                            >
                               Online Order Support
                             </Link>
                             .
@@ -371,7 +374,10 @@ const Page: NextPageWithLayout = () => {
                           </h5>
                           <p className="text-muted">
                             Your{" "}
-                            <Link href="#" className="text-decoration-underline">
+                            <Link
+                              href="#"
+                              className="text-decoration-underline"
+                            >
                               Online Order Support
                             </Link>{" "}
                             provides you with the most current status of your

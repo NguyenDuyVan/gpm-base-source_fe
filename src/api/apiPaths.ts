@@ -20,3 +20,8 @@ export const ROLES_PATH_BY_ID = (id: string | number) => `/v1/roles/${id}`;
 // User paths
 export const USERS_PATH = `/v1/users`;
 export const USERS_PATH_BY_ID = (id: string | number) => `/v1/users/${id}`;
+
+// Blog paths
+export const BLOGS_PATH = `/v1/blogs`;
+export const BLOGS_PATH_BY_ID = (id: string | number) => `/v1/blogs/${id}`;
+export const BLOGS_PATH_BY_SLUG = (slug: string) => `/v1/blogs/slug/${slug}`;

@@ -54,6 +54,7 @@ const Users = () => {
   const [deleteModalMulti, setDeleteModalMulti] = useState<boolean>(false);
   const [modal, setModal] = useState<boolean>(false);
   const [isInfoDetails, setIsInfoDetails] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   // Multi-select state
   const [selectedCheckBoxDelete, setSelectedCheckBoxDelete] = useState<any>([]);
@@ -64,6 +65,7 @@ const Users = () => {
     if (modal) {
       setModal(false);
       setSelectedUser(null);
+      setShowPassword(false); // Reset password visibility when closing modal
     } else {
       setModal(true);
     }
@@ -91,18 +93,17 @@ const Users = () => {
     setIsInfoDetails(!isInfoDetails);
   };
 
-  // Form validation with password field for creating new users
+  // Form validation
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
       fullName: (selectedUser && selectedUser.fullName) || "",
       email: (selectedUser && selectedUser.email) || "",
       phoneNumber: (selectedUser && selectedUser.phoneNumber) || "",
-      password: "",
       address: (selectedUser && selectedUser.address) || "",
       taxCode: (selectedUser && selectedUser.taxCode) || "",
       roleId: (selectedUser && selectedUser.roleId) || "",
-      isActive: (selectedUser && selectedUser.isActive) || true,
+      password: "",
     },
     validationSchema: Yup.object({
       fullName: Yup.string().required("Please Enter Full Name"),
@@ -114,17 +115,19 @@ const Users = () => {
     }),
     onSubmit: async (values) => {
       try {
-        const userData = {
+        const userData: any = {
           fullName: values.fullName,
           email: values.email,
-          password: values.password!, // Make password required
           phoneNumber: values.phoneNumber,
           address: values.address,
           taxCode: values.taxCode,
           roleId: values.roleId ? Number(values.roleId) : null,
-          isActive: values.isActive,
-          isSuperAdmin: false,
         };
+
+        // Only include password if it's not edit mode or if password is provided in edit mode
+        if (!isEdit || (isEdit && values.password)) {
+          userData.password = values.password!;
+        }
 
         if (isEdit && selectedUser) {
           await updateUserMutation.mutateAsync({
@@ -133,7 +136,10 @@ const Users = () => {
           });
           toast.success("User updated successfully");
         } else {
-          await createUserMutation.mutateAsync(userData);
+          await createUserMutation.mutateAsync({
+            ...userData,
+            password: values.password!, // Password is required for new users
+          });
           toast.success("User created successfully");
         }
 
@@ -156,7 +162,7 @@ const Users = () => {
   );
 
   const handleValidDate = (date: any) => {
-    const date1 = moment(new Date(date)).format("DD MMM Y");
+    const date1 = moment(new Date(date)).format("DD/MM/YYYY");
     return date1;
   };
 
@@ -256,37 +262,19 @@ const Users = () => {
         cell: (cell: any) => cell.getValue() || "N/A",
       },
       {
-        header: "Status",
-        accessorKey: "isActive",
+        header: "Role",
+        accessorKey: "role",
         enableColumnFilter: false,
         cell: (cell: any) => (
           <>
             <span
               className={`badge ${
-                cell.getValue()
-                  ? "bg-success-subtle text-success"
-                  : "bg-danger-subtle text-danger"
-              } me-1`}
+                cell.getValue()?.name
+                  ? "bg-secondary-subtle text-secondary"
+                  : "bg-primary-subtle text-primary"
+              }`}
             >
-              {cell.getValue() ? "Active" : "Inactive"}
-            </span>
-          </>
-        ),
-      },
-      {
-        header: "Super Admin",
-        accessorKey: "isSuperAdmin",
-        enableColumnFilter: false,
-        cell: (cell: any) => (
-          <>
-            <span
-              className={`badge ${
-                cell.getValue()
-                  ? "bg-warning-subtle text-warning"
-                  : "bg-secondary-subtle text-secondary"
-              } me-1`}
-            >
-              {cell.getValue() ? "Yes" : "No"}
+              {cell.getValue()?.name || "N/A"}
             </span>
           </>
         ),
@@ -502,6 +490,59 @@ const Users = () => {
                         <Col lg={6}>
                           <div>
                             <Label
+                              htmlFor="password-field"
+                              className="form-label"
+                            >
+                              Password{" "}
+                              {!isEdit && (
+                                <span className="text-danger">*</span>
+                              )}
+                            </Label>
+                            <div className="position-relative">
+                              <Input
+                                name="password"
+                                id="password-field"
+                                className="form-control"
+                                placeholder={
+                                  isEdit
+                                    ? "Leave blank to keep current"
+                                    : "Enter Password"
+                                }
+                                type={showPassword ? "text" : "password"}
+                                onChange={validation.handleChange}
+                                onBlur={validation.handleBlur}
+                                value={validation.values.password || ""}
+                                invalid={
+                                  validation.touched.password &&
+                                  validation.errors.password
+                                    ? true
+                                    : false
+                                }
+                              />
+                              <button
+                                type="button"
+                                className="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
+                                style={{ zIndex: 3 }}
+                                onClick={() => setShowPassword(!showPassword)}
+                              >
+                                <i
+                                  className={`ri-${
+                                    showPassword ? "eye-off" : "eye"
+                                  }-line`}
+                                ></i>
+                              </button>
+                            </div>
+                            {validation.touched.password &&
+                            validation.errors.password ? (
+                              <FormFeedback type="invalid">
+                                {validation.errors.password}
+                              </FormFeedback>
+                            ) : null}
+                          </div>
+                        </Col>
+                        <Col lg={6}>
+                          <div>
+                            <Label
                               htmlFor="phoneNumber-field"
                               className="form-label"
                             >
@@ -527,45 +568,6 @@ const Users = () => {
                             validation.errors.phoneNumber ? (
                               <FormFeedback type="invalid">
                                 {validation.errors.phoneNumber}
-                              </FormFeedback>
-                            ) : null}
-                          </div>
-                        </Col>
-                        <Col lg={12}>
-                          <div>
-                            <Label
-                              htmlFor="password-field"
-                              className="form-label"
-                            >
-                              Password{" "}
-                              {!isEdit && (
-                                <span className="text-danger">*</span>
-                              )}
-                            </Label>
-                            <Input
-                              name="password"
-                              id="password-field"
-                              className="form-control"
-                              placeholder={
-                                isEdit
-                                  ? "Leave blank to keep current password"
-                                  : "Enter Password"
-                              }
-                              type="password"
-                              onChange={validation.handleChange}
-                              onBlur={validation.handleBlur}
-                              value={validation.values.password || ""}
-                              invalid={
-                                validation.touched.password &&
-                                validation.errors.password
-                                  ? true
-                                  : false
-                              }
-                            />
-                            {validation.touched.password &&
-                            validation.errors.password ? (
-                              <FormFeedback type="invalid">
-                                {validation.errors.password}
                               </FormFeedback>
                             ) : null}
                           </div>
@@ -647,24 +649,6 @@ const Users = () => {
                               placeholder="Select Role"
                               className="mb-0"
                             />
-                          </div>
-                        </Col>
-                        <Col lg={12}>
-                          <div className="form-check">
-                            <Input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="isActive"
-                              name="isActive"
-                              checked={validation.values.isActive}
-                              onChange={validation.handleChange}
-                            />
-                            <Label
-                              className="form-check-label"
-                              htmlFor="isActive"
-                            >
-                              Active User
-                            </Label>
                           </div>
                         </Col>
                       </Row>

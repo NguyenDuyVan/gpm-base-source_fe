@@ -13,10 +13,10 @@ export const useUsersQuery = () => {
   return useQuery({
     queryKey: USERS_QUERY_KEY,
     queryFn: async (): Promise<User[]> => {
-      const response = await appFetcher<{ data: User[] }>(USERS_PATH, {
+      const response = await appFetcher<User[]>(USERS_PATH, {
         requireAuth: true,
       });
-      return response.data;
+      return response;
     },
   });
 };
@@ -26,10 +26,10 @@ export const useUserByIdQuery = (id: string | number, enabled = true) => {
   return useQuery({
     queryKey: USER_BY_ID_QUERY_KEY(id),
     queryFn: async (): Promise<User> => {
-      const response = await appFetcher<{ data: User }>(USERS_PATH_BY_ID(id), {
+      const response = await appFetcher<User>(USERS_PATH_BY_ID(id), {
         requireAuth: true,
       });
-      return response.data;
+      return response;
     },
     enabled: enabled && !!id,
   });

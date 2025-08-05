@@ -47,8 +47,8 @@ const UserProfile = () => {
   const { user, success, error } = useSelector(userprofileData);
 
   useEffect(() => {
-    if (sessionStorage.getItem("authUser")) {
-      const storedUser = sessionStorage.getItem("authUser");
+    if (localStorage.getItem("authUser")) {
+      const storedUser = localStorage.getItem("authUser");
       if (storedUser) {
         const obj = JSON.parse(storedUser);
 

@@ -1,37 +1,52 @@
-import { listData } from "@/common/data";
 import Link from "next/link";
 import React, { useMemo, useState } from "react";
-import { Card, CardBody, Pagination, Table } from "reactstrap";
+import { Card, CardBody, Pagination, Table, Alert } from "reactstrap";
 import CommonModal from "../../Common/CommonModal";
+import { useBlogsQuery } from "@/api/queries/useBlogQuery";
+import { useDeleteBlogMutation } from "@/api/mutations/useBlogMutation";
+import { Blog } from "@/types/api";
+import { toast } from "react-toastify";
 
 const MainList = () => {
+  // Fetch blogs using the query
+  const { data: blogs, isLoading, isError } = useBlogsQuery();
+
+  // Delete blog mutation
+  const deleteBlogMutation = useDeleteBlogMutation();
+
   //pagination
   const [currentPage, setCurrentPage] = useState(1);
   const perPageData = 6;
   const indexOfLast = currentPage * perPageData;
   const indexOfFirst = indexOfLast - perPageData;
   const currentdata = useMemo(
-    () => listData?.slice(indexOfFirst, indexOfLast),
-    [indexOfFirst, indexOfLast]
+    () => blogs?.slice(indexOfFirst, indexOfLast) || [],
+    [blogs, indexOfFirst, indexOfLast]
   );
 
   // Delete Modal state
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
-  const [blogToDelete, setBlogToDelete] = useState<any>(null);
+  const [blogToDelete, setBlogToDelete] = useState<Blog | null>(null);
 
   // Handle delete button click
-  const handleDeleteClick = (blog: any) => {
+  const handleDeleteClick = (blog: Blog) => {
     setBlogToDelete(blog);
     setDeleteModal(true);
   };
 
   // Handle confirmation of deletion
-  const handleDeleteBlog = () => {
-    // Implement your delete logic here
-    console.log("Deleting blog:", blogToDelete);
-    // After deletion logic is complete, close the modal
-    setDeleteModal(false);
-    setBlogToDelete(null);
+  const handleDeleteBlog = async () => {
+    if (!blogToDelete) return;
+
+    try {
+      await deleteBlogMutation.mutateAsync(blogToDelete.id);
+      toast.success("Blog deleted successfully!");
+      setDeleteModal(false);
+      setBlogToDelete(null);
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+      toast.error("Failed to delete blog. Please try again.");
+    }
   };
 
   return (
@@ -40,7 +55,7 @@ const MainList = () => {
         <div className="row g-4 mb-3">
           <div className="col-sm-auto">
             <div>
-              <Link href="/blog/create" className="btn btn-success">
+              <Link href="/admin/blog/create" className="btn btn-success">
                 <i className="ri-add-line align-bottom me-1"></i> Add New
               </Link>
             </div>
@@ -75,134 +90,122 @@ const MainList = () => {
 
         <Card>
           <CardBody>
-            <div className="table-responsive table-card">
-              <Table className="table-centered align-middle table-nowrap mb-0">
-                <thead className="text-muted table-light">
-                  <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Image</th>
-                    <th scope="col">Title</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Views</th>
-                    <th scope="col">Tags</th>
-                    <th scope="col">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentdata.map((item, idx) => (
-                    <tr key={idx}>
-                      <td>{idx + 1}</td>
-                      <td>
-                        <div style={{ width: "75px", height: "45px" }}>
-                          <img
-                            src={item.image.src}
-                            alt=""
-                            className="img-fluid rounded object-fit-cover"
-                            style={{ width: "100%", height: "100%" }}
-                          />
-                        </div>
-                      </td>
-                      <td>
-                        <h5 className="fs-14 fw-semibold">
-                          <Link href="/blog/overview" className="text-dark">
-                            {item.title}
-                          </Link>
-                        </h5>
-                        <p className="text-muted mb-0 fs-12">
-                          {item.description.substring(0, 60)}...
-                        </p>
-                      </td>
-                      <td>
-                        <span className="badge badge-soft-primary">
-                          {item.category}
-                        </span>
-                      </td>
-                      <td>
-                        <i className="ri-calendar-event-line me-1 text-muted"></i>
-                        {item.date}
-                      </td>
-                      <td>
-                        <i className="ri-eye-line me-1 text-muted"></i>
-                        {item.views}
-                      </td>
-                      <td>
-                        <div className="d-flex gap-1">
-                          {item.tags.slice(0, 2).map((tag, tagIdx) => (
-                            <Link
-                              href="#!"
-                              key={tagIdx}
-                              className="badge badge-soft-success"
-                            >
-                              {tag}
-                            </Link>
-                          ))}
-                          {item.tags.length > 2 && (
-                            <span className="badge badge-soft-dark">
-                              +{item.tags.length - 2}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="hstack gap-2">
-                          <Link
-                            href="/blog/overview"
-                            className="btn btn-sm btn-soft-info"
-                            title="View"
-                          >
-                            <i className="ri-eye-fill"></i>
-                          </Link>
-                          <Link
-                            href="#"
-                            className="btn btn-sm btn-soft-success"
-                            title="Edit"
-                          >
-                            <i className="ri-pencil-fill"></i>
-                          </Link>
-                          <Link
-                            href="#"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleDeleteClick(item);
-                            }}
-                            className="btn btn-sm btn-soft-danger"
-                            title="Delete"
-                          >
-                            <i className="ri-delete-bin-2-fill"></i>
-                          </Link>
-                        </div>
-                      </td>
+            {isLoading ? (
+              <div className="text-center py-4">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : isError ? (
+              <Alert color="danger" className="mb-0">
+                Error loading blogs. Please try again later.
+              </Alert>
+            ) : blogs && blogs.length > 0 ? (
+              <div className="table-responsive table-card">
+                <Table className="table-centered align-middle table-nowrap mb-0">
+                  <thead className="text-muted table-light">
+                    <tr>
+                      <th scope="col">ID</th>
+                      <th scope="col">Title</th>
+                      <th scope="col">Slug</th>
+                      <th scope="col">Created Date</th>
+                      <th scope="col">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {currentdata.map((blog: Blog) => (
+                      <tr key={blog.id}>
+                        <td>{blog.id}</td>
+                        <td>
+                          <h5 className="fs-14 fw-semibold">
+                            <Link
+                              href={`/admin/blog/${blog.id}`}
+                              className="text-dark"
+                            >
+                              {blog.title}
+                            </Link>
+                          </h5>
+                          <p className="text-muted mb-0 fs-12">
+                            {blog.description.substring(0, 60)}...
+                          </p>
+                        </td>
+                        <td>
+                          <span>{blog.slug}</span>
+                        </td>
+                        <td>
+                          <i className="ri-calendar-event-line me-1 text-muted"></i>
+                          {new Date(blog.createdAt || "").toLocaleDateString()}
+                        </td>
+                        <td>
+                          <div className="hstack gap-2">
+                            <Link
+                              href={`/blog/${blog.slug}`}
+                              className="btn btn-sm btn-soft-info"
+                              title="View"
+                            >
+                              <i className="ri-eye-fill"></i>
+                            </Link>
+                            <Link
+                              href={`/admin/blog/${blog.id}`}
+                              className="btn btn-sm btn-soft-success"
+                              title="Edit"
+                            >
+                              <i className="ri-pencil-fill"></i>
+                            </Link>
+                            <Link
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleDeleteClick(blog);
+                              }}
+                              className="btn btn-sm btn-soft-danger"
+                              title="Delete"
+                            >
+                              <i className="ri-delete-bin-2-fill"></i>
+                            </Link>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+            ) : (
+              <Alert color="info" className="mb-0">
+                No blogs found. Create a new blog to get started.
+              </Alert>
+            )}
           </CardBody>
         </Card>
 
-        <div className="row g-0 text-center text-sm-start align-items-center mb-4 mt-4">
-          <div className="col-sm-6">
-            <div>
-              <p className="mb-sm-0 text-muted">
-                Showing <span className="fw-semibold">1</span> to{" "}
-                <span className="fw-semibold">6</span> of{" "}
-                <span className="fw-semibold text-decoration-underline">
-                  21
-                </span>{" "}
-                entries
-              </p>
+        {blogs && blogs.length > 0 && (
+          <div className="row g-0 text-center text-sm-start align-items-center mb-4 mt-4">
+            <div className="col-sm-6">
+              <div>
+                <p className="mb-sm-0 text-muted">
+                  Showing{" "}
+                  <span className="fw-semibold">{indexOfFirst + 1}</span> to{" "}
+                  <span className="fw-semibold">
+                    {Math.min(indexOfLast, blogs.length)}
+                  </span>{" "}
+                  of{" "}
+                  <span className="fw-semibold text-decoration-underline">
+                    {blogs.length}
+                  </span>{" "}
+                  entries
+                </p>
+              </div>
+            </div>
+            <div className="col-sm-6">
+              <Pagination
+                perPageData={perPageData}
+                data={blogs}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+              />
             </div>
           </div>
-          <div className="col-sm-6">
-            <Pagination
-              perPageData={perPageData}
-              data={listData}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-            />
-          </div>
-        </div>
+        )}
 
         {/* Delete Confirmation Modal */}
         <CommonModal
@@ -211,6 +214,7 @@ const MainList = () => {
           modalType="delete"
           onConfirm={handleDeleteBlog}
           itemName={blogToDelete?.title}
+          isLoading={deleteBlogMutation.isPending}
         />
       </div>
     </React.Fragment>

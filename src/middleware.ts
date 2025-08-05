@@ -27,8 +27,8 @@ export function middleware(request: NextRequest) {
       item.apiPath.startsWith(`/api/v1${pathname}`)
     );
 
-  if (!hasPermission && pathname !== "/") {
-    return NextResponse.redirect(new URL("/", request.url));
+  if (!hasPermission && pathname !== "/admin") {
+    return NextResponse.redirect(new URL("/admin", request.url));
   }
 
   return NextResponse.next();

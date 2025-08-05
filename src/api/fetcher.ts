@@ -1,5 +1,6 @@
 import { PaginationType } from "@/types/pagination";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export type ResponsePagination<T> = {
   data: T[];
@@ -30,33 +31,25 @@ api.interceptors.response.use(
   (err) => {
     // Có thể xử lý lỗi toàn cục ở đây
     const message =
-      err?.response?.data?.message?.message || err.message || "Network Error";
+      err?.response?.data?.message || err.message || "Network Error";
     if (err?.status === 401 && window.location.pathname !== "/login") {
       localStorage.removeItem("accessToken");
       window.location.href = "/login";
     }
 
-    console.log(message);
-
-    // if (toast) {
-    //   if (Array.isArray(message)) {
-    //     message.forEach((msg) => {
-    //       toast!.add({
-    //         severity: "error",
-    //         summary: "Lỗi",
-    //         detail: msg,
-    //         life: 3000,
-    //       });
-    //     });
-    //   } else {
-    //     toast!.add({
-    //       severity: "error",
-    //       summary: "Lỗi",
-    //       detail: message,
-    //       life: 3000,
-    //     });
-    //   }
-    // }
+    if (toast) {
+      if (Array.isArray(message)) {
+        message.forEach((msg) => {
+          toast.error(msg, {
+            autoClose: 3000,
+          });
+        });
+      } else {
+        toast!.error(message, {
+          autoClose: 3000,
+        });
+      }
+    }
 
     return Promise.reject(err.response?.data || err.message);
   }
@@ -81,7 +74,7 @@ export const appPaginationFetcher = async <T = unknown>(
 };
 
 export const appFetcher = async <T = unknown>(url: string, config = {}) => {
-  return (await api.get(url, config)) as T;
+  return (await api.get(url, config)).data as T;
 };
 
 export const appPoster = async <T = unknown>(

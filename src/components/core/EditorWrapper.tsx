@@ -3,17 +3,29 @@ import React from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
-const EditorWrapper = () => {
+interface EditorWrapperProps {
+  value?: string;
+  onChange?: (content: string) => void;
+}
+
+const EditorWrapper = ({
+  value = "<p>Hello from CKEditor 5!</p>",
+  onChange,
+}: EditorWrapperProps) => {
   return (
     <CKEditor
       editor={ClassicEditor as any}
-      data="<p>Hello from CKEditor 5!</p>"
-      onReady={() => {
+      data={value}
+      onReady={(editor: any) => {
         // You can store the "editor" and use when it is needed.
+        console.log("Editor is ready to use!", editor);
       }}
-      // onChange={(editor) => {
-      //     editor.getData();
-      // }}
+      onChange={(event: any, editor: any) => {
+        const data = editor.getData();
+        if (onChange) {
+          onChange(data);
+        }
+      }}
     />
   );
 };

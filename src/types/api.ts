@@ -64,3 +64,11 @@ export interface Role {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface Blog {
+  id: number;
+  title: string;
+  slug: string;
+  description: string;
+  createdAt?: string;
+}

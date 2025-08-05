@@ -25,6 +25,7 @@ interface CommonModalProps {
   showFooter?: boolean;
   size?: "sm" | "md" | "lg" | "xl";
   centered?: boolean;
+  isLoading?: boolean;
 }
 
 const CommonModal: React.FC<CommonModalProps> = ({
@@ -42,6 +43,7 @@ const CommonModal: React.FC<CommonModalProps> = ({
   showFooter = true,
   size,
   centered = true,
+  isLoading = false,
 }) => {
   // Default values based on modal type
   const getDefaults = () => {
@@ -168,12 +170,23 @@ const CommonModal: React.FC<CommonModalProps> = ({
           {modalType !== "info" &&
             modalType !== "success" &&
             modalType !== "error" && (
-              <Button color="light" onClick={handleCancel}>
+              <Button color="light" onClick={handleCancel} disabled={isLoading}>
                 {modalCancelText}
               </Button>
             )}
-          <Button color={buttonColor} onClick={onConfirm}>
-            {modalConfirmText}
+          <Button color={buttonColor} onClick={onConfirm} disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm me-1"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Loading...
+              </>
+            ) : (
+              modalConfirmText
+            )}
           </Button>
         </ModalFooter>
       )}

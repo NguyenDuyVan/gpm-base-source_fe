@@ -1,7 +1,7 @@
 import AuthProtected from "@/components/auth/AuthProtected";
 import MainLayout from "@/Layouts/MainLayout";
 import { Card, CardHeader, CardBody, Row } from "reactstrap";
-import { NextPageWithLayout } from "./_app";
+import { NextPageWithLayout } from "../_app";
 import { ReactElement, useCallback, useMemo } from "react";
 import TableContainer from "@/components/Common/TableContainer";
 import RoleModal from "@/components/Permission/RoleModal";

@@ -314,7 +314,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
                               className="form-check-label"
                               htmlFor={`module-${moduleName}`}
                             >
-                              {t("Select All")} {moduleName}
+                              {t("Select All")}
                             </Label>
                           </div>
                         </div>

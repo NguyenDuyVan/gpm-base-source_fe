@@ -13,7 +13,6 @@ export default function Document() {
       data-layout-width="fluid"
       data-layout-position="fixed"
       data-topbar="light"
-      data-layout="vertical"
       data-sidebar-image="none"
       data-sidebar-visibility="show"
     >

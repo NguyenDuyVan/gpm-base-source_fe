@@ -116,20 +116,8 @@ const Register: NextPageWithLayout = () => {
       <ParticlesAuth>
         <div className="auth-page-content mt-lg-5">
           <Container>
-            <Row>
-              <Col lg={12}>
-                <div className="text-center mt-sm-5 mb-4 text-white-50">
-                  <div>
-                    <Link href="/" className="d-inline-block auth-logo">
-                      GPM
-                    </Link>
-                  </div>
-                </div>
-              </Col>
-            </Row>
-
             <Row className="justify-content-center">
-              <Col md={8} lg={6} xl={5}>
+              <Col md={8} lg={6} xl={8}>
                 <Card className="mt-4">
                   <CardBody className="p-4">
                     <div className="text-center mt-2">
@@ -166,193 +154,197 @@ const Register: NextPageWithLayout = () => {
                             </div>
                           </Alert>
                         ) : null}
+                        <Row>
+                          <Col xs={12} md={6} className="mt-3">
+                            <Label htmlFor="useremail" className="form-label">
+                              Email <span className="text-danger">*</span>
+                            </Label>
+                            <Input
+                              id="email"
+                              name="email"
+                              className="form-control"
+                              placeholder="Enter email address"
+                              type="email"
+                              onChange={validation.handleChange}
+                              onBlur={validation.handleBlur}
+                              value={validation.values.email || ""}
+                              invalid={
+                                validation.touched.email &&
+                                validation.errors.email
+                                  ? true
+                                  : false
+                              }
+                            />
+                            {validation.touched.email &&
+                            validation.errors.email ? (
+                              <FormFeedback type="invalid">
+                                <div>{validation.errors.email}</div>
+                              </FormFeedback>
+                            ) : null}
+                          </Col>
 
-                        <div className="mb-3">
-                          <Label htmlFor="useremail" className="form-label">
-                            Email <span className="text-danger">*</span>
-                          </Label>
-                          <Input
-                            id="email"
-                            name="email"
-                            className="form-control"
-                            placeholder="Enter email address"
-                            type="email"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.email || ""}
-                            invalid={
-                              validation.touched.email &&
-                              validation.errors.email
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.email &&
-                          validation.errors.email ? (
-                            <FormFeedback type="invalid">
-                              <div>{validation.errors.email}</div>
-                            </FormFeedback>
-                          ) : null}
-                        </div>
-                        <div className="mb-3">
-                          <Label htmlFor="username" className="form-label">
-                            Full Name <span className="text-danger">*</span>
-                          </Label>
-                          <Input
-                            name="first_name"
-                            type="text"
-                            placeholder="Enter your full name"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.first_name || ""}
-                            invalid={
-                              validation.touched.first_name &&
-                              validation.errors.first_name
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.first_name &&
-                          validation.errors.first_name ? (
-                            <FormFeedback type="invalid">
-                              <div>{validation.errors.first_name}</div>
-                            </FormFeedback>
-                          ) : null}
-                        </div>
+                          <Col xs={12} md={6} className="mt-3">
+                            <Label htmlFor="username" className="form-label">
+                              Full Name <span className="text-danger">*</span>
+                            </Label>
+                            <Input
+                              name="first_name"
+                              type="text"
+                              placeholder="Enter your full name"
+                              onChange={validation.handleChange}
+                              onBlur={validation.handleBlur}
+                              value={validation.values.first_name || ""}
+                              invalid={
+                                validation.touched.first_name &&
+                                validation.errors.first_name
+                                  ? true
+                                  : false
+                              }
+                            />
+                            {validation.touched.first_name &&
+                            validation.errors.first_name ? (
+                              <FormFeedback type="invalid">
+                                <div>{validation.errors.first_name}</div>
+                              </FormFeedback>
+                            ) : null}
+                          </Col>
 
-                        <div className="mb-3">
-                          <Label htmlFor="userpassword" className="form-label">
-                            Password <span className="text-danger">*</span>
-                          </Label>
-                          <Input
-                            name="password"
-                            type="password"
-                            placeholder="Enter Password"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.password || ""}
-                            invalid={
-                              validation.touched.password &&
-                              validation.errors.password
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.password &&
-                          validation.errors.password ? (
-                            <FormFeedback type="invalid">
-                              <div>{validation.errors.password}</div>
-                            </FormFeedback>
-                          ) : null}
-                        </div>
+                          <Col xs={12} md={6} className="mt-3">
+                            <Label
+                              htmlFor="userpassword"
+                              className="form-label"
+                            >
+                              Password <span className="text-danger">*</span>
+                            </Label>
+                            <Input
+                              name="password"
+                              type="password"
+                              placeholder="Enter Password"
+                              onChange={validation.handleChange}
+                              onBlur={validation.handleBlur}
+                              value={validation.values.password || ""}
+                              invalid={
+                                validation.touched.password &&
+                                validation.errors.password
+                                  ? true
+                                  : false
+                              }
+                            />
+                            {validation.touched.password &&
+                            validation.errors.password ? (
+                              <FormFeedback type="invalid">
+                                <div>{validation.errors.password}</div>
+                              </FormFeedback>
+                            ) : null}
+                          </Col>
 
-                        <div className="mb-2">
-                          <Label
-                            htmlFor="confirmPassword"
-                            className="form-label"
-                          >
-                            Confirm Password{" "}
-                            <span className="text-danger">*</span>
-                          </Label>
-                          <Input
-                            name="confirm_password"
-                            type="password"
-                            placeholder="Confirm Password"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.confirm_password || ""}
-                            invalid={
-                              validation.touched.confirm_password &&
-                              validation.errors.confirm_password
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.confirm_password &&
-                          validation.errors.confirm_password ? (
-                            <FormFeedback type="invalid">
-                              <div>{validation.errors.confirm_password}</div>
-                            </FormFeedback>
-                          ) : null}
-                        </div>
+                          <Col xs={12} md={6} className="mt-3">
+                            <Label
+                              htmlFor="confirmPassword"
+                              className="form-label"
+                            >
+                              Confirm Password{" "}
+                              <span className="text-danger">*</span>
+                            </Label>
+                            <Input
+                              name="confirm_password"
+                              type="password"
+                              placeholder="Confirm Password"
+                              onChange={validation.handleChange}
+                              onBlur={validation.handleBlur}
+                              value={validation.values.confirm_password || ""}
+                              invalid={
+                                validation.touched.confirm_password &&
+                                validation.errors.confirm_password
+                                  ? true
+                                  : false
+                              }
+                            />
+                            {validation.touched.confirm_password &&
+                            validation.errors.confirm_password ? (
+                              <FormFeedback type="invalid">
+                                <div>{validation.errors.confirm_password}</div>
+                              </FormFeedback>
+                            ) : null}
+                          </Col>
+                          <Col xs={12} md={6} className="mt-3">
+                            <Label htmlFor="phoneNumber" className="form-label">
+                              Phone Number
+                            </Label>
+                            <Input
+                              name="phoneNumber"
+                              type="text"
+                              placeholder="Enter your phone number"
+                              onChange={validation.handleChange}
+                              onBlur={validation.handleBlur}
+                              value={validation.values.phoneNumber || ""}
+                              invalid={
+                                validation.touched.phoneNumber &&
+                                validation.errors.phoneNumber
+                                  ? true
+                                  : false
+                              }
+                            />
+                            {validation.touched.phoneNumber &&
+                            validation.errors.phoneNumber ? (
+                              <FormFeedback type="invalid">
+                                <div>{validation.errors.phoneNumber}</div>
+                              </FormFeedback>
+                            ) : null}
+                          </Col>
 
-                        <div className="mb-3">
-                          <Label htmlFor="address" className="form-label">
-                            Address
-                          </Label>
-                          <Input
-                            name="address"
-                            type="text"
-                            placeholder="Enter your address"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.address || ""}
-                            invalid={
-                              validation.touched.address &&
-                              validation.errors.address
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.address &&
-                          validation.errors.address ? (
-                            <FormFeedback type="invalid">
-                              <div>{validation.errors.address}</div>
-                            </FormFeedback>
-                          ) : null}
-                        </div>
+                          <Col xs={12} md={6} className="mt-3">
+                            <Label htmlFor="taxCode" className="form-label">
+                              Tax Code
+                            </Label>
+                            <Input
+                              name="taxCode"
+                              type="text"
+                              placeholder="Enter your tax code"
+                              onChange={validation.handleChange}
+                              onBlur={validation.handleBlur}
+                              value={validation.values.taxCode || ""}
+                              invalid={
+                                validation.touched.taxCode &&
+                                validation.errors.taxCode
+                                  ? true
+                                  : false
+                              }
+                            />
+                            {validation.touched.taxCode &&
+                            validation.errors.taxCode ? (
+                              <FormFeedback type="invalid">
+                                <div>{validation.errors.taxCode}</div>
+                              </FormFeedback>
+                            ) : null}
+                          </Col>
 
-                        <div className="mb-3">
-                          <Label htmlFor="phoneNumber" className="form-label">
-                            Phone Number
-                          </Label>
-                          <Input
-                            name="phoneNumber"
-                            type="text"
-                            placeholder="Enter your phone number"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.phoneNumber || ""}
-                            invalid={
-                              validation.touched.phoneNumber &&
-                              validation.errors.phoneNumber
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.phoneNumber &&
-                          validation.errors.phoneNumber ? (
-                            <FormFeedback type="invalid">
-                              <div>{validation.errors.phoneNumber}</div>
-                            </FormFeedback>
-                          ) : null}
-                        </div>
-
-                        <div className="mb-3">
-                          <Label htmlFor="taxCode" className="form-label">
-                            Tax Code
-                          </Label>
-                          <Input
-                            name="taxCode"
-                            type="text"
-                            placeholder="Enter your tax code"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.taxCode || ""}
-                            invalid={
-                              validation.touched.taxCode &&
-                              validation.errors.taxCode
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.taxCode &&
-                          validation.errors.taxCode ? (
-                            <FormFeedback type="invalid">
-                              <div>{validation.errors.taxCode}</div>
-                            </FormFeedback>
-                          ) : null}
-                        </div>
+                          <Col xs={12} className="mt-3">
+                            <Label htmlFor="address" className="form-label">
+                              Address
+                            </Label>
+                            <Input
+                              name="address"
+                              type="text"
+                              placeholder="Enter your address"
+                              onChange={validation.handleChange}
+                              onBlur={validation.handleBlur}
+                              value={validation.values.address || ""}
+                              invalid={
+                                validation.touched.address &&
+                                validation.errors.address
+                                  ? true
+                                  : false
+                              }
+                            />
+                            {validation.touched.address &&
+                            validation.errors.address ? (
+                              <FormFeedback type="invalid">
+                                <div>{validation.errors.address}</div>
+                              </FormFeedback>
+                            ) : null}
+                          </Col>
+                        </Row>
 
                         <div className="mb-4">
                           <p className="mb-0 fs-12 text-muted fst-italic">

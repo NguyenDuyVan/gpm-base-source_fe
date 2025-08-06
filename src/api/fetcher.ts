@@ -37,30 +37,40 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (res) => res.data,
-  (err) => {
-    // Có thể xử lý lỗi toàn cục ở đây
-    const message =
-      err?.response?.data?.message || err.message || "Network Error";
-    if (err?.status === 401 && window.location.pathname !== "/login") {
+  async (err) => {
+    try {
+      // Có thể xử lý lỗi toàn cục ở đây
+      const message =
+        err?.response?.data?.message || err.message || "Network Error";
+      if (err?.status === 401 && window.location.pathname !== "/login") {
+        const hasToken = localStorage.getItem("accessToken");
+        if (hasToken) {
+          return await api.get("/v1/auth/refresh");
+        }
+        localStorage.removeItem("accessToken");
+        window.location.href = "/login";
+      }
+
+      if (toast) {
+        if (Array.isArray(message)) {
+          message.forEach((msg) => {
+            toast.error(msg, {
+              autoClose: 3000,
+            });
+          });
+        } else {
+          toast!.error(message, {
+            autoClose: 3000,
+          });
+        }
+      }
+
+      return Promise.reject(err.response?.data || err.message);
+    } catch (error) {
+      console.error("Error refreshing token:", error);
       localStorage.removeItem("accessToken");
       window.location.href = "/login";
     }
-
-    if (toast) {
-      if (Array.isArray(message)) {
-        message.forEach((msg) => {
-          toast.error(msg, {
-            autoClose: 3000,
-          });
-        });
-      } else {
-        toast!.error(message, {
-          autoClose: 3000,
-        });
-      }
-    }
-
-    return Promise.reject(err.response?.data || err.message);
   }
 );
 

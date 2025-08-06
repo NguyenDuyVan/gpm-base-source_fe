@@ -8,8 +8,8 @@ import { Blog } from "@/types/api";
 import { toast } from "react-toastify";
 
 const MainList = () => {
-  // Fetch blogs using the query
-  const { data: blogs, isLoading, isError } = useBlogsQuery();
+  // Fetch blogData.data using the query
+  const { data: blogData, isLoading, isError } = useBlogsQuery();
 
   // Delete blog mutation
   const deleteBlogMutation = useDeleteBlogMutation();
@@ -20,8 +20,8 @@ const MainList = () => {
   const indexOfLast = currentPage * perPageData;
   const indexOfFirst = indexOfLast - perPageData;
   const currentdata = useMemo(
-    () => blogs?.slice(indexOfFirst, indexOfLast) || [],
-    [blogs, indexOfFirst, indexOfLast]
+    () => blogData?.data?.slice(indexOfFirst, indexOfLast) || [],
+    [blogData, indexOfFirst, indexOfLast]
   );
 
   // Delete Modal state
@@ -100,7 +100,7 @@ const MainList = () => {
               <Alert color="danger" className="mb-0">
                 Error loading blogs. Please try again later.
               </Alert>
-            ) : blogs && blogs.length > 0 ? (
+            ) : blogData?.data && blogData.data.length > 0 ? (
               <div className="table-responsive table-card">
                 <Table className="table-centered align-middle table-nowrap mb-0">
                   <thead className="text-muted table-light">
@@ -172,13 +172,13 @@ const MainList = () => {
               </div>
             ) : (
               <Alert color="info" className="mb-0">
-                No blogs found. Create a new blog to get started.
+                No blogData.data found. Create a new blog to get started.
               </Alert>
             )}
           </CardBody>
         </Card>
 
-        {blogs && blogs.length > 0 && (
+        {blogData?.data && blogData.data.length > 0 && (
           <div className="row g-0 text-center text-sm-start align-items-center mb-4 mt-4">
             <div className="col-sm-6">
               <div>
@@ -186,11 +186,11 @@ const MainList = () => {
                   Showing{" "}
                   <span className="fw-semibold">{indexOfFirst + 1}</span> to{" "}
                   <span className="fw-semibold">
-                    {Math.min(indexOfLast, blogs.length)}
+                    {Math.min(indexOfLast, blogData.data.length)}
                   </span>{" "}
                   of{" "}
                   <span className="fw-semibold text-decoration-underline">
-                    {blogs.length}
+                    {blogData.data.length}
                   </span>{" "}
                   entries
                 </p>
@@ -199,7 +199,7 @@ const MainList = () => {
             <div className="col-sm-6">
               <Pagination
                 perPageData={perPageData}
-                data={blogs}
+                data={blogData.data}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
               />

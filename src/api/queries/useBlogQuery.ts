@@ -1,6 +1,10 @@
 import { Blog } from "@/types/api";
 import { useQuery } from "@tanstack/react-query";
-import { appFetcher } from "../fetcher";
+import {
+  appFetcher,
+  appPaginationFetcher,
+  ResponsePagination,
+} from "../fetcher";
 import { BLOGS_PATH, BLOGS_PATH_BY_ID, BLOGS_PATH_BY_SLUG } from "../apiPaths";
 // Blog query keys
 export const BLOGS_QUERY_KEY = ["blogs"] as const;
@@ -13,10 +17,8 @@ export const BLOG_BY_SLUG_QUERY_KEY = (slug: string) =>
 export const useBlogsQuery = () => {
   return useQuery({
     queryKey: BLOGS_QUERY_KEY,
-    queryFn: async (): Promise<Blog[]> => {
-      return await appFetcher<Blog[]>(BLOGS_PATH, {
-        requireAuth: true,
-      });
+    queryFn: async (): Promise<ResponsePagination<Blog>["data"]> => {
+      return await appPaginationFetcher<Blog>(BLOGS_PATH);
     },
   });
 };

@@ -3,8 +3,17 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 export type ResponsePagination<T> = {
-  data: T[];
-  pagination?: PaginationType;
+  data: {
+    data: T[];
+    meta: {
+      page: number;
+      limit: number;
+      totalItems: number;
+      totalPages: number;
+    };
+  };
+  message: string;
+  statusCode: number;
 };
 
 export type Response<T> = {
@@ -70,7 +79,7 @@ export const appPaginationFetcher = async <T = unknown>(
     });
     url += `?${new URLSearchParams(stringParams).toString()}`;
   }
-  return (await api.get(url, config)) as ResponsePagination<T>;
+  return (await api.get(url, config)).data as ResponsePagination<T>["data"];
 };
 
 export const appFetcher = async <T = unknown>(url: string, config = {}) => {

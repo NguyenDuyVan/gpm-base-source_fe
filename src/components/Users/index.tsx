@@ -41,8 +41,8 @@ import { User } from "@/types/api";
 
 const Users = () => {
   // React Query hooks
-  const { data: users = [], isLoading } = useUsersQuery();
-  const { data: roles = [] } = useRolesQuery();
+  const { data: userData, isLoading } = useUsersQuery();
+  const { data: roleData } = useRolesQuery();
   const createUserMutation = useCreateUserMutation();
   const updateUserMutation = useUpdateUserMutation();
   const deleteUserMutation = useDeleteUserMutation();
@@ -394,10 +394,10 @@ const Users = () => {
                 <div>
                   {isLoading ? (
                     <Loader />
-                  ) : users && users.length ? (
+                  ) : userData?.data && userData?.data.length ? (
                     <TableContainer
                       columns={columns}
-                      data={users || []}
+                      data={userData.data || []}
                       isGlobalFilter={false}
                       customPageSize={10}
                       divClass="table-responsive table-card"
@@ -621,13 +621,13 @@ const Users = () => {
                               name="roleId"
                               id="role-field"
                               value={
-                                roles.find(
+                                roleData?.data.find(
                                   (role) =>
                                     role.id === Number(validation.values.roleId)
                                 )
                                   ? {
                                       value: validation.values.roleId,
-                                      label: roles.find(
+                                      label: roleData?.data.find(
                                         (role) =>
                                           role.id ===
                                           Number(validation.values.roleId)
@@ -641,7 +641,7 @@ const Users = () => {
                                   selectedOption?.value || ""
                                 );
                               }}
-                              options={roles.map((role) => ({
+                              options={roleData?.data.map((role) => ({
                                 value: role.id,
                                 label: role.name,
                               }))}

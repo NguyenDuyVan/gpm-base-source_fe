@@ -1,6 +1,10 @@
 import { Role, Permission } from "@/types/api";
 import { useQuery } from "@tanstack/react-query";
-import { appFetcher } from "../fetcher";
+import {
+  appFetcher,
+  appPaginationFetcher,
+  ResponsePagination,
+} from "../fetcher";
 import { ROLES_PATH } from "../apiPaths";
 
 // Role query keys
@@ -13,11 +17,8 @@ export const PERMISSIONS_QUERY_KEY = ["permissions"] as const;
 export const useRolesQuery = () => {
   return useQuery({
     queryKey: ROLES_QUERY_KEY,
-    queryFn: async (): Promise<Role[]> => {
-      const response = await appFetcher<Role[]>(ROLES_PATH, {
-        requireAuth: true,
-      });
-      return response;
+    queryFn: async (): Promise<ResponsePagination<Role>["data"]> => {
+      return await appPaginationFetcher<Role>(ROLES_PATH);
     },
   });
 };
@@ -40,11 +41,8 @@ export const useRoleByIdQuery = (id: string | number, enabled = true) => {
 export const usePermissionsQuery = () => {
   return useQuery({
     queryKey: PERMISSIONS_QUERY_KEY,
-    queryFn: async (): Promise<Permission[]> => {
-      const response = await appFetcher<Permission[]>("/v1/permissions", {
-        requireAuth: true,
-      });
-      return response;
+    queryFn: async (): Promise<ResponsePagination<Permission>["data"]> => {
+      return await appPaginationFetcher<Permission>("/v1/permissions");
     },
   });
 };
@@ -56,10 +54,10 @@ export const useRolesWithPermissionsQuery = () => {
 
   return {
     ...rolesQuery,
-    data: rolesQuery.data
+    data: rolesQuery.data?.data
       ? {
-          roles: rolesQuery.data,
-          permissions: permissionsQuery.data || [],
+          roles: rolesQuery.data.data,
+          permissions: permissionsQuery.data?.data || [],
           isPermissionsLoading: permissionsQuery.isLoading,
           permissionsError: permissionsQuery.error,
         }

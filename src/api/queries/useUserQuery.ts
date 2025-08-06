@@ -1,6 +1,10 @@
 import { User } from "@/types/api";
 import { useQuery } from "@tanstack/react-query";
-import { appFetcher } from "../fetcher";
+import {
+  appFetcher,
+  appPaginationFetcher,
+  ResponsePagination,
+} from "../fetcher";
 import { USERS_PATH, USERS_PATH_BY_ID } from "../apiPaths";
 
 // User query keys
@@ -12,11 +16,8 @@ export const USER_BY_ID_QUERY_KEY = (id: string | number) =>
 export const useUsersQuery = () => {
   return useQuery({
     queryKey: USERS_QUERY_KEY,
-    queryFn: async (): Promise<User[]> => {
-      const response = await appFetcher<User[]>(USERS_PATH, {
-        requireAuth: true,
-      });
-      return response;
+    queryFn: async (): Promise<ResponsePagination<User>["data"]> => {
+      return await appPaginationFetcher<User>(USERS_PATH);
     },
   });
 };

@@ -18,9 +18,12 @@ interface LoginResponse {
 }
 
 interface RegisterRequest {
-  name: string;
   email: string;
   password: string;
+  fullName: string;
+  address?: string;
+  phoneNumber?: string;
+  taxCode?: string;
 }
 
 // Login mutation

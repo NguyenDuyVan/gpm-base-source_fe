@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   Row,
   Col,
@@ -21,23 +21,19 @@ import { useFormik } from "formik";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-//redux
-import { useSelector, useDispatch } from "react-redux";
-
-//import images
-import { createSelector } from "reselect";
-import { registerUser, resetRegisterFlag } from "@/slices/auth/register/thunk";
 import { useRouter } from "next/router";
 import ParticlesAuth from "@/components/AuthenticationInner/ParticlesAuth";
 import Link from "next/link";
 import NonAuthLayout from "@/Layouts/NonAuthLayout";
 import Head from "next/head";
 import { NextPageWithLayout } from "./_app";
+import { useRegisterMutation } from "@/api/mutations/useAuthMutation";
 
 const Register: NextPageWithLayout = () => {
   const router = useRouter();
-  const dispatch: any = useDispatch();
-  const [loader, setLoader] = useState<boolean>(false);
+
+  // React Query mutation
+  const registerMutation = useRegisterMutation();
 
   const validation = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
@@ -48,43 +44,74 @@ const Register: NextPageWithLayout = () => {
       first_name: "",
       password: "",
       confirm_password: "",
+      address: "",
+      phoneNumber: "",
+      taxCode: "",
     },
     validationSchema: Yup.object({
       email: Yup.string().required("Please Enter Your Email"),
-      first_name: Yup.string().required("Please Enter Your Username"),
+      first_name: Yup.string().required("Please Enter Your Full Name"),
       password: Yup.string().required("Please Enter Your Password"),
       confirm_password: Yup.string()
         .oneOf([Yup.ref("password"), ""])
         .required("Confirm Password is required"),
+      address: Yup.string(),
+      phoneNumber: Yup.string(),
+      taxCode: Yup.string(),
     }),
     onSubmit: (values) => {
-      dispatch(registerUser(values));
-      setLoader(true);
+      // Create the registration data object according to API requirements
+      const registrationData = {
+        email: values.email,
+        password: values.password,
+        fullName: values.first_name,
+        address: values.address,
+        phoneNumber: values.phoneNumber,
+        taxCode: values.taxCode,
+      };
+
+      // Use the React Query mutation
+      registerMutation.mutate(registrationData, {
+        onSuccess: () => {
+          toast("Registration successful! Redirecting to login page...", {
+            position: "top-right",
+            hideProgressBar: false,
+            className: "bg-success text-white",
+            progress: undefined,
+            toastId: "",
+          });
+          setTimeout(() => router.push("/login"), 3000);
+        },
+        onError: (error: any) => {
+          toast.error(
+            error?.message || "Registration failed. Please try again.",
+            {
+              position: "top-right",
+              hideProgressBar: false,
+              progress: undefined,
+              toastId: "",
+            }
+          );
+        },
+      });
     },
   });
 
-  const selectLayoutState = (state: any) => state.Account;
-  const registerdatatype = createSelector(selectLayoutState, (account) => ({
-    success: account.success,
-    error: account.error,
-  }));
-  // Inside your component
-  const { error, success } = useSelector(registerdatatype);
-
+  // Display success message and redirect to login page on successful registration
   useEffect(() => {
-    if (success) {
-      setTimeout(() => router.push("/login"), 3000);
-    }
+    if (registerMutation.isSuccess) {
+      const redirectTimer = setTimeout(() => {
+        router.push("/login");
+      }, 3000);
 
-    setTimeout(() => {
-      dispatch(resetRegisterFlag());
-    }, 3000);
-  }, [dispatch, success, error, router]);
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [registerMutation.isSuccess, router]);
 
   return (
     <NonAuthLayout>
       <Head>
-        <title>Basic SignUp | Velzon - React Admin & Dashboard Template </title>
+        <title>Sign Up | GPM</title>
       </Head>
       <ParticlesAuth>
         <div className="auth-page-content mt-lg-5">
@@ -108,7 +135,7 @@ const Register: NextPageWithLayout = () => {
                     <div className="text-center mt-2">
                       <h5 className="text-primary">Create New Account</h5>
                       <p className="text-muted">
-                        Get your free velzon account now
+                        Get your free GPM account now
                       </p>
                     </div>
                     <div className="p-2 mt-4">
@@ -121,28 +148,21 @@ const Register: NextPageWithLayout = () => {
                         className="needs-validation"
                         action="#"
                       >
-                        {success && success ? (
+                        {registerMutation.isSuccess ? (
                           <>
-                            {toast("Your Redirect To Login Page...", {
-                              position: "top-right",
-                              hideProgressBar: false,
-                              className: "bg-success text-white",
-                              progress: undefined,
-                              toastId: "",
-                            })}
                             <ToastContainer autoClose={2000} limit={1} />
                             <Alert color="success">
-                              Register User Successfully and Your Redirect To
-                              Login Page...
+                              Registration successful! Redirecting to the login
+                              page...
                             </Alert>
                           </>
                         ) : null}
 
-                        {error && error ? (
+                        {registerMutation.isError ? (
                           <Alert color="danger">
                             <div>
-                              Email has been Register Before, Please Use Another
-                              Email Address...{" "}
+                              {(registerMutation.error as any)?.message ||
+                                "Registration failed. Please try again."}
                             </div>
                           </Alert>
                         ) : null}
@@ -176,12 +196,12 @@ const Register: NextPageWithLayout = () => {
                         </div>
                         <div className="mb-3">
                           <Label htmlFor="username" className="form-label">
-                            Username <span className="text-danger">*</span>
+                            Full Name <span className="text-danger">*</span>
                           </Label>
                           <Input
                             name="first_name"
                             type="text"
-                            placeholder="Enter username"
+                            placeholder="Enter your full name"
                             onChange={validation.handleChange}
                             onBlur={validation.handleBlur}
                             value={validation.values.first_name || ""}
@@ -256,13 +276,92 @@ const Register: NextPageWithLayout = () => {
                           ) : null}
                         </div>
 
+                        <div className="mb-3">
+                          <Label htmlFor="address" className="form-label">
+                            Address
+                          </Label>
+                          <Input
+                            name="address"
+                            type="text"
+                            placeholder="Enter your address"
+                            onChange={validation.handleChange}
+                            onBlur={validation.handleBlur}
+                            value={validation.values.address || ""}
+                            invalid={
+                              validation.touched.address &&
+                              validation.errors.address
+                                ? true
+                                : false
+                            }
+                          />
+                          {validation.touched.address &&
+                          validation.errors.address ? (
+                            <FormFeedback type="invalid">
+                              <div>{validation.errors.address}</div>
+                            </FormFeedback>
+                          ) : null}
+                        </div>
+
+                        <div className="mb-3">
+                          <Label htmlFor="phoneNumber" className="form-label">
+                            Phone Number
+                          </Label>
+                          <Input
+                            name="phoneNumber"
+                            type="text"
+                            placeholder="Enter your phone number"
+                            onChange={validation.handleChange}
+                            onBlur={validation.handleBlur}
+                            value={validation.values.phoneNumber || ""}
+                            invalid={
+                              validation.touched.phoneNumber &&
+                              validation.errors.phoneNumber
+                                ? true
+                                : false
+                            }
+                          />
+                          {validation.touched.phoneNumber &&
+                          validation.errors.phoneNumber ? (
+                            <FormFeedback type="invalid">
+                              <div>{validation.errors.phoneNumber}</div>
+                            </FormFeedback>
+                          ) : null}
+                        </div>
+
+                        <div className="mb-3">
+                          <Label htmlFor="taxCode" className="form-label">
+                            Tax Code
+                          </Label>
+                          <Input
+                            name="taxCode"
+                            type="text"
+                            placeholder="Enter your tax code"
+                            onChange={validation.handleChange}
+                            onBlur={validation.handleBlur}
+                            value={validation.values.taxCode || ""}
+                            invalid={
+                              validation.touched.taxCode &&
+                              validation.errors.taxCode
+                                ? true
+                                : false
+                            }
+                          />
+                          {validation.touched.taxCode &&
+                          validation.errors.taxCode ? (
+                            <FormFeedback type="invalid">
+                              <div>{validation.errors.taxCode}</div>
+                            </FormFeedback>
+                          ) : null}
+                        </div>
+
                         <div className="mb-4">
                           <p className="mb-0 fs-12 text-muted fst-italic">
-                            By registering you agree to the Velzon
+                            By registering you agree to the GPM
                             <Link
                               href="#"
                               className="text-primary text-decoration-underline fst-normal fw-medium"
                             >
+                              {" "}
                               Terms of Use
                             </Link>
                           </p>
@@ -273,9 +372,9 @@ const Register: NextPageWithLayout = () => {
                             color="success"
                             className="w-100"
                             type="submit"
-                            disabled={loader && true}
+                            disabled={registerMutation.isPending}
                           >
-                            {loader && (
+                            {registerMutation.isPending && (
                               <Spinner size="sm" className="me-2">
                                 {" "}
                                 Loading...{" "}

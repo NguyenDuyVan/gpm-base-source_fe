@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Modal,
   ModalBody,
@@ -31,6 +32,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
   onSubmit,
   permissions = [],
 }) => {
+  const { t } = useTranslation();
   const [selectedPermissions, setSelectedPermissions] = useState<Set<number>>(
     new Set()
   );
@@ -49,7 +51,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
       const moduleName = pathParts[2]; // e.g., "permissions" or "roles"
       return moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
     }
-    return "General";
+    return t("General");
   };
 
   // Utility function to generate permission name from apiPath and method
@@ -63,22 +65,22 @@ const RoleModal: React.FC<RoleModalProps> = ({
 
       // Handle special cases
       if (apiPath.includes("assign-permissions")) {
-        return `Assign ${resource} permissions`;
+        return t("Assign {{resource}} permissions", { resource });
       }
 
       // Standard CRUD operations
       switch (action) {
         case "get":
           return apiPath.includes("/:")
-            ? `View ${resource}`
-            : `List ${resource}`;
+            ? t("View {{resource}}", { resource })
+            : t("List {{resource}}", { resource });
         case "post":
-          return `Create ${resource}`;
+          return t("Create {{resource}}", { resource });
         case "put":
         case "patch":
-          return `Update ${resource}`;
+          return t("Update {{resource}}", { resource });
         case "delete":
-          return `Delete ${resource}`;
+          return t("Delete {{resource}}", { resource });
         default:
           return `${action} ${resource}`;
       }
@@ -104,7 +106,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
       acc[moduleName].push(enhancedPermission);
       return acc;
     }, {} as Record<string, (Permission & { name: string; module: string })[]>);
-  }, [permissions]);
+  }, [permissions, t]);
 
   // Initialize permissions when modal opens or roleData changes
   useEffect(() => {
@@ -231,7 +233,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
   return (
     <Modal id="showModal" isOpen={modal} toggle={toggle} centered size="xl">
       <ModalHeader className="bg-light p-3" toggle={toggle}>
-        {isEdit ? "Edit Role" : "Add Role"}
+        {isEdit ? t("Edit Role") : t("Add Role")}
       </ModalHeader>
       <Form className="tablelist-form" onSubmit={handleSubmit}>
         <ModalBody>
@@ -239,13 +241,13 @@ const RoleModal: React.FC<RoleModalProps> = ({
             <Col lg={12}>
               <div>
                 <Label htmlFor="role-field" className="form-label">
-                  Role Name <span className="text-danger">*</span>
+                  {t("Role Name")} <span className="text-danger">*</span>
                 </Label>
                 <Input
                   name="role"
                   id="role-field"
                   className="form-control"
-                  placeholder="Enter Role Name"
+                  placeholder={t("Enter Role Name")}
                   type="text"
                   value={roleName}
                   onChange={(e) => setRoleName(e.target.value)}
@@ -259,7 +261,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
             <Row className="mt-4">
               <Col lg={12}>
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <h5 className="mb-0">Permissions</h5>
+                  <h5 className="mb-0">{t("Permissions")}</h5>
                   <div className="form-check">
                     <Input
                       type="checkbox"
@@ -269,7 +271,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
                       onChange={(e) => handleSelectAll(e.target.checked)}
                     />
                     <Label className="form-check-label" htmlFor="select-all">
-                      Select All Permissions
+                      {t("Select All Permissions")}
                     </Label>
                   </div>
                 </div>
@@ -312,7 +314,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
                               className="form-check-label"
                               htmlFor={`module-${moduleName}`}
                             >
-                              Select All {moduleName}
+                              {t("Select All")} {moduleName}
                             </Label>
                           </div>
                         </div>
@@ -367,8 +369,8 @@ const RoleModal: React.FC<RoleModalProps> = ({
                 <div className="mt-3 p-2 bg-light rounded">
                   <small className="text-muted">
                     <i className="mdi mdi-information-outline me-1"></i>
-                    Selected {selectedPermissions.size} of {permissions.length}{" "}
-                    permissions
+                    {t("Selected")} {selectedPermissions.size} {t("of")}{" "}
+                    {permissions.length} {t("permissions")}
                   </small>
                 </div>
               </Col>
@@ -380,8 +382,9 @@ const RoleModal: React.FC<RoleModalProps> = ({
               <Col lg={12}>
                 <div className="text-center text-muted">
                   <i className="mdi mdi-information-outline me-1"></i>
-                  No permissions available. Please make sure permissions are
-                  loaded.
+                  {t(
+                    "No permissions available. Please make sure permissions are loaded."
+                  )}
                 </div>
               </Col>
             </Row>
@@ -395,7 +398,7 @@ const RoleModal: React.FC<RoleModalProps> = ({
               onClick={toggle}
               disabled={assignPermissionsMutation.isPending}
             >
-              Close
+              {t("Close")}
             </button>
             <button
               type="submit"
@@ -403,10 +406,10 @@ const RoleModal: React.FC<RoleModalProps> = ({
               disabled={!roleName.trim() || assignPermissionsMutation.isPending}
             >
               {assignPermissionsMutation.isPending
-                ? "Processing..."
+                ? t("Processing...")
                 : isEdit
-                ? "Update Role"
-                : "Add Role"}
+                ? t("Update Role")
+                : t("Add Role")}
             </button>
           </div>
         </ModalFooter>

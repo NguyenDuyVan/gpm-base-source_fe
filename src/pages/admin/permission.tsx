@@ -20,8 +20,10 @@ import { useState } from "react";
 import React from "react";
 import CommonModal from "@/components/Common/CommonModal";
 import { PaginationType } from "@/types/pagination";
+import { useTranslation } from "react-i18next";
 
 const Page: NextPageWithLayout = () => {
+  const { t } = useTranslation();
   const [isEdit, setIsEdit] = useState(false);
   const [modal, setModal] = useState<boolean>(false);
   const [selectedRole, setSelectedRole] = useState<any>(null);
@@ -100,7 +102,7 @@ const Page: NextPageWithLayout = () => {
     if (roleToDelete) {
       try {
         await deleteRoleMutation.mutateAsync(roleToDelete.id);
-        toast("Role deleted successfully", {
+        toast(t("Role deleted successfully"), {
           position: "top-center",
           className: " text-success-600",
           type: "success",
@@ -108,14 +110,14 @@ const Page: NextPageWithLayout = () => {
         setDeleteModal(false);
         setRoleToDelete(null);
       } catch (_error) {
-        toast("Failed to delete role", {
+        toast(t("Failed to delete role"), {
           position: "top-center",
           className: " text-danger-600",
           type: "error",
         });
       }
     }
-  }, [roleToDelete, deleteRoleMutation]);
+  }, [roleToDelete, deleteRoleMutation, t]);
 
   const handleRoleSubmit = useCallback(
     async (data: any) => {
@@ -141,7 +143,7 @@ const Page: NextPageWithLayout = () => {
               permissionIds: data.selectedPermissions,
             });
           }
-          toast("Role updated successfully", {
+          toast(t("Role updated successfully"), {
             position: "top-center",
             className: " text-success-600",
             type: "success",
@@ -155,7 +157,7 @@ const Page: NextPageWithLayout = () => {
               permissionIds: data.selectedPermissions,
             });
           }
-          toast("Role created successfully", {
+          toast(t("Role created successfully"), {
             position: "top-center",
             className: " text-success-600",
             type: "success",
@@ -163,7 +165,7 @@ const Page: NextPageWithLayout = () => {
         }
         setModal(false);
       } catch (_error) {
-        toast("An error occurred", {
+        toast(t("An error occurred"), {
           position: "top-center",
           className: " text-danger-600",
           type: "error",
@@ -176,6 +178,7 @@ const Page: NextPageWithLayout = () => {
       updateRoleMutation,
       createRoleMutation,
       assignPermissionsMutation,
+      t,
     ]
   );
 
@@ -191,17 +194,17 @@ const Page: NextPageWithLayout = () => {
   const columns = useMemo(
     () => [
       {
-        header: "Id",
+        header: t("Id"),
         accessorKey: "id",
         enableColumnFilter: false,
       },
       {
-        header: "Role",
+        header: t("Role"),
         accessorKey: "name",
         enableColumnFilter: false,
       },
       {
-        header: "Permissions",
+        header: t("Permissions"),
         accessorKey: "rolePermissions",
         enableColumnFilter: false,
         enableSorting: false,
@@ -213,26 +216,26 @@ const Page: NextPageWithLayout = () => {
           return (
             <div className="d-flex align-items-center">
               <span className="badge fs-6  bg-soft-info text-info me-2">
-                {uniqueModules.size} Modules
+                {uniqueModules.size} {t("Modules")}
               </span>
               <span className="badge fs-6  bg-soft-primary text-primary">
-                {rolePermissions.length} Permissions
+                {rolePermissions.length} {t("Permissions")}
               </span>
             </div>
           );
         },
       },
       {
-        header: "Description",
+        header: t("Description"),
         accessorKey: "description",
         enableColumnFilter: false,
       },
       {
-        header: "Action",
+        header: t("Action"),
         cell: (cellProps: any) => {
           return (
             <ul className="list-inline hstack gap-2 mb-0 ">
-              <li className="list-inline-item" title="Edit">
+              <li className="list-inline-item" title={t("Edit")}>
                 <span
                   className="edit-item-btn"
                   onClick={() => {
@@ -243,7 +246,7 @@ const Page: NextPageWithLayout = () => {
                   <i className="cursor-pointer ri-pencil-fill align-bottom text-muted"></i>
                 </span>
               </li>
-              <li className="list-inline-item" title="Delete">
+              <li className="list-inline-item" title={t("Delete")}>
                 <span
                   className="remove-item-btn"
                   onClick={() => {
@@ -259,7 +262,7 @@ const Page: NextPageWithLayout = () => {
         },
       },
     ],
-    [handleEditRole, onClickDelete]
+    [handleEditRole, onClickDelete, t]
   );
 
   if (isLoading) {
@@ -269,9 +272,9 @@ const Page: NextPageWithLayout = () => {
           <CardBody>
             <div className="text-center">
               <div className="spinner-border" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t("Loading...")}</span>
               </div>
-              <p className="mt-2">Loading roles...</p>
+              <p className="mt-2">{t("Loading roles...")}</p>
             </div>
           </CardBody>
         </Card>
@@ -286,7 +289,9 @@ const Page: NextPageWithLayout = () => {
           <CardBody>
             <div className="text-center text-danger">
               <i className="ri-error-warning-line fs-1"></i>
-              <p className="mt-2">Failed to load roles. Please try again.</p>
+              <p className="mt-2">
+                {t("Failed to load roles. Please try again.")}
+              </p>
             </div>
           </CardBody>
         </Card>
@@ -304,7 +309,7 @@ const Page: NextPageWithLayout = () => {
                 <Input
                   type="text"
                   className="form-control search"
-                  placeholder="Search for roles..."
+                  placeholder={t("Search for roles...")}
                   onChange={(e) => setSearchInput(e.target.value)}
                   value={searchInput}
                 />
@@ -321,7 +326,8 @@ const Page: NextPageWithLayout = () => {
                   toggle();
                 }}
               >
-                <i className="ri-add-line align-bottom me-1"></i> Add Role
+                <i className="ri-add-line align-bottom me-1"></i>{" "}
+                {t("Add Role")}
               </button>
             </div>
           </Row>
@@ -330,13 +336,15 @@ const Page: NextPageWithLayout = () => {
           {isLoading ? (
             <div className="text-center mt-3">
               <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t("Loading...")}</span>
               </div>
             </div>
           ) : error ? (
             <div className="text-center text-danger">
               <i className="ri-error-warning-line fs-1"></i>
-              <p className="mt-2">Failed to load roles. Please try again.</p>
+              <p className="mt-2">
+                {t("Failed to load roles. Please try again.")}
+              </p>
             </div>
           ) : roles && roles.length > 0 ? (
             <TableContainer
@@ -362,11 +370,11 @@ const Page: NextPageWithLayout = () => {
                   <i className="ri-shield-user-line"></i>
                 </div>
               </div>
-              <h5 className="mt-2">No roles found</h5>
+              <h5 className="mt-2">{t("No roles found")}</h5>
               <p className="text-muted">
                 {searchInput
-                  ? `No results found for "${searchInput}"`
-                  : "Create your first role to get started."}
+                  ? t(`No results found for "${searchInput}"`)
+                  : t("Create your first role to get started.")}
               </p>
               <button
                 type="button"
@@ -376,7 +384,8 @@ const Page: NextPageWithLayout = () => {
                   toggle();
                 }}
               >
-                <i className="ri-add-line align-bottom me-1"></i> Add New Role
+                <i className="ri-add-line align-bottom me-1"></i>{" "}
+                {t("Add New Role")}
               </button>
             </div>
           )}

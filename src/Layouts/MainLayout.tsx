@@ -24,6 +24,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 import { Container } from "reactstrap";
+import { withTranslation } from "react-i18next";
 
 const Layout = (props: any) => {
   const [headerClass, setHeaderClass] = useState("");
@@ -169,4 +170,4 @@ Layout.propTypes = {
   children: PropTypes.object,
 };
 
-export default Layout;
+export default withTranslation()(Layout);

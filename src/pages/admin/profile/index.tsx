@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { isEmpty } from "lodash";
+import { useTranslation } from "react-i18next";
 
 import {
   Container,
@@ -31,6 +32,7 @@ import MainLayout from "@/Layouts/MainLayout";
 
 const UserProfile = () => {
   const dispatch: any = useDispatch();
+  const { t } = useTranslation();
 
   const [email, setemail] = useState("admin@gmail.com");
   const [idx, setidx] = useState("1");
@@ -87,7 +89,7 @@ const UserProfile = () => {
       idx: idx || "",
     },
     validationSchema: Yup.object({
-      first_name: Yup.string().required("Please Enter Your UserName"),
+      first_name: Yup.string().required(t("Please Enter Your UserName")),
     }),
     onSubmit: (values) => {
       dispatch(editProfile(values));
@@ -102,7 +104,9 @@ const UserProfile = () => {
             <Col lg="12">
               {error && error ? <Alert color="danger">{error}</Alert> : null}
               {success ? (
-                <Alert color="success">Username Updated To {userName}</Alert>
+                <Alert color="success">
+                  {t("Username Updated To")} {userName}
+                </Alert>
               ) : null}
 
               <Card>
@@ -117,9 +121,13 @@ const UserProfile = () => {
                     </div>
                     <div className="flex-grow-1 align-self-center">
                       <div className="text-muted">
-                        <h5>{userName || "Admin"}</h5>
-                        <p className="mb-1">Email Id : {email}</p>
-                        <p className="mb-0">Id No : #{idx}</p>
+                        <h5>{userName || t("Admin")}</h5>
+                        <p className="mb-1">
+                          {t("Email Id")} : {email}
+                        </p>
+                        <p className="mb-0">
+                          {t("Id No")} : #{idx}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -128,7 +136,7 @@ const UserProfile = () => {
             </Col>
           </Row>
 
-          <h4 className="card-title mb-4">Change User Name</h4>
+          <h4 className="card-title mb-4">{t("Change User Name")}</h4>
 
           <Card>
             <CardBody>
@@ -141,12 +149,12 @@ const UserProfile = () => {
                 }}
               >
                 <div className="form-group">
-                  <Label className="form-label">User Name</Label>
+                  <Label className="form-label">{t("User Name")}</Label>
                   <Input
                     name="first_name"
                     // value={name}
                     className="form-control"
-                    placeholder="Enter User Name"
+                    placeholder={t("Enter User Name")}
                     type="text"
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
@@ -168,7 +176,7 @@ const UserProfile = () => {
                 </div>
                 <div className="text-center mt-4">
                   <Button type="submit" color="danger">
-                    Update User Name
+                    {t("Update User Name")}
                   </Button>
                 </div>
               </Form>

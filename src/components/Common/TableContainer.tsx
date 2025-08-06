@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { CardBody, Col, Row, Table } from "reactstrap";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 import {
   Column,
@@ -158,6 +159,7 @@ const TableContainer = ({
   pageIndex,
   pageSize,
 }: TableContainerProps) => {
+  const { t } = useTranslation();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -334,15 +336,15 @@ const TableContainer = ({
       <Row className="align-items-center mt-2 g-3 text-center text-sm-start">
         <div className="col-sm">
           <div className="text-muted">
-            Showing
+            {t("Showing")}
             <span className="fw-semibold ms-1">
               {getState().pagination.pageSize}
             </span>{" "}
-            of{" "}
+            {t("of")}{" "}
             <span className="fw-semibold">
               {manualPagination ? totalCount || 0 : data.length}
             </span>{" "}
-            Results
+            {t("Results")}
           </div>
         </div>
         <div className="col-sm-auto">
@@ -364,7 +366,7 @@ const TableContainer = ({
                   }
                 }}
               >
-                Previous
+                {t("Previous")}
               </Link>
             </li>
             {manualPagination &&
@@ -437,7 +439,7 @@ const TableContainer = ({
                   }
                 }}
               >
-                Next
+                {t("Next")}
               </Link>
             </li>
           </ul>
@@ -447,9 +449,9 @@ const TableContainer = ({
         {onPageSizeChange && (
           <div className="col-sm-auto">
             <div className="d-flex align-items-center gap-2">
-              <span className="text-muted">Show</span>
+              <span className="text-muted shrink-0">{t("Show")}</span>
               <select
-                className="form-select form-select-sm"
+                className="form-select form-select-sm "
                 value={pageSize || getState().pagination.pageSize}
                 onChange={(e) => {
                   const size = Number(e.target.value);
@@ -466,7 +468,7 @@ const TableContainer = ({
                   </option>
                 ))}
               </select>
-              <span className="text-muted">entries</span>
+              <span className="text-muted">{t("entries")}</span>
             </div>
           </div>
         )}

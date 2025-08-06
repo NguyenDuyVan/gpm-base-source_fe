@@ -1,4 +1,5 @@
 import React, { ReactElement, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Card,
   CardBody,
@@ -26,6 +27,7 @@ const EditorWrapper = dynamic(() => import("@/components/core/EditorWrapper"), {
 });
 
 const Page = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [formData, setFormData] = useState<CreateBlogRequest>({
     title: "",
@@ -45,11 +47,11 @@ const Page = () => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.title?.trim()) {
-      newErrors.title = "Title is required";
+      newErrors.title = t("Title is required");
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = "Description is required";
+      newErrors.description = t("Description is required");
     }
 
     setErrors(newErrors);
@@ -99,11 +101,11 @@ const Page = () => {
 
     try {
       await createBlogMutation.mutateAsync(formData);
-      toast.success("Blog created successfully!");
+      toast.success(t("Blog created successfully!"));
       router.push("/admin/blog");
     } catch (error) {
       console.error("Error creating blog:", error);
-      toast.error("Failed to create blog. Please try again.");
+      toast.error(t("Failed to create blog. Please try again."));
     }
   };
 
@@ -116,13 +118,13 @@ const Page = () => {
               <CardBody>
                 <div className="mb-3">
                   <Label className="form-label" htmlFor="blog-title-input">
-                    Blog Title
+                    {t("Blog Title")}
                   </Label>
                   <Input
                     type="text"
                     className="form-control"
                     id="blog-title-input"
-                    placeholder="Enter blog title"
+                    placeholder={t("Enter blog title")}
                     value={formData.title}
                     onChange={handleInputChange}
                     onBlur={() => handleBlur("title")}
@@ -136,7 +138,7 @@ const Page = () => {
 
                 <div className="mb-3">
                   <Label className="form-label" htmlFor="blog-slug-input">
-                    Slug
+                    {t("Slug")}
                   </Label>
                   <Input
                     type="text"
@@ -147,12 +149,12 @@ const Page = () => {
                     readOnly
                   />
                   <small className="text-muted">
-                    Auto-generated from title. Used in URLs.
+                    {t("Auto-generated from title. Used in URLs.")}
                   </small>
                 </div>
 
                 <div className="mb-3">
-                  <Label className="form-label">Blog Description</Label>
+                  <Label className="form-label">{t("Blog Description")}</Label>
                   <EditorWrapper
                     onChange={handleEditorContent}
                     value={editorContent}
@@ -168,10 +170,10 @@ const Page = () => {
               <Button
                 type="submit"
                 color="success"
-                className="w-sm"
+                className="w-20"
                 disabled={createBlogMutation.isPending}
               >
-                {createBlogMutation.isPending ? "Creating..." : "Create"}
+                {createBlogMutation.isPending ? t("Creating...") : t("Create")}
               </Button>
             </div>
           </Col>

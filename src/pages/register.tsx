@@ -14,6 +14,7 @@ import {
   Spinner,
 } from "reactstrap";
 
+import { useTranslation } from "react-i18next";
 // Formik Validation
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -30,6 +31,7 @@ import { NextPageWithLayout } from "./_app";
 import { useRegisterMutation } from "@/api/mutations/useAuthMutation";
 
 const Register: NextPageWithLayout = () => {
+  const { t } = useTranslation();
   const router = useRouter();
 
   // React Query mutation
@@ -121,9 +123,11 @@ const Register: NextPageWithLayout = () => {
                 <Card className="mt-4">
                   <CardBody className="p-4">
                     <div className="text-center mt-2">
-                      <h5 className="text-primary">Create New Account</h5>
+                      <h5 className="text-primary">
+                        {t("Create New Account")}
+                      </h5>
                       <p className="text-muted">
-                        Get your free GPM account now
+                        {t("Get your free GPM account now")}
                       </p>
                     </div>
                     <div className="p-2 mt-4">
@@ -416,13 +420,13 @@ const Register: NextPageWithLayout = () => {
                 </Card>
                 <div className="mt-4 text-center">
                   <p className="mb-0">
-                    Already have an account ?{" "}
+                    {t("Already have an account")} ?{" "}
                     <Link
                       href="/login"
                       className="fw-semibold text-primary text-decoration-underline"
                     >
                       {" "}
-                      Signin{" "}
+                      {t("Signin")}{" "}
                     </Link>{" "}
                   </p>
                 </div>

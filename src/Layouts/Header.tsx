@@ -7,7 +7,6 @@ import logoDark from "../assets/images/logo-dark.png";
 import logoLight from "../assets/images/logo-light.png";
 
 //import Components
-import NotificationDropdown from "@/components/Common/NotificationDropdown";
 import ProfileDropdown from "@/components/Common/ProfileDropdown";
 import LightDark from "@/components/Common/LightDark";
 
@@ -15,6 +14,7 @@ import { changeSidebarVisibility } from "../slices/thunks";
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 import Link from "next/link";
+import LanguageDropdown from "@/components/Common/LanguageDropdown";
 
 const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }: any) => {
   const dispatch: any = useDispatch();
@@ -149,9 +149,9 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }: any) => {
                 </DropdownMenu>
               </Dropdown>
 
-              {/* <LanguageDropdown />
+              <LanguageDropdown />
 
-              <WebAppsDropdown />
+              {/* <WebAppsDropdown />
 
               <MyCartDropdown />
 

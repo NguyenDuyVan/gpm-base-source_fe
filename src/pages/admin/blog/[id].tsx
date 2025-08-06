@@ -1,4 +1,5 @@
 import React, { ReactElement, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Card,
   CardBody,
@@ -28,6 +29,7 @@ const EditorWrapper = dynamic(() => import("@/components/core/EditorWrapper"), {
 });
 
 const Page = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { id } = router.query;
   const [formData, setFormData] = useState<CreateBlogRequest>({
@@ -66,11 +68,11 @@ const Page = () => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.title?.trim()) {
-      newErrors.title = "Title is required";
+      newErrors.title = t("Title is required");
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = "Description is required";
+      newErrors.description = t("Description is required");
     }
 
     setErrors(newErrors);
@@ -120,7 +122,7 @@ const Page = () => {
 
     try {
       if (!id) {
-        toast.error("Blog ID is missing");
+        toast.error(t("Blog ID is missing"));
         return;
       }
 
@@ -129,11 +131,11 @@ const Page = () => {
         ...formData,
       });
 
-      toast.success("Blog updated successfully!");
+      toast.success(t("Blog updated successfully!"));
       router.push("/admin/blog");
     } catch (error) {
       console.error("Error updating blog:", error);
-      toast.error("Failed to update blog. Please try again.");
+      toast.error(t("Failed to update blog. Please try again."));
     }
   };
 
@@ -142,13 +144,13 @@ const Page = () => {
       {isLoading ? (
         <div className="text-center py-5">
           <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
+            <span className="visually-hidden">{t("Loading...")}</span>
           </div>
-          <p className="mt-2">Loading blog data...</p>
+          <p className="mt-2">{t("Loading blog data...")}</p>
         </div>
       ) : isError ? (
         <Alert color="danger" className="mb-0">
-          Error loading blog. Please try again later.
+          {t("Error loading blog. Please try again later.")}
         </Alert>
       ) : (
         <Form onSubmit={handleFormSubmit}>
@@ -158,13 +160,13 @@ const Page = () => {
                 <CardBody>
                   <div className="mb-3">
                     <Label className="form-label" htmlFor="blog-title-input">
-                      Blog Title
+                      {t("Blog Title")}
                     </Label>
                     <Input
                       type="text"
                       className="form-control"
                       id="blog-title-input"
-                      placeholder="Enter blog title"
+                      placeholder={t("Enter blog title")}
                       value={formData.title}
                       onChange={handleInputChange}
                       onBlur={() => handleBlur("title")}
@@ -178,7 +180,7 @@ const Page = () => {
 
                   <div className="mb-3">
                     <Label className="form-label" htmlFor="blog-slug-input">
-                      Slug
+                      {t("Slug")}
                     </Label>
                     <Input
                       type="text"
@@ -190,12 +192,14 @@ const Page = () => {
                       readOnly
                     />
                     <small className="text-muted">
-                      Auto-generated from title. Used in URLs.
+                      {t("Auto-generated from title. Used in URLs.")}
                     </small>
                   </div>
 
                   <div className="mb-3">
-                    <Label className="form-label">Blog Description</Label>
+                    <Label className="form-label">
+                      {t("Blog Description")}
+                    </Label>
                     <EditorWrapper
                       onChange={handleEditorContent}
                       value={editorContent}
@@ -216,7 +220,7 @@ const Page = () => {
                   className="me-2"
                   onClick={() => router.push("/admin/blog")}
                 >
-                  Cancel
+                  {t("Cancel")}
                 </Button>
                 <Button
                   type="submit"
@@ -224,7 +228,9 @@ const Page = () => {
                   className="w-sm"
                   disabled={updateBlogMutation.isPending}
                 >
-                  {updateBlogMutation.isPending ? "Updating..." : "Update Blog"}
+                  {updateBlogMutation.isPending
+                    ? t("Updating...")
+                    : t("Update Blog")}
                 </Button>
               </div>
             </Col>

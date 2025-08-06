@@ -21,6 +21,7 @@ import { useSelector, useDispatch } from "react-redux";
 // Formik validation
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { useTranslation } from "react-i18next";
 
 // actions
 
@@ -35,6 +36,7 @@ import { useLoginMutation } from "@/api/mutations/useAuthMutation";
 import { apiError, loginSuccess } from "@/slices/auth/login/reducer";
 
 const Login: NextPageWithLayout = () => {
+  const { t } = useTranslation();
   const dispatch: any = useDispatch();
   const router = useRouter();
   const { mutateAsync: handleLogin } = useLoginMutation();
@@ -130,9 +132,9 @@ const Login: NextPageWithLayout = () => {
                 <Card className="mt-4 card-bg-fill">
                   <CardBody className="p-4">
                     <div className="text-center mt-2">
-                      <h5 className="text-primary">Chào mừng trở lại!</h5>
+                      <h5 className="text-primary">{t("Welcome Back")}</h5>
                       <p className="text-muted">
-                        Đăng nhập để tiếp tục sử dụng GPM.
+                        {t("Sign in to continue to GPM")}
                       </p>
                     </div>
                     {error && error ? (
@@ -154,7 +156,7 @@ const Login: NextPageWithLayout = () => {
                           <Input
                             name="email"
                             className="form-control"
-                            placeholder="Nhập email"
+                            placeholder={t("Enter email")}
                             type="email"
                             onChange={validation.handleChange}
                             onBlur={validation.handleBlur}
@@ -176,18 +178,19 @@ const Login: NextPageWithLayout = () => {
 
                         <div className="mb-3">
                           <div className="float-end">
+                            {" "}
                             <Link
                               href="/forgot-password"
                               className="text-muted"
                             >
-                              Quên mật khẩu?
+                              {t("Forgot password")}?
                             </Link>
                           </div>
                           <Label
                             className="form-label"
                             htmlFor="password-input"
                           >
-                            Mật khẩu
+                            {t("Password")}
                           </Label>
                           <div className="position-relative auth-pass-inputgroup mb-3">
                             <Input
@@ -195,7 +198,7 @@ const Login: NextPageWithLayout = () => {
                               value={validation.values.password || ""}
                               type={passwordShow ? "text" : "password"}
                               className="form-control pe-5"
-                              placeholder="Nhập mật khẩu"
+                              placeholder={t("Enter password")}
                               onChange={validation.handleChange}
                               onBlur={validation.handleBlur}
                               invalid={
@@ -233,7 +236,7 @@ const Login: NextPageWithLayout = () => {
                             className="form-check-label"
                             htmlFor="auth-remember-check"
                           >
-                            Ghi nhớ đăng nhập
+                            {t("Remember me")}
                           </Label>
                         </div>
 
@@ -250,7 +253,7 @@ const Login: NextPageWithLayout = () => {
                                 Đang tải...{" "}
                               </Spinner>
                             )}
-                            Đăng nhập
+                            {t("Sign In")}
                           </Button>
                         </div>
 

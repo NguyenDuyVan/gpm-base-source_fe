@@ -9,8 +9,10 @@ import { toast } from "react-toastify";
 import TableContainer from "@/components/Common/TableContainer";
 import moment from "moment";
 import { PaginationType } from "@/types/pagination";
+import { useTranslation } from "react-i18next";
 
 const MainList = () => {
+  const { t } = useTranslation();
   const [queryParams, setQueryParams] = useState<PaginationType>({
     page: 1,
     limit: 5,
@@ -74,12 +76,12 @@ const MainList = () => {
 
     try {
       await deleteBlogMutation.mutateAsync(blogToDelete.id);
-      toast.success("Blog deleted successfully!");
+      toast.success(t("Blog deleted successfully!"));
       setDeleteModal(false);
       setBlogToDelete(null);
     } catch (error) {
       console.error("Error deleting blog:", error);
-      toast.error("Failed to delete blog. Please try again.");
+      toast.error(t("Failed to delete blog. Please try again."));
     }
   };
 
@@ -90,7 +92,7 @@ const MainList = () => {
   const columns = useMemo(
     () => [
       {
-        header: "Title",
+        header: t("Title"),
         accessorKey: "title",
         enableColumnFilter: false,
         cell: (cell: any) => (
@@ -103,13 +105,13 @@ const MainList = () => {
         ),
       },
       {
-        header: "Slug",
+        header: t("Slug"),
         accessorKey: "slug",
         enableColumnFilter: false,
         cell: (cell: any) => <span>{cell.getValue()}</span>,
       },
       {
-        header: "Published Date",
+        header: t("Published Date"),
         accessorKey: "createdAt",
         enableColumnFilter: false,
         cell: (cell: any) => (
@@ -117,11 +119,11 @@ const MainList = () => {
         ),
       },
       {
-        header: "Action",
+        header: t("Action"),
         cell: (cellProps: any) => {
           return (
             <ul className="list-inline gap-3 mb-0">
-              <li className="list-inline-item" title="View">
+              <li className="list-inline-item" title={t("View")}>
                 <Link
                   href={`/blog/${cellProps.row.original.slug}`}
                   className="view-item-btn"
@@ -129,7 +131,7 @@ const MainList = () => {
                   <i className="ri-eye-fill align-bottom text-muted"></i>
                 </Link>
               </li>
-              <li className="list-inline-item" title="Edit">
+              <li className="list-inline-item" title={t("Edit")}>
                 <Link
                   href={`/admin/blog/${cellProps.row.original.id}`}
                   className="edit-item-btn"
@@ -137,7 +139,7 @@ const MainList = () => {
                   <i className="ri-pencil-fill align-bottom text-muted"></i>
                 </Link>
               </li>
-              <li className="list-inline-item" title="Delete">
+              <li className="list-inline-item" title={t("Delete")}>
                 <span
                   className="remove-item-btn"
                   onClick={() => handleDeleteClick(cellProps.row.original)}
@@ -150,13 +152,13 @@ const MainList = () => {
         },
       },
     ],
-    []
+    [t]
   );
 
   if (isError) {
     return (
       <Alert color="danger">
-        Failed to load blogs. Please try again later.
+        {t("Failed to load blogs. Please try again later.")}
       </Alert>
     );
   }
@@ -179,7 +181,7 @@ const MainList = () => {
                 <Input
                   type="text"
                   className="form-control search"
-                  placeholder="Search for blogs..."
+                  placeholder={t("Search for blogs...")}
                   onChange={(e) => setSearchInput(e.target.value)}
                   value={searchInput}
                 />
@@ -191,7 +193,8 @@ const MainList = () => {
                 href="/admin/blog/create"
                 className="btn btn-primary add-btn"
               >
-                <i className="ri-add-line align-bottom me-1"></i> Add Blog
+                <i className="ri-add-line align-bottom me-1"></i>{" "}
+                {t("Add Blog")}
               </Link>
             </div>
           </Row>
@@ -200,7 +203,7 @@ const MainList = () => {
           {isLoading ? (
             <div className="text-center mt-3">
               <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t("Loading...")}</span>
               </div>
             </div>
           ) : blogData?.data && blogData.data.length > 0 ? (
@@ -227,14 +230,15 @@ const MainList = () => {
                   <i className="ri-file-text-line"></i>
                 </div>
               </div>
-              <h5 className="mt-2">No blog posts found</h5>
+              <h5 className="mt-2">{t("No blog posts found")}</h5>
               <p className="text-muted">
                 {searchInput
-                  ? `No results found for "${searchInput}"`
-                  : "Create your first blog post to get started."}
+                  ? t(`No results found for "${searchInput}"`)
+                  : t("Create your first blog post to get started.")}
               </p>
               <Link href="/admin/blog/add" className="btn btn-success">
-                <i className="ri-add-line align-bottom me-1"></i> Add New Blog
+                <i className="ri-add-line align-bottom me-1"></i>{" "}
+                {t("Add New Blog")}
               </Link>
             </div>
           )}

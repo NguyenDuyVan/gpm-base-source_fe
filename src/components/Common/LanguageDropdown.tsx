@@ -46,7 +46,7 @@ const LanguageDropdown = () => {
             src={get(languages, `${selectedLang}.flag.src`)}
             alt="Header Language"
             height="20"
-            className="rounded"
+            className="rounded size-6"
           />
         </DropdownToggle>
         <DropdownMenu className="notify-item language py-2">
@@ -54,19 +54,21 @@ const LanguageDropdown = () => {
             <DropdownItem
               key={key}
               onClick={() => changeLanguageAction(key)}
-              className={`notify-item ${
+              className={`notify-item  ${
                 selectedLang === key ? "active" : "none"
               }`}
             >
-              <img
-                src={get(languages, `${key}.flag.src`)}
-                alt="Skote"
-                className="me-2 rounded"
-                height="18"
-              />
-              <span className="align-middle">
-                {get(languages, `${key}.label`)}
-              </span>
+              <div className="flex">
+                <img
+                  src={get(languages, `${key}.flag.src`)}
+                  alt="Skote"
+                  className="me-2 rounded size-4"
+                  height="18"
+                />
+                <span className="align-middle">
+                  {get(languages, `${key}.label`)}
+                </span>
+              </div>
             </DropdownItem>
           ))}
         </DropdownMenu>

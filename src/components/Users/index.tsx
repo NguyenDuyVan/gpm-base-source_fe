@@ -16,6 +16,7 @@ import {
 } from "reactstrap";
 import Select from "react-select";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 // Import React Query hooks
 import { useUsersQuery } from "@/api/queries/useUserQuery";
@@ -41,6 +42,8 @@ import { User } from "@/types/api";
 import { PaginationType } from "@/types/pagination";
 
 const Users = () => {
+  const { t } = useTranslation();
+
   // Query params state
   const [queryParams, setQueryParams] = useState<PaginationType>({
     page: 1,
@@ -96,10 +99,10 @@ const Users = () => {
     if (selectedUser) {
       try {
         await deleteUserMutation.mutateAsync(selectedUser.id);
-        toast.success("User deleted successfully");
+        toast.success(t("User deleted successfully"));
         setDeleteModal(false);
       } catch (_error) {
-        toast.error("Failed to delete user");
+        toast.error(t("Failed to delete user"));
       }
     }
   };
@@ -122,12 +125,14 @@ const Users = () => {
       password: "",
     },
     validationSchema: Yup.object({
-      fullName: Yup.string().required("Please Enter Full Name"),
-      email: Yup.string().email("Invalid email").required("Please Enter Email"),
-      phoneNumber: Yup.string().required("Please Enter Phone Number"),
+      fullName: Yup.string().required(t("Please Enter Full Name")),
+      email: Yup.string()
+        .email(t("Invalid email"))
+        .required(t("Please Enter Email")),
+      phoneNumber: Yup.string().required(t("Please Enter Phone Number")),
       password: isEdit
         ? Yup.string().optional()
-        : Yup.string().required("Please Enter Password"),
+        : Yup.string().required(t("Please Enter Password")),
     }),
     onSubmit: async (values) => {
       try {
@@ -150,19 +155,21 @@ const Users = () => {
             id: selectedUser.id,
             ...userData,
           });
-          toast.success("User updated successfully");
+          toast.success(t("User updated successfully"));
         } else {
           await createUserMutation.mutateAsync({
             ...userData,
             password: values.password!, // Password is required for new users
           });
-          toast.success("User created successfully");
+          toast.success(t("User created successfully"));
         }
 
         validation.resetForm();
         toggle();
       } catch (_error) {
-        toast.error(isEdit ? "Failed to update user" : "Failed to create user");
+        toast.error(
+          isEdit ? t("Failed to update user") : t("Failed to create user")
+        );
       }
     },
   });
@@ -214,11 +221,11 @@ const Users = () => {
       for (const element of selectedCheckBoxDelete) {
         await deleteUserMutation.mutateAsync(Number(element.value));
       }
-      toast.success("Users deleted successfully");
+      toast.success(t("Users deleted successfully"));
       setIsMultiDeleteButton(false);
       checkall.checked = false;
     } catch (_error) {
-      toast.error("Failed to delete users");
+      toast.error(t("Failed to delete users"));
     }
   };
 
@@ -248,7 +255,7 @@ const Users = () => {
         enableSorting: false,
       },
       {
-        header: "Name",
+        header: t("Name"),
         accessorKey: "fullName",
         enableColumnFilter: false,
         cell: (cell: any) => (
@@ -267,18 +274,18 @@ const Users = () => {
         ),
       },
       {
-        header: "Email",
+        header: t("Email"),
         accessorKey: "email",
         enableColumnFilter: false,
       },
       {
-        header: "Phone",
+        header: t("Phone Number"),
         accessorKey: "phoneNumber",
         enableColumnFilter: false,
         cell: (cell: any) => cell.getValue() || "N/A",
       },
       {
-        header: "Role",
+        header: t("Role"),
         accessorKey: "role",
         enableColumnFilter: false,
         enableSorting: false,
@@ -297,7 +304,7 @@ const Users = () => {
         ),
       },
       {
-        header: "Create Date",
+        header: t("Create Date"),
         accessorKey: "createdAt",
         enableColumnFilter: false,
         cell: (cell: any) => (
@@ -305,11 +312,11 @@ const Users = () => {
         ),
       },
       {
-        header: "Action",
+        header: t("Action"),
         cell: (cellProps: any) => {
           return (
             <ul className="list-inline hstack gap-2 mb-0">
-              <li className="list-inline-item" title="Edit">
+              <li className="list-inline-item" title={t("Edit")}>
                 <span
                   className="edit-item-btn"
                   onClick={() => {
@@ -320,7 +327,7 @@ const Users = () => {
                   <i className="cursor-pointer ri-pencil-fill align-bottom text-muted"></i>
                 </span>
               </li>
-              <li className="list-inline-item" title="Delete">
+              <li className="list-inline-item" title={t("Delete")}>
                 <span
                   className="remove-item-btn"
                   onClick={() => {
@@ -336,7 +343,7 @@ const Users = () => {
         },
       },
     ],
-    [handleUserClick, checkedAll]
+    [handleUserClick, checkedAll, t]
   );
 
   // Update search params when search input changes (with debounce)
@@ -459,7 +466,7 @@ const Users = () => {
                       <Input
                         type="text"
                         className="form-control search"
-                        placeholder="Search for..."
+                        placeholder={t("Search for...")}
                         onChange={(e) => setSearchInput(e.target.value)}
                         value={searchInput}
                       />
@@ -483,7 +490,7 @@ const Users = () => {
                         onClick={toggleInfo}
                       >
                         <i className="ri-filter-3-line align-bottom me-1"></i>{" "}
-                        Filters
+                        {t("Filters")}
                       </button> */}
                       <button
                         type="button"
@@ -495,8 +502,8 @@ const Users = () => {
                           toggle();
                         }}
                       >
-                        <i className="ri-add-line align-bottom me-1"></i> Add
-                        User
+                        <i className="ri-add-line align-bottom me-1"></i>{" "}
+                        {t("Add User")}
                       </button>
                     </div>
                   </div>
@@ -526,14 +533,14 @@ const Users = () => {
                     />
                   ) : (
                     <div className="text-center py-4">
-                      <p>No users found</p>
+                      <p>{t("No users found")}</p>
                     </div>
                   )}
                 </div>
 
                 <Modal id="showModal" isOpen={modal} toggle={toggle} centered>
                   <ModalHeader className="bg-light p-3" toggle={toggle}>
-                    {!!isEdit ? "Edit User" : "Add User"}
+                    {!!isEdit ? t("Edit User") : t("Add User")}
                   </ModalHeader>
                   <Form
                     className="tablelist-form"
@@ -551,13 +558,13 @@ const Users = () => {
                               htmlFor="fullName-field"
                               className="form-label"
                             >
-                              Full Name
+                              {t("Full Name")}
                             </Label>
                             <Input
                               name="fullName"
                               id="fullName-field"
                               className="form-control"
-                              placeholder="Enter Full Name"
+                              placeholder={t("Enter Full Name")}
                               type="text"
                               onChange={validation.handleChange}
                               onBlur={validation.handleBlur}
@@ -580,13 +587,13 @@ const Users = () => {
                         <Col lg={6}>
                           <div>
                             <Label htmlFor="email-field" className="form-label">
-                              Email
+                              {t("Email")}
                             </Label>
                             <Input
                               name="email"
                               id="email-field"
                               className="form-control"
-                              placeholder="Enter Email"
+                              placeholder={t("Enter Email")}
                               type="email"
                               onChange={validation.handleChange}
                               onBlur={validation.handleBlur}
@@ -612,7 +619,7 @@ const Users = () => {
                               htmlFor="password-field"
                               className="form-label"
                             >
-                              Password{" "}
+                              {t("Password")}{" "}
                               {!isEdit && (
                                 <span className="text-danger">*</span>
                               )}
@@ -624,8 +631,8 @@ const Users = () => {
                                 className="form-control"
                                 placeholder={
                                   isEdit
-                                    ? "Leave blank to keep current"
-                                    : "Enter Password"
+                                    ? t("Leave blank to keep current")
+                                    : t("Enter Password")
                                 }
                                 type={showPassword ? "text" : "password"}
                                 onChange={validation.handleChange}
@@ -665,13 +672,13 @@ const Users = () => {
                               htmlFor="phoneNumber-field"
                               className="form-label"
                             >
-                              Phone Number
+                              {t("Phone Number")}
                             </Label>
                             <Input
                               name="phoneNumber"
                               id="phoneNumber-field"
                               className="form-control"
-                              placeholder="Enter Phone Number"
+                              placeholder={t("Enter Phone Number")}
                               type="text"
                               onChange={validation.handleChange}
                               onBlur={validation.handleBlur}
@@ -697,13 +704,13 @@ const Users = () => {
                               htmlFor="address-field"
                               className="form-label"
                             >
-                              Address
+                              {t("Address")}
                             </Label>
                             <Input
                               name="address"
                               id="address-field"
                               className="form-control"
-                              placeholder="Enter Address"
+                              placeholder={t("Enter Address")}
                               type="text"
                               onChange={validation.handleChange}
                               onBlur={validation.handleBlur}
@@ -717,13 +724,13 @@ const Users = () => {
                               htmlFor="taxCode-field"
                               className="form-label"
                             >
-                              Tax Code
+                              {t("Tax Code")}
                             </Label>
                             <Input
                               name="taxCode"
                               id="taxCode-field"
                               className="form-control"
-                              placeholder="Enter Tax Code"
+                              placeholder={t("Enter Tax Code")}
                               type="text"
                               onChange={validation.handleChange}
                               onBlur={validation.handleBlur}
@@ -734,7 +741,7 @@ const Users = () => {
                         <Col lg={12}>
                           <div>
                             <Label htmlFor="role-field" className="form-label">
-                              Role
+                              {t("Role")}
                             </Label>
                             <Select
                               name="roleId"
@@ -765,7 +772,7 @@ const Users = () => {
                                 label: role.name,
                               }))}
                               isClearable
-                              placeholder="Select Role"
+                              placeholder={t("Select Role")}
                               className="mb-0"
                             />
                           </div>
@@ -781,7 +788,7 @@ const Users = () => {
                             setModal(false);
                           }}
                         >
-                          Close
+                          {t("Close")}
                         </button>
                         <button
                           type="submit"
@@ -796,10 +803,10 @@ const Users = () => {
                           updateUserMutation.isPending ? (
                             <>
                               <i className="spinner-border spinner-border-sm me-1"></i>
-                              {!!isEdit ? "Updating..." : "Adding..."}
+                              {!!isEdit ? t("Updating...") : t("Adding...")}
                             </>
                           ) : (
-                            <>{!!isEdit ? "Update User" : "Add User"}</>
+                            <>{!!isEdit ? t("Update User") : t("Add User")}</>
                           )}
                         </button>
                       </div>

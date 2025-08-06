@@ -18,6 +18,7 @@ import {
 import classnames from "classnames";
 import Flatpickr from "react-flatpickr";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 //import images
 import Link from "next/link";
@@ -32,6 +33,7 @@ import {
 } from "@/api/mutations/useAccountMutation";
 
 const Settings = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("1");
   const [formData, setFormData] = useState<AccountUpdateData>({
     fullName: "",
@@ -249,7 +251,7 @@ const Settings = () => {
                   }}
                 >
                   <i className="fas fa-home"></i>
-                  Personal Details
+                  {t("Personal Details")}
                 </NavLink>
               </NavItem>
               <NavItem>
@@ -262,7 +264,7 @@ const Settings = () => {
                   type="button"
                 >
                   <i className="far fa-user"></i>
-                  Change Password
+                  {t("Change Password")}
                 </NavLink>
               </NavItem>
             </Nav>
@@ -281,7 +283,7 @@ const Settings = () => {
                             htmlFor="firstnameInput"
                             className="form-label"
                           >
-                            Full Name
+                            {t("Full Name")}
                           </Label>
                           <Input
                             type="text"
@@ -299,7 +301,7 @@ const Settings = () => {
                             htmlFor="phonenumberInput"
                             className="form-label"
                           >
-                            Phone Number
+                            {t("Phone Number")}
                           </Label>
                           <Input
                             type="text"
@@ -363,7 +365,7 @@ const Settings = () => {
                       <Col lg={12}>
                         <div className="mb-3">
                           <Label htmlFor="address" className="form-label">
-                            Address
+                            {t("Address")}
                           </Label>
                           <Input
                             type="textarea"
@@ -386,7 +388,7 @@ const Settings = () => {
                           >
                             {updateAccountMutation.isPending
                               ? "Updating..."
-                              : "Update"}
+                              : t("Update Profile")}
                           </button>
                         </div>
                       </Col>
@@ -404,7 +406,7 @@ const Settings = () => {
                           htmlFor="oldpasswordInput"
                           className="form-label"
                         >
-                          Old Password*
+                          {t("Old Password")}*
                         </Label>
                         <Input
                           type="password"
@@ -423,7 +425,7 @@ const Settings = () => {
                           htmlFor="newpasswordInput"
                           className="form-label"
                         >
-                          New Password*
+                          {t("New Password")}*
                         </Label>
                         <Input
                           type="password"
@@ -493,7 +495,7 @@ const Settings = () => {
                           htmlFor="confirmpasswordInput"
                           className="form-label"
                         >
-                          Confirm Password*
+                          {t("Confirm Password")}*
                         </Label>
                         <Input
                           type="password"
@@ -534,7 +536,7 @@ const Settings = () => {
                         >
                           {updatePasswordMutation.isPending
                             ? "Updating..."
-                            : "Change Password"}
+                            : t("Update Password")}
                         </button>
                       </div>
                     </Col>

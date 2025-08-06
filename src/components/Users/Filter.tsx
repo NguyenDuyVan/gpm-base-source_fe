@@ -10,6 +10,7 @@ import {
 } from "reactstrap";
 import Flatpickr from "react-flatpickr";
 import Select from "react-select";
+import { useTranslation } from "react-i18next";
 
 interface FilterProps {
   show: boolean;
@@ -31,6 +32,9 @@ const UserFilter = ({
     tags: [],
   },
 }: FilterProps) => {
+  // Translation hook
+  const { t } = useTranslation();
+
   // State for filter data
   const [filterData, setFilterData] = useState<any>(initialFilterData);
 
@@ -152,7 +156,7 @@ const UserFilter = ({
       toggle={onCloseClick}
     >
       <OffcanvasHeader className="bg-light" toggle={onCloseClick}>
-        Users Filters
+        {t("Users Filters")}
       </OffcanvasHeader>
       <form action="" className="d-flex flex-column justify-content-end h-100">
         <OffcanvasBody>
@@ -161,12 +165,12 @@ const UserFilter = ({
               htmlFor="datepicker-range"
               className="form-label text-muted text-uppercase fw-semibold mb-3"
             >
-              Date
+              {t("Date")}
             </Label>
             <Flatpickr
               className="form-control"
               id="datepicker-publish-input"
-              placeholder="Select a date"
+              placeholder={t("Select a date")}
               value={filterData.date || []}
               onChange={(selectedDates) => handleDateChange(selectedDates)}
               options={{
@@ -182,7 +186,7 @@ const UserFilter = ({
               htmlFor="country-select"
               className="form-label text-muted text-uppercase fw-semibold mb-3"
             >
-              Country
+              {t("Country")}
             </Label>
 
             <Select
@@ -198,7 +202,7 @@ const UserFilter = ({
               htmlFor="status-select"
               className="form-label text-muted text-uppercase fw-semibold mb-3"
             >
-              Status
+              {t("Status")}
             </Label>
             <Row className="g-2">
               <Col lg={6}>
@@ -214,7 +218,7 @@ const UserFilter = ({
                     onChange={handleStatusChange}
                   />
                   <Label className="form-check-label" htmlFor="newLeads">
-                    New Users
+                    {t("New Users")}
                   </Label>
                 </div>
               </Col>
@@ -231,7 +235,7 @@ const UserFilter = ({
                     onChange={handleStatusChange}
                   />
                   <Label className="form-check-label" htmlFor="activeUsers">
-                    Active Users
+                    {t("Active Users")}
                   </Label>
                 </div>
               </Col>
@@ -249,7 +253,7 @@ const UserFilter = ({
                     onChange={handleStatusChange}
                   />
                   <Label className="form-check-label" htmlFor="inactiveUsers">
-                    Inactive Users
+                    {t("Inactive Users")}
                   </Label>
                 </div>
               </Col>
@@ -266,7 +270,7 @@ const UserFilter = ({
                     onChange={handleStatusChange}
                   />
                   <Label className="form-check-label" htmlFor="adminUsers">
-                    Admin Users
+                    {t("Admin Users")}
                   </Label>
                 </div>
               </Col>
@@ -277,7 +281,7 @@ const UserFilter = ({
               htmlFor="users-tags"
               className="form-label text-muted text-uppercase fw-semibold mb-3"
             >
-              Tags
+              {t("Tags")}
             </Label>
             <Row className="g-3">
               <Col lg={6}>
@@ -293,7 +297,7 @@ const UserFilter = ({
                     onChange={handleTagChange}
                   />
                   <Label className="form-check-label" htmlFor="marketing">
-                    Marketing
+                    {t("Marketing")}
                   </Label>
                 </div>
               </Col>
@@ -310,7 +314,7 @@ const UserFilter = ({
                     onChange={handleTagChange}
                   />
                   <Label className="form-check-label" htmlFor="management">
-                    Management
+                    {t("Management")}
                   </Label>
                 </div>
               </Col>
@@ -327,7 +331,7 @@ const UserFilter = ({
                     onChange={handleTagChange}
                   />
                   <Label className="form-check-label" htmlFor="business">
-                    Business
+                    {t("Business")}
                   </Label>
                 </div>
               </Col>
@@ -344,7 +348,7 @@ const UserFilter = ({
                     onChange={handleTagChange}
                   />
                   <Label className="form-check-label" htmlFor="partner">
-                    Partner
+                    {t("Partner")}
                   </Label>
                 </div>
               </Col>
@@ -361,7 +365,7 @@ const UserFilter = ({
                     onChange={handleTagChange}
                   />
                   <Label className="form-check-label" htmlFor="lead">
-                    Leads
+                    {t("Leads")}
                   </Label>
                 </div>
               </Col>
@@ -378,7 +382,7 @@ const UserFilter = ({
                     onChange={handleTagChange}
                   />
                   <Label className="form-check-label" htmlFor="sale">
-                    Sale
+                    {t("Sale")}
                   </Label>
                 </div>
               </Col>
@@ -391,14 +395,14 @@ const UserFilter = ({
             onClick={clearFilters}
             type="button"
           >
-            Clear Filter
+            {t("Clear Filter")}
           </button>
           <button
             type="button"
             className="btn btn-success w-100"
             onClick={applyFilters}
           >
-            Apply Filters
+            {t("Apply Filters")}
           </button>
         </div>
       </form>

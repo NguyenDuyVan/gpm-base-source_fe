@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
   Col,
   Row,
@@ -19,15 +19,15 @@ import moment from "moment";
 
 // Import React Query hooks
 import { useUsersQuery } from "@/api/queries/useUserQuery";
+import { useRolesQuery } from "@/api/queries/useRoleQuery";
 import {
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
 } from "@/api/mutations/useUserMutation";
-import { useRolesQuery } from "@/api/queries/useRoleQuery";
 
 import TableContainer from "@/components/Common/TableContainer";
-import CrmFilter from "./CrmFilter";
+import UserFilter from "./Filter";
 
 // Formik
 import * as Yup from "yup";
@@ -38,10 +38,30 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CommonModal from "../Common/CommonModal";
 import { User } from "@/types/api";
+import { PaginationType } from "@/types/pagination";
 
 const Users = () => {
+  // Query params state
+  const [queryParams, setQueryParams] = useState<PaginationType>({
+    page: 1,
+    limit: 10,
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
+
+  // Search state
+  const [searchInput, setSearchInput] = useState<string>("");
+
+  // Filter state
+  const [filterData, setFilterData] = useState<any>({
+    date: null,
+    country: null,
+    status: [],
+    tags: [],
+  });
+
   // React Query hooks
-  const { data: userData, isLoading } = useUsersQuery();
+  const { data: userData, isLoading } = useUsersQuery(queryParams);
   const { data: roleData } = useRolesQuery();
   const createUserMutation = useCreateUserMutation();
   const updateUserMutation = useUpdateUserMutation();
@@ -87,10 +107,6 @@ const Users = () => {
   const onClickDelete = (user: User) => {
     setSelectedUser(user);
     setDeleteModal(true);
-  };
-
-  const toggleInfo = () => {
-    setIsInfoDetails(!isInfoDetails);
   };
 
   // Form validation
@@ -265,6 +281,7 @@ const Users = () => {
         header: "Role",
         accessorKey: "role",
         enableColumnFilter: false,
+        enableSorting: false,
         cell: (cell: any) => (
           <>
             <span
@@ -322,6 +339,99 @@ const Users = () => {
     [handleUserClick, checkedAll]
   );
 
+  // Update search params when search input changes (with debounce)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== undefined) {
+        setQueryParams((prev) => ({
+          ...prev,
+          search: searchInput || undefined,
+          page: 1, // Reset to first page on new search
+        }));
+      }
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  // Handle filter changes from the Filter component
+  const handleFilterChange = (filters: any) => {
+    setFilterData(filters);
+
+    // Convert filter data to API query format
+    const apiFilters: Record<string, any> = { isActive: true };
+
+    // Add date filter if selected
+    if (filters.date && filters.date.length) {
+      apiFilters.dateRange = filters.date
+        .map((date: Date) => moment(date).format("YYYY-MM-DD"))
+        .join(",");
+    }
+
+    // Add country filter if selected
+    if (filters.country && filters.country.value !== "Select country") {
+      apiFilters.country = filters.country.value;
+    }
+
+    // Add status filters
+    if (filters.status && filters.status.length) {
+      apiFilters.status = filters.status.join(",");
+    }
+
+    // Add tag filters
+    if (filters.tags && filters.tags.length) {
+      apiFilters.tags = filters.tags.join(",");
+    }
+
+    setQueryParams((prev) => ({
+      ...prev,
+      filters: apiFilters,
+      page: 1, // Reset to first page on filter change
+    }));
+  };
+
+  // Handle clear filters
+  const handleClearFilters = () => {
+    setFilterData({
+      date: null,
+      country: null,
+      status: [],
+      tags: [],
+    });
+
+    setQueryParams((prev) => ({
+      ...prev,
+      filters: { isActive: true },
+      page: 1,
+    }));
+  };
+
+  // Handle pagination
+  const handlePageChange = (page: number) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      page: page + 1, // Add 1 because the API expects 1-based page numbers but TableContainer uses 0-based
+    }));
+  };
+
+  // Handle page size change
+  const handlePageSizeChange = (pageSize: number) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      limit: pageSize,
+      page: 1, // Reset to first page when changing page size
+    }));
+  };
+
+  // Handle sorting
+  const handleSort = (column: any, sortDirection: string) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      sortBy: column.id || column.accessorKey,
+      sortOrder: sortDirection as "asc" | "desc",
+    }));
+  };
+
   return (
     <React.Fragment>
       <div>
@@ -350,6 +460,8 @@ const Users = () => {
                         type="text"
                         className="form-control search"
                         placeholder="Search for..."
+                        onChange={(e) => setSearchInput(e.target.value)}
+                        value={searchInput}
                       />
                       <i className="ri-search-line search-icon"></i>
                     </div>
@@ -365,14 +477,14 @@ const Users = () => {
                           <i className="ri-delete-bin-2-line"></i>
                         </button>
                       )}
-                      <button
+                      {/* <button
                         type="button"
                         className="btn btn-secondary"
                         onClick={toggleInfo}
                       >
                         <i className="ri-filter-3-line align-bottom me-1"></i>{" "}
                         Filters
-                      </button>
+                      </button> */}
                       <button
                         type="button"
                         className="btn btn-primary add-btn"
@@ -404,6 +516,13 @@ const Users = () => {
                       tableClass="align-middle"
                       theadClass="table-light"
                       isLeadsFilter={false}
+                      onPageChange={handlePageChange}
+                      onPageSizeChange={handlePageSizeChange}
+                      onSort={handleSort}
+                      manualPagination
+                      totalCount={userData?.meta?.totalItems || 0}
+                      pageIndex={queryParams.page ? queryParams.page - 1 : 0}
+                      pageSize={queryParams.limit || 10}
                     />
                   ) : (
                     <div className="text-center py-4">
@@ -693,9 +812,12 @@ const Users = () => {
         </Row>
       </div>
 
-      <CrmFilter
+      <UserFilter
         show={isInfoDetails}
         onCloseClick={() => setIsInfoDetails(false)}
+        onFilterChange={handleFilterChange}
+        onClearFilter={handleClearFilters}
+        initialFilterData={filterData}
       />
     </React.Fragment>
   );

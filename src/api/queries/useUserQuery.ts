@@ -6,18 +6,19 @@ import {
   ResponsePagination,
 } from "../fetcher";
 import { USERS_PATH, USERS_PATH_BY_ID } from "../apiPaths";
+import { PaginationType } from "@/types/pagination";
 
 // User query keys
 export const USERS_QUERY_KEY = ["users"] as const;
 export const USER_BY_ID_QUERY_KEY = (id: string | number) =>
   ["users", id] as const;
 
-// Get all users query
-export const useUsersQuery = () => {
+// Get all users query with pagination, sorting, filtering
+export const useUsersQuery = (params?: PaginationType) => {
   return useQuery({
-    queryKey: USERS_QUERY_KEY,
+    queryKey: [...USERS_QUERY_KEY, params],
     queryFn: async (): Promise<ResponsePagination<User>["data"]> => {
-      return await appPaginationFetcher<User>(USERS_PATH);
+      return await appPaginationFetcher<User>(USERS_PATH, params);
     },
   });
 };

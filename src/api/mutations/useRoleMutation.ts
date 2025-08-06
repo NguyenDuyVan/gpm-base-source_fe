@@ -70,7 +70,7 @@ export const useAssignPermissionsMutation = () => {
       const response = await appPoster(
         `${ROLES_PATH}/assign-permissions/${roleId}`,
         {
-          permission_ids: permissionIds,
+          permissionIds,
         }
       );
       return response;

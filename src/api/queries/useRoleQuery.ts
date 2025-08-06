@@ -6,24 +6,22 @@ import {
   ResponsePagination,
 } from "../fetcher";
 import { ROLES_PATH } from "../apiPaths";
+import { PaginationType } from "@/types/pagination";
 
-// Role query keys
 export const ROLES_QUERY_KEY = ["roles"] as const;
 export const ROLE_BY_ID_QUERY_KEY = (id: string | number) =>
   ["roles", id] as const;
 export const PERMISSIONS_QUERY_KEY = ["permissions"] as const;
 
-// Get all roles query
-export const useRolesQuery = () => {
+export const useRolesQuery = (params?: PaginationType) => {
   return useQuery({
-    queryKey: ROLES_QUERY_KEY,
+    queryKey: [...ROLES_QUERY_KEY, params],
     queryFn: async (): Promise<ResponsePagination<Role>["data"]> => {
-      return await appPaginationFetcher<Role>(ROLES_PATH);
+      return await appPaginationFetcher<Role>(ROLES_PATH, params);
     },
   });
 };
 
-// Get role by ID query
 export const useRoleByIdQuery = (id: string | number, enabled = true) => {
   return useQuery({
     queryKey: ROLE_BY_ID_QUERY_KEY(id),
@@ -37,17 +35,18 @@ export const useRoleByIdQuery = (id: string | number, enabled = true) => {
   });
 };
 
-// Get permissions query (for binding roles to permissions)
 export const usePermissionsQuery = () => {
   return useQuery({
     queryKey: PERMISSIONS_QUERY_KEY,
-    queryFn: async (): Promise<ResponsePagination<Permission>["data"]> => {
-      return await appPaginationFetcher<Permission>("/v1/permissions");
+    queryFn: async (): Promise<Permission[]> => {
+      const response = await appFetcher<Permission[]>("/v1/permissions", {
+        requireAuth: true,
+      });
+      return response;
     },
   });
 };
 
-// Custom hook to get roles with their permissions
 export const useRolesWithPermissionsQuery = () => {
   const rolesQuery = useRolesQuery();
   const permissionsQuery = usePermissionsQuery();
@@ -57,7 +56,7 @@ export const useRolesWithPermissionsQuery = () => {
     data: rolesQuery.data?.data
       ? {
           roles: rolesQuery.data.data,
-          permissions: permissionsQuery.data?.data || [],
+          permissions: permissionsQuery.data || [],
           isPermissionsLoading: permissionsQuery.isLoading,
           permissionsError: permissionsQuery.error,
         }

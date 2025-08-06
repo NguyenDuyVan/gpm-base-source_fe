@@ -1,11 +1,14 @@
 import AuthProtected from "@/components/auth/AuthProtected";
 import MainLayout from "@/Layouts/MainLayout";
-import { Card, CardHeader, CardBody, Row } from "reactstrap";
+import { Card, CardHeader, CardBody, Row, Col, Input } from "reactstrap";
 import { NextPageWithLayout } from "../_app";
-import { ReactElement, useCallback, useMemo } from "react";
+import { ReactElement, useCallback, useMemo, useEffect } from "react";
 import TableContainer from "@/components/Common/TableContainer";
 import RoleModal from "@/components/Permission/RoleModal";
-import { useRolesWithPermissionsQuery } from "@/api/queries/useRoleQuery";
+import {
+  useRolesWithPermissionsQuery,
+  useRolesQuery,
+} from "@/api/queries/useRoleQuery";
 import {
   useCreateRoleMutation,
   useUpdateRoleMutation,
@@ -16,6 +19,7 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 import React from "react";
 import CommonModal from "@/components/Common/CommonModal";
+import { PaginationType } from "@/types/pagination";
 
 const Page: NextPageWithLayout = () => {
   const [isEdit, setIsEdit] = useState(false);
@@ -24,33 +28,74 @@ const Page: NextPageWithLayout = () => {
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
   const [roleToDelete, setRoleToDelete] = useState<any>(null);
 
-  // Fetch roles and permissions using React Query
-  const { data: rolesData, isLoading, error } = useRolesWithPermissionsQuery();
+  const [searchInput, setSearchInput] = useState<string>("");
 
-  // Get roles data with fallback to empty array
-  const roles = rolesData?.roles || [];
-  const permissions = rolesData?.permissions || [];
+  const [queryParams, setQueryParams] = useState<PaginationType>({
+    page: 1,
+    limit: 5,
+    sortBy: "name",
+    sortOrder: "asc",
+  });
 
-  // Mutations
+  const { data: rolesData, isLoading, error } = useRolesQuery(queryParams);
+  const { data: permissionsData } = useRolesWithPermissionsQuery();
+
+  const roles = rolesData?.data || [];
+  const permissions = permissionsData?.permissions || [];
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== undefined) {
+        setQueryParams((prev) => ({
+          ...prev,
+          search: searchInput || undefined,
+          page: 1,
+        }));
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const handlePageChange = (page: number) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      page: page + 1,
+    }));
+  };
+
+  const handlePageSizeChange = (pageSize: number) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      limit: pageSize,
+      page: 1,
+    }));
+  };
+
+  const handleSort = (column: any, sortDirection: string) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      sortBy: column.id || column.accessorKey,
+      sortOrder: sortDirection as "asc" | "desc",
+    }));
+  };
+
   const createRoleMutation = useCreateRoleMutation();
   const updateRoleMutation = useUpdateRoleMutation();
   const deleteRoleMutation = useDeleteRoleMutation();
   const assignPermissionsMutation = useAssignPermissionsMutation();
 
-  // Add the handleEditRole function
   const handleEditRole = useCallback((roleData: any) => {
     setIsEdit(true);
     setSelectedRole(roleData);
     setModal(true);
   }, []);
 
-  // Add the onClickDelete function
   const onClickDelete = useCallback((roleData: any) => {
     setRoleToDelete(roleData);
     setDeleteModal(true);
   }, []);
 
-  // Handle role deletion confirmation
   const handleDeleteRole = useCallback(async () => {
     if (roleToDelete) {
       try {
@@ -72,7 +117,6 @@ const Page: NextPageWithLayout = () => {
     }
   }, [roleToDelete, deleteRoleMutation]);
 
-  // Handle form submission
   const handleRoleSubmit = useCallback(
     async (data: any) => {
       try {
@@ -83,12 +127,11 @@ const Page: NextPageWithLayout = () => {
         };
 
         if (isEdit && selectedRole) {
-          // Update existing role
           await updateRoleMutation.mutateAsync({
             id: selectedRole.id,
             ...roleData,
           });
-          // Assign permissions if any are selected
+
           if (
             data.selectedPermissions &&
             data.selectedPermissions.length >= 0
@@ -104,9 +147,8 @@ const Page: NextPageWithLayout = () => {
             type: "success",
           });
         } else {
-          // Create new role
           const newRole = await createRoleMutation.mutateAsync(roleData);
-          // If permissions were selected, assign them to the new role
+
           if (data.selectedPermissions && data.selectedPermissions.length > 0) {
             await assignPermissionsMutation.mutateAsync({
               roleId: newRole.id,
@@ -162,6 +204,7 @@ const Page: NextPageWithLayout = () => {
         header: "Permissions",
         accessorKey: "rolePermissions",
         enableColumnFilter: false,
+        enableSorting: false,
         cell: (cellProps: any) => {
           const rolePermissions = cellProps.row.original.rolePermissions || [];
           const uniqueModules = new Set(
@@ -219,7 +262,6 @@ const Page: NextPageWithLayout = () => {
     [handleEditRole, onClickDelete]
   );
 
-  // Show loading state
   if (isLoading) {
     return (
       <React.Fragment>
@@ -237,7 +279,6 @@ const Page: NextPageWithLayout = () => {
     );
   }
 
-  // Show error state
   if (error) {
     return (
       <React.Fragment>
@@ -258,6 +299,18 @@ const Page: NextPageWithLayout = () => {
       <Card>
         <CardHeader className="border-0">
           <Row className="g-4 align-items-center">
+            <Col sm={3}>
+              <div className="search-box">
+                <Input
+                  type="text"
+                  className="form-control search"
+                  placeholder="Search for roles..."
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  value={searchInput}
+                />
+                <i className="ri-search-line search-icon"></i>
+              </div>
+            </Col>
             <div className="col-sm-auto ms-auto">
               <button
                 type="button"
@@ -273,13 +326,60 @@ const Page: NextPageWithLayout = () => {
             </div>
           </Row>
         </CardHeader>
-        <CardBody>
-          <TableContainer
-            columns={columns || []}
-            data={roles || []}
-            customPageSize={5}
-            SearchPlaceholder="Search Roles..."
-          />
+        <CardBody className="pt-3">
+          {isLoading ? (
+            <div className="text-center mt-3">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="text-center text-danger">
+              <i className="ri-error-warning-line fs-1"></i>
+              <p className="mt-2">Failed to load roles. Please try again.</p>
+            </div>
+          ) : roles && roles.length > 0 ? (
+            <TableContainer
+              columns={columns || []}
+              data={roles || []}
+              isGlobalFilter={false}
+              customPageSize={queryParams.limit}
+              divClass="table-responsive table-card"
+              tableClass="align-middle"
+              theadClass="table-light"
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+              onSort={handleSort}
+              manualPagination
+              totalCount={rolesData?.meta?.totalItems || 0}
+              pageIndex={queryParams.page ? queryParams.page - 1 : 0}
+              pageSize={queryParams.limit || 5}
+            />
+          ) : (
+            <div className="text-center p-4">
+              <div className="avatar-md mx-auto mb-4">
+                <div className="avatar-title bg-light rounded-circle text-primary fs-24">
+                  <i className="ri-shield-user-line"></i>
+                </div>
+              </div>
+              <h5 className="mt-2">No roles found</h5>
+              <p className="text-muted">
+                {searchInput
+                  ? `No results found for "${searchInput}"`
+                  : "Create your first role to get started."}
+              </p>
+              <button
+                type="button"
+                className="btn btn-success"
+                onClick={() => {
+                  setIsEdit(false);
+                  toggle();
+                }}
+              >
+                <i className="ri-add-line align-bottom me-1"></i> Add New Role
+              </button>
+            </div>
+          )}
         </CardBody>
       </Card>
       <RoleModal

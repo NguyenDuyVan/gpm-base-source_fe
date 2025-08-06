@@ -1,8 +1,9 @@
 export type PaginationType = {
   page: number;
-  size: number;
-  total?: number;
+  limit: number;
+  totalPages?: number;
+  totalItems?: number;
   search?: string;
-  order?: "ASC" | "DESC";
+  sortOrder?: "asc" | "desc";
   sortBy?: string;
 };

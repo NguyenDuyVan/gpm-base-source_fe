@@ -1,40 +1,74 @@
 import Link from "next/link";
-import React, { useMemo, useState } from "react";
-import { Card, CardBody, Pagination, Table, Alert } from "reactstrap";
+import React, { useMemo, useState, useEffect } from "react";
+import { Card, CardBody, CardHeader, Alert, Row, Col, Input } from "reactstrap";
 import CommonModal from "../../Common/CommonModal";
 import { useBlogsQuery } from "@/api/queries/useBlogQuery";
 import { useDeleteBlogMutation } from "@/api/mutations/useBlogMutation";
 import { Blog } from "@/types/api";
 import { toast } from "react-toastify";
+import TableContainer from "@/components/Common/TableContainer";
+import moment from "moment";
+import { PaginationType } from "@/types/pagination";
 
 const MainList = () => {
-  // Fetch blogData.data using the query
-  const { data: blogData, isLoading, isError } = useBlogsQuery();
+  const [queryParams, setQueryParams] = useState<PaginationType>({
+    page: 1,
+    limit: 5,
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
 
-  // Delete blog mutation
+  const [searchInput, setSearchInput] = useState<string>("");
+
+  const { data: blogData, isLoading, isError } = useBlogsQuery(queryParams);
+
   const deleteBlogMutation = useDeleteBlogMutation();
 
-  //pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const perPageData = 6;
-  const indexOfLast = currentPage * perPageData;
-  const indexOfFirst = indexOfLast - perPageData;
-  const currentdata = useMemo(
-    () => blogData?.data?.slice(indexOfFirst, indexOfLast) || [],
-    [blogData, indexOfFirst, indexOfLast]
-  );
-
-  // Delete Modal state
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
   const [blogToDelete, setBlogToDelete] = useState<Blog | null>(null);
 
-  // Handle delete button click
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== undefined) {
+        setQueryParams((prev) => ({
+          ...prev,
+          search: searchInput || undefined,
+          page: 1,
+        }));
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const handlePageChange = (page: number) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      page: page + 1,
+    }));
+  };
+
+  const handlePageSizeChange = (pageSize: number) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      limit: pageSize,
+      page: 1,
+    }));
+  };
+
+  const handleSort = (column: any, sortDirection: string) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      sortBy: column.id || column.accessorKey,
+      sortOrder: sortDirection as "asc" | "desc",
+    }));
+  };
+
   const handleDeleteClick = (blog: Blog) => {
     setBlogToDelete(blog);
     setDeleteModal(true);
   };
 
-  // Handle confirmation of deletion
   const handleDeleteBlog = async () => {
     if (!blogToDelete) return;
 
@@ -49,174 +83,163 @@ const MainList = () => {
     }
   };
 
+  const handleValidDate = (date: any) => {
+    return moment(new Date(date)).format("DD MMM, YYYY");
+  };
+
+  const columns = useMemo(
+    () => [
+      {
+        header: "Title",
+        accessorKey: "title",
+        enableColumnFilter: false,
+        cell: (cell: any) => (
+          <Link
+            href={`/blog/${cell.row.original.slug}`}
+            className="text-reset "
+          >
+            {cell.getValue()}
+          </Link>
+        ),
+      },
+      {
+        header: "Slug",
+        accessorKey: "slug",
+        enableColumnFilter: false,
+        cell: (cell: any) => <span>{cell.getValue()}</span>,
+      },
+      {
+        header: "Published Date",
+        accessorKey: "createdAt",
+        enableColumnFilter: false,
+        cell: (cell: any) => (
+          <>{cell.getValue() ? handleValidDate(cell.getValue()) : "N/A"}</>
+        ),
+      },
+      {
+        header: "Action",
+        cell: (cellProps: any) => {
+          return (
+            <ul className="list-inline gap-3 mb-0">
+              <li className="list-inline-item" title="View">
+                <Link
+                  href={`/blog/${cellProps.row.original.slug}`}
+                  className="view-item-btn"
+                >
+                  <i className="ri-eye-fill align-bottom text-muted"></i>
+                </Link>
+              </li>
+              <li className="list-inline-item" title="Edit">
+                <Link
+                  href={`/admin/blog/${cellProps.row.original.id}`}
+                  className="edit-item-btn"
+                >
+                  <i className="ri-pencil-fill align-bottom text-muted"></i>
+                </Link>
+              </li>
+              <li className="list-inline-item" title="Delete">
+                <span
+                  className="remove-item-btn"
+                  onClick={() => handleDeleteClick(cellProps.row.original)}
+                >
+                  <i className="ri-delete-bin-fill align-bottom text-muted"></i>
+                </span>
+              </li>
+            </ul>
+          );
+        },
+      },
+    ],
+    []
+  );
+
+  if (isError) {
+    return (
+      <Alert color="danger">
+        Failed to load blogs. Please try again later.
+      </Alert>
+    );
+  }
+
   return (
     <React.Fragment>
-      <div>
-        <div className="row g-4 mb-3">
-          <div className="col-sm-auto">
-            <div>
-              <Link href="/admin/blog/create" className="btn btn-success">
-                <i className="ri-add-line align-bottom me-1"></i> Add New
-              </Link>
-            </div>
-          </div>
-          <div className="col-sm">
-            <div className="d-flex justify-content-sm-end gap-2">
-              <div className="search-box ms-2">
-                <input
+      <CommonModal
+        isOpen={deleteModal}
+        toggle={() => setDeleteModal(false)}
+        modalType="delete"
+        onConfirm={handleDeleteBlog}
+        itemName={blogToDelete?.title}
+      />
+
+      <Card>
+        <CardHeader className="border-0">
+          <Row className="g-4 align-items-center">
+            <Col sm={3}>
+              <div className="search-box">
+                <Input
                   type="text"
-                  className="form-control"
-                  placeholder="Search..."
+                  className="form-control search"
+                  placeholder="Search for blogs..."
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  value={searchInput}
                 />
                 <i className="ri-search-line search-icon"></i>
               </div>
-
-              <select
-                className="form-control w-md"
-                defaultValue="Yesterday"
-                style={{ width: "152px" }}
+            </Col>
+            <div className="col-sm-auto ms-auto">
+              <Link
+                href="/admin/blog/create"
+                className="btn btn-primary add-btn"
               >
-                <option value="All">All</option>
-                <option value="Today">Today</option>
-                <option value="Yesterday">Yesterday</option>
-                <option value="Last 7 Days">Last 7 Days</option>
-                <option value="Last 30 Days">Last 30 Days</option>
-                <option value="This Month">This Month</option>
-                <option value="Last Year">Last Year</option>
-              </select>
+                <i className="ri-add-line align-bottom me-1"></i> Add Blog
+              </Link>
             </div>
-          </div>
-        </div>
-
-        <Card>
-          <CardBody>
-            {isLoading ? (
-              <div className="text-center py-4">
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
+          </Row>
+        </CardHeader>
+        <CardBody>
+          {isLoading ? (
+            <div className="text-center mt-3">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : blogData?.data && blogData.data.length > 0 ? (
+            <TableContainer
+              columns={columns}
+              data={blogData.data || []}
+              isGlobalFilter={false}
+              customPageSize={queryParams.limit}
+              divClass="table-responsive table-card"
+              tableClass="align-middle"
+              theadClass="table-light"
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+              onSort={handleSort}
+              manualPagination
+              totalCount={blogData.meta?.totalItems || 0}
+              pageIndex={queryParams.page ? queryParams.page - 1 : 0}
+              pageSize={queryParams.limit || 5}
+            />
+          ) : (
+            <div className="text-center p-4">
+              <div className="avatar-md mx-auto mb-4">
+                <div className="avatar-title bg-light rounded-circle text-primary fs-24">
+                  <i className="ri-file-text-line"></i>
                 </div>
               </div>
-            ) : isError ? (
-              <Alert color="danger" className="mb-0">
-                Error loading blogs. Please try again later.
-              </Alert>
-            ) : blogData?.data && blogData.data.length > 0 ? (
-              <div className="table-responsive table-card">
-                <Table className="table-centered align-middle table-nowrap mb-0">
-                  <thead className="text-muted table-light">
-                    <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">Title</th>
-                      <th scope="col">Slug</th>
-                      <th scope="col">Created Date</th>
-                      <th scope="col">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentdata.map((blog: Blog) => (
-                      <tr key={blog.id}>
-                        <td>{blog.id}</td>
-                        <td>
-                          <h5 className="fs-14 fw-semibold">
-                            <Link
-                              href={`/admin/blog/${blog.id}`}
-                              className="text-dark"
-                            >
-                              {blog.title}
-                            </Link>
-                          </h5>
-                          <p className="text-muted mb-0 fs-12">
-                            {blog.description.substring(0, 60)}...
-                          </p>
-                        </td>
-                        <td>
-                          <span>{blog.slug}</span>
-                        </td>
-                        <td>
-                          <i className="ri-calendar-event-line me-1 text-muted"></i>
-                          {new Date(blog.createdAt || "").toLocaleDateString()}
-                        </td>
-                        <td>
-                          <div className="hstack gap-2">
-                            <Link
-                              href={`/blog/${blog.slug}`}
-                              className="btn btn-sm btn-soft-info"
-                              title="View"
-                            >
-                              <i className="ri-eye-fill"></i>
-                            </Link>
-                            <Link
-                              href={`/admin/blog/${blog.id}`}
-                              className="btn btn-sm btn-soft-success"
-                              title="Edit"
-                            >
-                              <i className="ri-pencil-fill"></i>
-                            </Link>
-                            <Link
-                              href="#"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleDeleteClick(blog);
-                              }}
-                              className="btn btn-sm btn-soft-danger"
-                              title="Delete"
-                            >
-                              <i className="ri-delete-bin-2-fill"></i>
-                            </Link>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </div>
-            ) : (
-              <Alert color="info" className="mb-0">
-                No blogData.data found. Create a new blog to get started.
-              </Alert>
-            )}
-          </CardBody>
-        </Card>
-
-        {blogData?.data && blogData.data.length > 0 && (
-          <div className="row g-0 text-center text-sm-start align-items-center mb-4 mt-4">
-            <div className="col-sm-6">
-              <div>
-                <p className="mb-sm-0 text-muted">
-                  Showing{" "}
-                  <span className="fw-semibold">{indexOfFirst + 1}</span> to{" "}
-                  <span className="fw-semibold">
-                    {Math.min(indexOfLast, blogData.data.length)}
-                  </span>{" "}
-                  of{" "}
-                  <span className="fw-semibold text-decoration-underline">
-                    {blogData.data.length}
-                  </span>{" "}
-                  entries
-                </p>
-              </div>
+              <h5 className="mt-2">No blog posts found</h5>
+              <p className="text-muted">
+                {searchInput
+                  ? `No results found for "${searchInput}"`
+                  : "Create your first blog post to get started."}
+              </p>
+              <Link href="/admin/blog/add" className="btn btn-success">
+                <i className="ri-add-line align-bottom me-1"></i> Add New Blog
+              </Link>
             </div>
-            <div className="col-sm-6">
-              <Pagination
-                perPageData={perPageData}
-                data={blogData.data}
-                currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Delete Confirmation Modal */}
-        <CommonModal
-          isOpen={deleteModal}
-          toggle={() => setDeleteModal(false)}
-          modalType="delete"
-          onConfirm={handleDeleteBlog}
-          itemName={blogToDelete?.title}
-          isLoading={deleteBlogMutation.isPending}
-        />
-      </div>
+          )}
+        </CardBody>
+      </Card>
     </React.Fragment>
   );
 };

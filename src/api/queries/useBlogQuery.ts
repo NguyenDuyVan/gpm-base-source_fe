@@ -6,6 +6,7 @@ import {
   ResponsePagination,
 } from "../fetcher";
 import { BLOGS_PATH, BLOGS_PATH_BY_ID, BLOGS_PATH_BY_SLUG } from "../apiPaths";
+import { PaginationType } from "@/types/pagination";
 // Blog query keys
 export const BLOGS_QUERY_KEY = ["blogs"] as const;
 export const BLOG_BY_ID_QUERY_KEY = (id: string | number) =>
@@ -13,12 +14,11 @@ export const BLOG_BY_ID_QUERY_KEY = (id: string | number) =>
 export const BLOG_BY_SLUG_QUERY_KEY = (slug: string) =>
   ["blogs", "slug", slug] as const;
 
-// Get all blogs query
-export const useBlogsQuery = () => {
+export const useBlogsQuery = (params?: PaginationType) => {
   return useQuery({
-    queryKey: BLOGS_QUERY_KEY,
+    queryKey: [...BLOGS_QUERY_KEY, params],
     queryFn: async (): Promise<ResponsePagination<Blog>["data"]> => {
-      return await appPaginationFetcher<Blog>(BLOGS_PATH);
+      return await appPaginationFetcher<Blog>(BLOGS_PATH, params);
     },
   });
 };

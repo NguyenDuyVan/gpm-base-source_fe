@@ -117,6 +117,15 @@ interface TableContainerProps {
   handleCompanyClick?: any;
   handleContactClick?: any;
   handleTicketClick?: any;
+
+  // External pagination and sorting props
+  manualPagination?: boolean;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  onSort?: (column: any, sortDirection: string) => void;
+  totalCount?: number;
+  pageIndex?: number;
+  pageSize?: number;
 }
 
 const TableContainer = ({
@@ -141,6 +150,13 @@ const TableContainer = ({
   thClass,
   divClass,
   SearchPlaceholder,
+  manualPagination,
+  onPageChange,
+  onPageSizeChange,
+  onSort,
+  totalCount,
+  pageIndex,
+  pageSize,
 }: TableContainerProps) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -162,14 +178,38 @@ const TableContainer = ({
     state: {
       columnFilters,
       globalFilter,
+      pagination: manualPagination
+        ? {
+            pageIndex: pageIndex || 0,
+            pageSize: pageSize || Number(customPageSize) || 10,
+          }
+        : undefined,
     },
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: fuzzyFilter,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    getPaginationRowModel: manualPagination
+      ? undefined
+      : getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    manualPagination: manualPagination,
+    onSortingChange: (updater) => {
+      if (onSort) {
+        const newState =
+          typeof updater === "function"
+            ? updater(table.getState().sorting)
+            : updater;
+        if (newState && newState.length > 0) {
+          const column = columns.find(
+            (col: any) =>
+              col.id === newState[0].id || col.accessorKey === newState[0].id
+          );
+          onSort(column, newState[0].desc ? "desc" : "asc");
+        }
+      }
+    },
   });
 
   const {
@@ -186,8 +226,10 @@ const TableContainer = ({
   } = table;
 
   useEffect(() => {
-    Number(customPageSize) && setPageSize(Number(customPageSize));
-  }, [customPageSize, setPageSize]);
+    if (!manualPagination) {
+      Number(customPageSize) && setPageSize(Number(customPageSize));
+    }
+  }, [customPageSize, setPageSize, manualPagination]);
 
   return (
     <Fragment>
@@ -296,7 +338,11 @@ const TableContainer = ({
             <span className="fw-semibold ms-1">
               {getState().pagination.pageSize}
             </span>{" "}
-            of <span className="fw-semibold">{data.length}</span> Results
+            of{" "}
+            <span className="fw-semibold">
+              {manualPagination ? totalCount || 0 : data.length}
+            </span>{" "}
+            Results
           </div>
         </div>
         <div className="col-sm-auto">
@@ -306,36 +352,124 @@ const TableContainer = ({
                 !getCanPreviousPage() ? "page-item disabled" : "page-item"
               }
             >
-              <Link href="#" className="page-link" onClick={previousPage}>
+              <Link
+                href="#"
+                className="page-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (manualPagination && onPageChange) {
+                    onPageChange(Math.max((pageIndex || 0) - 1, 0));
+                  } else {
+                    previousPage();
+                  }
+                }}
+              >
                 Previous
               </Link>
             </li>
-            {getPageOptions().map((item: any, key: number) => (
-              <React.Fragment key={key}>
-                <li className="page-item">
-                  <Link
-                    href="#"
-                    className={
-                      getState().pagination.pageIndex === item
-                        ? "page-link active"
-                        : "page-link"
-                    }
-                    onClick={() => setPageIndex(item)}
-                  >
-                    {item + 1}
-                  </Link>
-                </li>
-              </React.Fragment>
-            ))}
+            {manualPagination &&
+            pageIndex !== undefined &&
+            totalCount !== undefined &&
+            pageSize
+              ? // Custom pagination for external control
+                Array.from(
+                  { length: Math.ceil(totalCount / pageSize) },
+                  (_, i) => (
+                    <li className="page-item" key={i}>
+                      <Link
+                        href="#"
+                        className={
+                          pageIndex === i ? "page-link active" : "page-link"
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (onPageChange) {
+                            onPageChange(i);
+                          }
+                        }}
+                      >
+                        {i + 1}
+                      </Link>
+                    </li>
+                  )
+                )
+              : // Standard pagination from tanstack table
+                getPageOptions().map((item: any, key: number) => (
+                  <React.Fragment key={key}>
+                    <li className="page-item">
+                      <Link
+                        href="#"
+                        className={
+                          getState().pagination.pageIndex === item
+                            ? "page-link active"
+                            : "page-link"
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setPageIndex(item);
+                        }}
+                      >
+                        {item + 1}
+                      </Link>
+                    </li>
+                  </React.Fragment>
+                ))}
             <li
               className={!getCanNextPage() ? "page-item disabled" : "page-item"}
             >
-              <Link href="#" className="page-link" onClick={nextPage}>
+              <Link
+                href="#"
+                className="page-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (
+                    manualPagination &&
+                    onPageChange &&
+                    pageIndex !== undefined &&
+                    totalCount !== undefined &&
+                    pageSize
+                  ) {
+                    if ((pageIndex + 1) * pageSize < totalCount) {
+                      onPageChange(pageIndex + 1);
+                    }
+                  } else {
+                    nextPage();
+                  }
+                }}
+              >
                 Next
               </Link>
             </li>
           </ul>
         </div>
+
+        {/* Page size selector */}
+        {onPageSizeChange && (
+          <div className="col-sm-auto">
+            <div className="d-flex align-items-center gap-2">
+              <span className="text-muted">Show</span>
+              <select
+                className="form-select form-select-sm"
+                value={pageSize || getState().pagination.pageSize}
+                onChange={(e) => {
+                  const size = Number(e.target.value);
+                  if (manualPagination && onPageSizeChange) {
+                    onPageSizeChange(size);
+                  } else {
+                    setPageSize(size);
+                  }
+                }}
+              >
+                {[5, 10, 20, 50].map((pageSize) => (
+                  <option key={pageSize} value={pageSize}>
+                    {pageSize}
+                  </option>
+                ))}
+              </select>
+              <span className="text-muted">entries</span>
+            </div>
+          </div>
+        )}
       </Row>
     </Fragment>
   );

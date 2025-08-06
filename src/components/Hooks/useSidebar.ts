@@ -62,7 +62,7 @@ export const useSidebar = () => {
     },
     {
       id: "user-management",
-      label: "User Management",
+      label: "User",
       icon: "ri-user-settings-line",
       link: "/admin/user-management",
       isShow: hasPermission("/api/v1/users"),

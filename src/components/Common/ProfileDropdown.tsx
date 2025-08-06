@@ -77,7 +77,7 @@ const ProfileDropdown = () => {
             </Link>
           </DropdownItem>
           <DropdownItem className="p-0">
-            <Link href="/profile/setting" className="dropdown-item">
+            <Link href="/admin/profile/setting" className="dropdown-item">
               <span className="badge bg-success-subtle text-success mt-1 float-end">
                 New
               </span>

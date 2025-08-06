@@ -2,7 +2,6 @@ import { changeHTMLAttribute } from "./utils";
 import {
   changeLayoutAction,
   changeLayoutThemeAction,
-  changeLayoutThemeColorAction,
   changeLayoutModeAction,
   changeSidebarThemeAction,
   changeLayoutWidthAction,
@@ -68,20 +67,6 @@ export const changeLayoutTheme =
       }
       changeHTMLAttribute("data-theme", layoutTheme);
       dispatch(changeLayoutThemeAction(layoutTheme));
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-/**
- * Changes the layout theme color
- * @param {*} param0
- */
-export const changeLayoutThemeColor =
-  (layoutThemeColor: any) => async (dispatch: any) => {
-    try {
-      changeHTMLAttribute("data-theme-colors", layoutThemeColor);
-      dispatch(changeLayoutThemeColorAction(layoutThemeColor));
     } catch (error) {
       console.log(error);
     }
@@ -225,5 +210,5 @@ export const changeSidebarVisibility =
     try {
       changeHTMLAttribute("data-sidebar-visibility", sidebarVisibilitytype);
       dispatch(changeSidebarVisibilityAction(sidebarVisibilitytype));
-    } catch (error) {}
+    } catch (_error) {}
   };

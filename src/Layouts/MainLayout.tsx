@@ -10,7 +10,6 @@ import {
   changeLayout,
   changeSidebarTheme,
   changeLayoutMode,
-  changeLayoutThemeColor,
   changeLayoutTheme,
   changeLayoutWidth,
   changeLayoutPosition,
@@ -87,7 +86,6 @@ const Layout = (props: any) => {
       dispatch(changeLeftsidebarViewType(leftSidebarViewType));
       dispatch(changeLeftsidebarSizeType(leftsidbarSizeType));
       dispatch(changeSidebarTheme(leftSidebarType));
-      dispatch(changeLayoutThemeColor(layoutThemeColorType));
       dispatch(changeLayoutTheme(layoutThemeType));
       dispatch(changeLayoutMode(layoutModeType));
       dispatch(changeLayoutWidth(layoutWidthType));

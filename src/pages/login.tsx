@@ -24,22 +24,23 @@ import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 
 // actions
-
 import { createSelector } from "reselect";
 import Link from "next/link";
 import ParticlesAuth from "@/components/AuthenticationInner/ParticlesAuth";
-import { socialLogin, resetLoginFlag } from "@/slices/auth/login/thunk";
+import { resetLoginFlag } from "@/slices/auth/login/thunk";
 import NonAuthLayout from "@/Layouts/NonAuthLayout";
 import { NextPageWithLayout } from "./_app";
 import { useRouter } from "next/router";
 import { useLoginMutation } from "@/api/mutations/useAuthMutation";
 import { apiError, loginSuccess } from "@/slices/auth/login/reducer";
+import { useSocialAuth } from "@/hooks/useSocialAuth";
 
 const Login: NextPageWithLayout = () => {
   const { t } = useTranslation();
   const dispatch: any = useDispatch();
   const router = useRouter();
   const { mutateAsync: handleLogin } = useLoginMutation();
+  const { handleSocialLogin, loading: socialLoading } = useSocialAuth();
 
   const selectLayoutState = (state: any) => state;
   const loginpageData = createSelector(selectLayoutState, (state) => ({
@@ -91,12 +92,12 @@ const Login: NextPageWithLayout = () => {
     },
   });
 
-  const signIn = (type: any) => {
-    dispatch(socialLogin(type, router.push));
+  const signIn = async (type: "google" | "facebook") => {
+    await handleSocialLogin(type);
   };
 
   //for facebook and google authentication
-  const socialResponse = (type: any) => {
+  const socialResponse = (type: "google" | "facebook") => {
     signIn(type);
   };
 
@@ -262,31 +263,21 @@ const Login: NextPageWithLayout = () => {
                             <h5 className="fs-13 mb-4 title">Đăng nhập bằng</h5>
                           </div>
                           <div>
-                            <Link
-                              href="#"
-                              className="btn btn-primary btn-icon me-1"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                socialResponse("facebook");
-                              }}
+                            <Button
+                              color="primary"
+                              className="btn-icon me-1"
+                              disabled={socialLoading}
+                              onClick={() => socialResponse("facebook")}
                             >
                               <i className="ri-facebook-fill fs-16" />
-                            </Link>
-                            <Link
-                              href="#"
-                              className="btn btn-danger btn-icon me-1"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                socialResponse("google");
-                              }}
+                            </Button>
+                            <Button
+                              color="danger"
+                              className="btn-icon me-1"
+                              disabled={socialLoading}
+                              onClick={() => socialResponse("google")}
                             >
                               <i className="ri-google-fill fs-16" />
-                            </Link>
-                            <Button color="dark" className="btn-icon">
-                              <i className="ri-github-fill fs-16"></i>
-                            </Button>{" "}
-                            <Button color="info" className="btn-icon">
-                              <i className="ri-twitter-fill fs-16"></i>
                             </Button>
                           </div>
                         </div>

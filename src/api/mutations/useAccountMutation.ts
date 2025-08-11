@@ -2,7 +2,10 @@ import { User } from "@/types/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { appPatchter } from "../fetcher";
 import { USERS_PATH_BY_ID, USERS_PATH_CHANGE_PASSWORD } from "../apiPaths";
-import { ACCOUNT_QUERY_KEY, CURRENT_USER_QUERY_KEY } from "../queries/useAuthQuery";
+import {
+  ACCOUNT_QUERY_KEY,
+  CURRENT_USER_QUERY_KEY,
+} from "../queries/useAuthQuery";
 
 // Interface for account update data
 export interface AccountUpdateData {
@@ -36,6 +39,7 @@ export const useUpdateAccountMutation = () => {
       queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
     },
+    retry: false,
   });
 };
 
@@ -52,6 +56,7 @@ export const useUpdatePasswordMutation = () => {
       queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
     },
+    retry: false,
   });
 };
 
@@ -76,5 +81,6 @@ export const useUpdateAccountAndPasswordMutation = () => {
       queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
     },
+    retry: false,
   });
 };

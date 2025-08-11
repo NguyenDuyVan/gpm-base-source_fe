@@ -69,7 +69,10 @@ api.interceptors.response.use(
     } catch (error) {
       console.error("Error refreshing token:", error);
       localStorage.removeItem("accessToken");
-      window.location.href = "/login";
+
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
     }
   }
 );

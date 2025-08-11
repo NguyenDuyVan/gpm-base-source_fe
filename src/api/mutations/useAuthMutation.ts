@@ -5,6 +5,7 @@ import {
   AUTH_PATH_LOGIN,
   AUTH_PATH_LOGOUT,
   AUTH_PATH_REGISTER,
+  AUTH_PATH_SOCIAL_LOGIN,
 } from "../apiPaths";
 
 interface LoginRequest {
@@ -26,12 +27,22 @@ interface RegisterRequest {
   taxCode?: string;
 }
 
+interface SocialLoginRequest {
+  idToken: string;
+  provider: "google" | "facebook";
+  uid: string;
+  email: string;
+  fullName: string;
+  photoURL?: string;
+}
+
 // Login mutation
 export const useLoginMutation = () => {
   return useMutation({
     mutationFn: async (data: LoginRequest) => {
       return await appPoster<LoginResponse>(AUTH_PATH_LOGIN, data);
     },
+    retry: false,
   });
 };
 
@@ -41,6 +52,7 @@ export const useRegisterMutation = () => {
     mutationFn: async (data: RegisterRequest) => {
       return await appPoster<LoginResponse>(AUTH_PATH_REGISTER, data);
     },
+    retry: false,
   });
 };
 
@@ -50,5 +62,16 @@ export const useLogoutMutation = () => {
     mutationFn: async () => {
       return await appPoster<void>(AUTH_PATH_LOGOUT);
     },
+    retry: false,
+  });
+};
+
+// Social login mutation
+export const useSocialLoginMutation = () => {
+  return useMutation({
+    mutationFn: async (data: SocialLoginRequest) => {
+      return await appPoster<LoginResponse>(AUTH_PATH_SOCIAL_LOGIN, data);
+    },
+    retry: false,
   });
 };

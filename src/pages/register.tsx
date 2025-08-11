@@ -400,18 +400,6 @@ const Register: NextPageWithLayout = () => {
                             >
                               <i className="ri-google-fill fs-16"></i>
                             </button>{" "}
-                            <button
-                              type="button"
-                              className="btn btn-dark btn-icon waves-effect waves-light"
-                            >
-                              <i className="ri-github-fill fs-16"></i>
-                            </button>{" "}
-                            <button
-                              type="button"
-                              className="btn btn-info btn-icon waves-effect waves-light"
-                            >
-                              <i className="ri-twitter-fill fs-16"></i>
-                            </button>
                           </div>
                         </div>
                       </Form>

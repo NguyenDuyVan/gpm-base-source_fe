@@ -11,6 +11,7 @@ export const API_BASE_URL =
 export const AUTH_PATH_LOGIN = `/v1/auth/login`;
 export const AUTH_PATH_REGISTER = `/v1/auth/register`;
 export const AUTH_PATH_LOGOUT = `/v1/auth/logout`;
+export const AUTH_PATH_SOCIAL_LOGIN = `/v1/auth/social-login`;
 export const AUTH_PATH_CURRENT_USER = `/v1/auth/me`;
 export const AUTH_PATH_ACCOUNT = `/v1/auth/account`;
 

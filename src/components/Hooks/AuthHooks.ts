@@ -8,8 +8,10 @@ export const useAuthHooks = () => {
 
   const logoutUser = async () => {
     try {
-      await logout();
       localStorage.removeItem("authUser");
+
+      if (!localStorage.getItem("accessToken")) return;
+      await logout();
       localStorage.removeItem("accessToken");
 
       dispatch(logoutUserSuccess());

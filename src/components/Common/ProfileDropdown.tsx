@@ -28,15 +28,7 @@ const ProfileDropdown = () => {
     const authUSer: any = localStorage.getItem("authUser");
     if (authUSer) {
       const obj: any = JSON.parse(authUSer);
-      setUserName(
-        process.env.NEXT_PUBLIC_DEFAULTAUTH === "fake"
-          ? obj.username === undefined
-            ? user.first_name || obj.fullName || t("Admin") // Use || to provide a fallback
-            : t("Admin")
-          : process.env.NEXT_PUBLIC_DEFAULTAUTH === "firebase"
-          ? obj.email || t("Admin") // Use || to provide a fallback
-          : t("Admin")
-      );
+      setUserName(obj.fullName || t("Admin"));
     }
   }, [userName, user, t]);
 

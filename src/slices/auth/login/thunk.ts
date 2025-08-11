@@ -1,5 +1,5 @@
 //Include Both Helper File with needed methods
-import { getFirebaseBackend } from "../../../helpers/firebase_helper";
+import firebaseAuthHelper from "../../../helpers/firebase_auth_helper";
 
 import { loginSuccess, apiError, reset_login_flag } from "./reducer";
 
@@ -9,8 +9,7 @@ export const socialLogin =
       let response;
 
       if (process.env.NEXT_PUBLIC_DEFAULTAUTH === "firebase") {
-        const fireBaseBackend: any = getFirebaseBackend();
-        response = fireBaseBackend.socialLoginUser(type);
+        response = firebaseAuthHelper.socialLogin(type);
       }
       //  else {
       //   response = postSocialLogin(data);

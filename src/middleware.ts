@@ -14,7 +14,7 @@ export function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  if (pathname === "/login" || pathname === "/register") {
+  if (["/login", "/register", "/logout"].includes(pathname)) {
     return NextResponse.next();
   }
 

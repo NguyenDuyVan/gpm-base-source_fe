@@ -1,6 +1,7 @@
 import { PaginationType } from "@/types/pagination";
 import axios from "axios";
 import { toast } from "react-toastify";
+import i18n from "@/i18n";
 
 export type ResponsePagination<T> = {
   data: {
@@ -40,7 +41,7 @@ api.interceptors.response.use(
   async (err) => {
     try {
       // Có thể xử lý lỗi toàn cục ở đây
-      const message =
+      const rawMessage =
         err?.response?.data?.message || err.message || "Network Error";
       if (err?.status === 401 && window.location.pathname !== "/login") {
         const hasToken = localStorage.getItem("accessToken");
@@ -52,14 +53,14 @@ api.interceptors.response.use(
       }
 
       if (toast) {
-        if (Array.isArray(message)) {
-          message.forEach((msg) => {
-            toast.error(msg, {
+        if (Array.isArray(rawMessage)) {
+          rawMessage.forEach((msg) => {
+            toast.error(i18n.t(msg), {
               autoClose: 3000,
             });
           });
         } else {
-          toast!.error(message, {
+          toast!.error(i18n.t(rawMessage), {
             autoClose: 3000,
           });
         }

@@ -363,5 +363,32 @@
   "Slug": "Slug",
   "Published Date": "Ngày xuất bản",
   "Add Blog": "Thêm bài viết",
-  "Create": "Tạo"
+  "Create": "Tạo",
+
+  "auth": {
+    "refreshToken": {
+      "invalid": "Mã làm mới không hợp lệ. Vui lòng đăng nhập lại."
+    },
+    "resetLink": {
+      "error": "Có lỗi với liên kết đặt lại mật khẩu."
+    },
+    "password": {
+      "mismatch": "Mật khẩu không khớp."
+    },
+    "resetToken": {
+      "invalid": "Mã đặt lại mật khẩu không hợp lệ hoặc đã hết hạn."
+    }
+  },
+  "login": {
+    "failed": "Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập."
+  },
+  "blogs": {
+    "sortBy_invalid": "Trường sắp xếp blog không hợp lệ."
+  },
+  "roles": {
+    "sortBy_invalid": "Trường sắp xếp vai trò không hợp lệ."
+  },
+  "users": {
+    "sortBy_invalid": "Trường sắp xếp người dùng không hợp lệ."
+  }
 }

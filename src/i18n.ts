@@ -30,7 +30,7 @@ i18n
         : "vi",
     fallbackLng: "vi",
 
-    keySeparator: false,
+    keySeparator: ".",
 
     interpolation: {
       escapeValue: false,

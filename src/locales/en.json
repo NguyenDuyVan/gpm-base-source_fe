@@ -363,5 +363,32 @@
   "Slug": "Slug",
   "Published Date": "Published Date",
   "Add Blog": "Add Blog",
-  "Create": "Create"
+  "Create": "Create",
+
+  "auth": {
+    "refreshToken": {
+      "invalid": "Invalid refresh token. Please login again."
+    },
+    "resetLink": {
+      "error": "There was an error with the password reset link."
+    },
+    "password": {
+      "mismatch": "Passwords do not match."
+    },
+    "resetToken": {
+      "invalid": "Password reset token is invalid or has expired."
+    }
+  },
+  "login": {
+    "failed": "Login failed. Please check your credentials."
+  },
+  "blogs": {
+    "sortBy_invalid": "Invalid blog sort field."
+  },
+  "roles": {
+    "sortBy_invalid": "Invalid role sort field."
+  },
+  "users": {
+    "sortBy_invalid": "Invalid user sort field."
+  }
 }

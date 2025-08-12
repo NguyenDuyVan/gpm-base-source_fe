@@ -6,6 +6,8 @@ import {
   AUTH_PATH_LOGOUT,
   AUTH_PATH_REGISTER,
   AUTH_PATH_SOCIAL_LOGIN,
+  AUTH_PATH_FORGOT_PASSWORD,
+  AUTH_PATH_RESET_PASSWORD,
 } from "../apiPaths";
 
 interface LoginRequest {
@@ -71,6 +73,50 @@ export const useSocialLoginMutation = () => {
   return useMutation({
     mutationFn: async (data: SocialLoginRequest) => {
       return await appPoster<LoginResponse>(AUTH_PATH_SOCIAL_LOGIN, data);
+    },
+    retry: false,
+  });
+};
+
+// Forgot password mutation
+interface ForgotPasswordRequest {
+  email: string;
+}
+
+interface ForgotPasswordResponse {
+  message: string;
+}
+
+export const useForgotPasswordMutation = () => {
+  return useMutation({
+    mutationFn: async (data: ForgotPasswordRequest) => {
+      return await appPoster<ForgotPasswordResponse>(
+        AUTH_PATH_FORGOT_PASSWORD,
+        data
+      );
+    },
+    retry: false,
+  });
+};
+
+// Reset password mutation
+interface ResetPasswordRequest {
+  token: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface ResetPasswordResponse {
+  message: string;
+}
+
+export const useResetPasswordMutation = () => {
+  return useMutation({
+    mutationFn: async (data: ResetPasswordRequest) => {
+      return await appPoster<ResetPasswordResponse>(
+        AUTH_PATH_RESET_PASSWORD,
+        data
+      );
     },
     retry: false,
   });

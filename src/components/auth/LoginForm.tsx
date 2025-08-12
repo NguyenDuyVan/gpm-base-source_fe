@@ -73,6 +73,14 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             required
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
+          <div className="mt-2 text-right">
+            <a
+              href="/forgot-password"
+              className="text-sm text-blue-500 hover:text-blue-700"
+            >
+              Forgot Password?
+            </a>
+          </div>
         </div>
 
         <div className="flex items-center justify-between">

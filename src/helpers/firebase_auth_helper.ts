@@ -21,9 +21,9 @@ class FirebaseAuthHelper {
     // Listen to auth state changes
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        sessionStorage.setItem("authUser", JSON.stringify(user));
+        localStorage.setItem("authUser", JSON.stringify(user));
       } else {
-        sessionStorage.removeItem("authUser");
+        localStorage.removeItem("authUser");
       }
     });
   }

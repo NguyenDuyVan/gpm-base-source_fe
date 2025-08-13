@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 
 //import images
 import avatar1 from "../../assets/images/users/avatar-1.jpg";
+import { URL_MANAGEMENT } from "@/constants";
 
 const ProfileDropdown = () => {
   const { t } = useTranslation();
@@ -82,7 +83,7 @@ const ProfileDropdown = () => {
             </Link>
           </DropdownItem>
           <DropdownItem className="p-0">
-            <Link href="/auth/logout" className="dropdown-item">
+            <Link href={URL_MANAGEMENT.LOGOUT} className="dropdown-item">
               <i className="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>{" "}
               <span className="align-middle" data-key="t-logout">
                 {t("Logout")}

@@ -2,11 +2,12 @@ import PropTypes from "prop-types";
 import React from "react";
 import NonAuthLayout from "@/Layouts/NonAuthLayout";
 import { useRouter } from "next/router";
+import { URL_MANAGEMENT } from "@/constants";
 
 const Logout = () => {
   const router = useRouter();
 
-  return router.push("/auth/login");
+  return router.push(URL_MANAGEMENT.LOGIN);
 };
 
 Logout.propTypes = {

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { Permission } from "./types/api";
 import { decodeValueCookie } from "./helpers";
+import { URL_MANAGEMENT } from "./constants/url";
 
 export function middleware(request: NextRequest) {
   if (process.env.NEXT_PUBLIC_SKIP_BUILD_AUTH === "true") {
@@ -14,21 +15,21 @@ export function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  if (pathname.includes("/auth")) {
+  if (pathname.includes(URL_MANAGEMENT.AUTH)) {
     return NextResponse.next();
   }
 
   if (!authUser) {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+    return NextResponse.redirect(new URL(URL_MANAGEMENT.LOGIN, request.url));
   }
   const hasPermission =
     authUser?.isSuperAdmin ||
     authUser?.permissions?.find((item: Permission) =>
-      item.apiPath.startsWith(`/api/v1${pathname}`)
+      item.apiPath.startsWith(`${URL_MANAGEMENT.BASE_API}${pathname}`)
     );
 
-  if (!hasPermission && pathname !== "/admin") {
-    return NextResponse.redirect(new URL("/admin", request.url));
+  if (!hasPermission && pathname !== URL_MANAGEMENT.ADMIN) {
+    return NextResponse.redirect(new URL(URL_MANAGEMENT.ADMIN, request.url));
   }
 
   return NextResponse.next();

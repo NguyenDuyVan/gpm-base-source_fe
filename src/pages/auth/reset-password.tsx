@@ -8,6 +8,7 @@ import { NextPageWithLayout } from "../_app";
 import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { URL_MANAGEMENT } from "@/constants";
 
 const ResetPassword: NextPageWithLayout = () => {
   const { t } = useTranslation();
@@ -51,7 +52,7 @@ const ResetPassword: NextPageWithLayout = () => {
                       </Alert>
                       <div className="mt-4">
                         <Link
-                          href="/auth/forgot-password"
+                          href={URL_MANAGEMENT.FORGOT_PASSWORD}
                           className="btn btn-primary"
                         >
                           {t("Request New Link")}

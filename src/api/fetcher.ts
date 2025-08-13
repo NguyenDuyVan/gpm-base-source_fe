@@ -2,6 +2,8 @@ import { PaginationType } from "@/types/pagination";
 import axios from "axios";
 import { toast } from "react-toastify";
 import i18n from "@/i18n";
+import { URL_MANAGEMENT } from "@/constants";
+import { AUTH_PATH_REFRESH } from "./apiPaths";
 
 export type ResponsePagination<T> = {
   data: {
@@ -43,13 +45,16 @@ api.interceptors.response.use(
       // Có thể xử lý lỗi toàn cục ở đây
       const rawMessage =
         err?.response?.data?.message || err.message || "Network Error";
-      if (err?.status === 401 && window.location.pathname !== "/auth/login") {
+      if (
+        err?.status === 401 &&
+        window.location.pathname !== URL_MANAGEMENT.LOGIN
+      ) {
         const hasToken = localStorage.getItem("accessToken");
         if (hasToken) {
-          return await api.get("/v1/auth/refresh");
+          return await api.get(AUTH_PATH_REFRESH);
         }
         localStorage.removeItem("accessToken");
-        window.location.href = "/auth/login";
+        window.location.href = URL_MANAGEMENT.LOGIN;
       }
 
       if (toast) {
@@ -71,8 +76,8 @@ api.interceptors.response.use(
       console.error("Error refreshing token:", error);
       localStorage.removeItem("accessToken");
 
-      if (window.location.pathname !== "/auth/login") {
-        window.location.href = "/auth/login";
+      if (window.location.pathname !== URL_MANAGEMENT.LOGIN) {
+        window.location.href = URL_MANAGEMENT.LOGIN;
       }
     }
   }

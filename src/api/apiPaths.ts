@@ -15,6 +15,7 @@ export const AUTH_PATH_SOCIAL_LOGIN = `/v1/auth/social-login`;
 export const AUTH_PATH_ACCOUNT = `/v1/auth/current-user`;
 export const AUTH_PATH_FORGOT_PASSWORD = `/v1/auth/forgot-password`;
 export const AUTH_PATH_RESET_PASSWORD = `/v1/auth/reset-password`;
+export const AUTH_PATH_REFRESH = `/v1/auth/refresh`;
 
 // Role paths
 export const ROLES_PATH = `/v1/roles`;

@@ -33,6 +33,7 @@ import { NextPageWithLayout } from "../_app";
 import { useRouter } from "next/router";
 import { useLoginMutation } from "@/api/mutations/useAuthMutation";
 import { apiError, loginSuccess } from "@/slices/auth/login/reducer";
+import { URL_MANAGEMENT } from "@/constants";
 
 const Login: NextPageWithLayout = () => {
   const { t } = useTranslation();
@@ -187,7 +188,7 @@ const Login: NextPageWithLayout = () => {
                           <div className="float-end">
                             {" "}
                             <Link
-                              href="/auth/forgot-password"
+                              href={URL_MANAGEMENT.FORGOT_PASSWORD}
                               className="text-muted"
                             >
                               {t("Forgot password")}?
@@ -294,7 +295,7 @@ const Login: NextPageWithLayout = () => {
                   <p className="mb-0">
                     Chưa có tài khoản?{" "}
                     <Link
-                      href="/auth/register"
+                      href={URL_MANAGEMENT.REGISTER}
                       className="fw-semibold text-primary text-decoration-underline"
                     >
                       {" "}

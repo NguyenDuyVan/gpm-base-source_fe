@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useLoginMutation } from "@/api/mutations/useAuthMutation";
+import { URL_MANAGEMENT } from "@/constants";
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -75,7 +76,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           />
           <div className="mt-2 text-right">
             <a
-              href="/auth/forgot-password"
+              href={URL_MANAGEMENT.FORGOT_PASSWORD}
               className="text-sm text-blue-500 hover:text-blue-700"
             >
               Forgot Password?

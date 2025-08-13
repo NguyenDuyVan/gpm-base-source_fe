@@ -16,6 +16,7 @@ import {
 import { useTranslation } from "react-i18next";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { URL_MANAGEMENT } from "@/constants";
 
 interface ResetPasswordFormProps {
   token: string;
@@ -64,7 +65,7 @@ export default function ResetPasswordForm({
 
         // Redirect to login page after successful password reset
         setTimeout(() => {
-          router.push("/auth/login");
+          router.push(URL_MANAGEMENT.LOGIN);
         }, 3000);
       } catch (error: any) {
         setMsgError(error.message || t("Failed to reset password"));
@@ -182,7 +183,7 @@ export default function ResetPasswordForm({
         <p className="mb-0">
           {t("Already reset your password?")}{" "}
           <Link
-            href="/auth/login"
+            href={URL_MANAGEMENT.LOGIN}
             className="fw-semibold text-primary text-decoration-underline"
           >
             {" "}

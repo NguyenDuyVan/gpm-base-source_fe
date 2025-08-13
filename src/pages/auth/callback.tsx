@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import NonAuthLayout from "@/Layouts/NonAuthLayout";
 import { NextPageWithLayout } from "../_app";
 import { Spinner } from "reactstrap";
+import { URL_MANAGEMENT } from "@/constants";
 
 const AuthCallback: NextPageWithLayout = () => {
   const router = useRouter();
@@ -10,7 +11,7 @@ const AuthCallback: NextPageWithLayout = () => {
   const processCallback = async () => {
     const { token, user } = router.query;
 
-    if (!token || !user) return router.push("/auth/login");
+    if (!token || !user) return router.push(URL_MANAGEMENT.LOGIN);
 
     localStorage.setItem("accessToken", JSON.stringify(token));
     localStorage.setItem("authUser", JSON.stringify(user));

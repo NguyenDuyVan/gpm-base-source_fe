@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { useProfile } from "../Hooks/UserHooks";
 import { useRouter } from "next/navigation";
 import { useAuthHooks } from "../Hooks/AuthHooks";
+import { URL_MANAGEMENT } from "@/constants";
 
 const AuthProtected = (props: any) => {
   const { userProfile, loading, token } = useProfile();
@@ -22,7 +23,7 @@ const AuthProtected = (props: any) => {
   }
 
   if (!userProfile && loading && !token) {
-    router.push("/auth/login");
+    router.push(URL_MANAGEMENT.LOGIN);
     return null;
   }
 

@@ -29,6 +29,7 @@ import NonAuthLayout from "@/Layouts/NonAuthLayout";
 import Head from "next/head";
 import { NextPageWithLayout } from "../_app";
 import { useRegisterMutation } from "@/api/mutations/useAuthMutation";
+import { URL_MANAGEMENT } from "@/constants";
 
 const Register: NextPageWithLayout = () => {
   const { t } = useTranslation();
@@ -82,7 +83,7 @@ const Register: NextPageWithLayout = () => {
             progress: undefined,
             toastId: "",
           });
-          setTimeout(() => router.push("/auth/login"), 3000);
+          setTimeout(() => router.push(URL_MANAGEMENT.LOGIN), 3000);
         },
         onError: (error: any) => {
           toast.error(
@@ -103,7 +104,7 @@ const Register: NextPageWithLayout = () => {
   useEffect(() => {
     if (registerMutation.isSuccess) {
       const redirectTimer = setTimeout(() => {
-        router.push("/auth/login");
+        router.push(URL_MANAGEMENT.LOGIN);
       }, 3000);
 
       return () => clearTimeout(redirectTimer);
@@ -410,7 +411,7 @@ const Register: NextPageWithLayout = () => {
                   <p className="mb-0">
                     {t("Already have an account")} ?{" "}
                     <Link
-                      href="/auth/login"
+                      href={URL_MANAGEMENT.LOGIN}
                       className="fw-semibold text-primary text-decoration-underline"
                     >
                       {" "}

@@ -1,0 +1,15 @@
+export const URL_MANAGEMENT = {
+  BASE_API: "/api/v1",
+  AUTH: "/auth",
+  REGISTER: "/auth/register",
+  LOGIN: "/auth/login",
+  LOGOUT: "/auth/logout",
+  FORGOT_PASSWORD: "/auth/forgot-password",
+  RESET_PASSWORD: "/auth/reset-password",
+  USER_PROFILE: "/user/profile",
+  ADMIN: "/admin",
+  DASHBOARD: "/admin/dashboard",
+  ADMIN_USERS: "/admin/users",
+  ADMIN_SETTINGS: "/admin/settings",
+  AUTH_CALLBACK: "/auth/callback",
+};

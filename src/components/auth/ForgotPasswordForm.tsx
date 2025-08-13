@@ -5,6 +5,7 @@ import { Alert, Button, Form, FormFeedback, Input, Spinner } from "reactstrap";
 import { useTranslation } from "react-i18next";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { URL_MANAGEMENT } from "@/constants";
 
 interface ForgotPasswordFormProps {
   onSuccess?: () => void;
@@ -103,7 +104,7 @@ export default function ForgotPasswordForm({
         <p className="mb-0">
           {t("Wait, I remember my password...")}{" "}
           <Link
-            href="/auth/login"
+            href={URL_MANAGEMENT.LOGIN}
             className="fw-semibold text-primary text-decoration-underline"
           >
             {" "}

@@ -14,20 +14,12 @@ export function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  if (
-    [
-      "/login",
-      "/register",
-      "/logout",
-      "/forgot-password",
-      "/reset-password",
-    ].includes(pathname)
-  ) {
+  if (pathname.includes("/auth")) {
     return NextResponse.next();
   }
 
   if (!authUser) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/auth/login", request.url));
   }
   const hasPermission =
     authUser?.isSuperAdmin ||
@@ -43,5 +35,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|login|register).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

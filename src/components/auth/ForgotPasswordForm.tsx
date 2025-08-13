@@ -103,7 +103,7 @@ export default function ForgotPasswordForm({
         <p className="mb-0">
           {t("Wait, I remember my password...")}{" "}
           <Link
-            href="/login"
+            href="/auth/login"
             className="fw-semibold text-primary text-decoration-underline"
           >
             {" "}

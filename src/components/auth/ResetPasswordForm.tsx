@@ -64,7 +64,7 @@ export default function ResetPasswordForm({
 
         // Redirect to login page after successful password reset
         setTimeout(() => {
-          router.push("/login");
+          router.push("/auth/login");
         }, 3000);
       } catch (error: any) {
         setMsgError(error.message || t("Failed to reset password"));
@@ -182,7 +182,7 @@ export default function ResetPasswordForm({
         <p className="mb-0">
           {t("Already reset your password?")}{" "}
           <Link
-            href="/login"
+            href="/auth/login"
             className="fw-semibold text-primary text-decoration-underline"
           >
             {" "}

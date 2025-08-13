@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 const Logout = () => {
   const router = useRouter();
 
-  return router.push("/login");
+  return router.push("/auth/login");
 };
 
 Logout.propTypes = {

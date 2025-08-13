@@ -27,7 +27,7 @@ import ParticlesAuth from "@/components/AuthenticationInner/ParticlesAuth";
 import Link from "next/link";
 import NonAuthLayout from "@/Layouts/NonAuthLayout";
 import Head from "next/head";
-import { NextPageWithLayout } from "./_app";
+import { NextPageWithLayout } from "../_app";
 import { useRegisterMutation } from "@/api/mutations/useAuthMutation";
 
 const Register: NextPageWithLayout = () => {
@@ -82,7 +82,7 @@ const Register: NextPageWithLayout = () => {
             progress: undefined,
             toastId: "",
           });
-          setTimeout(() => router.push("/login"), 3000);
+          setTimeout(() => router.push("/auth/login"), 3000);
         },
         onError: (error: any) => {
           toast.error(
@@ -103,7 +103,7 @@ const Register: NextPageWithLayout = () => {
   useEffect(() => {
     if (registerMutation.isSuccess) {
       const redirectTimer = setTimeout(() => {
-        router.push("/login");
+        router.push("/auth/login");
       }, 3000);
 
       return () => clearTimeout(redirectTimer);
@@ -410,7 +410,7 @@ const Register: NextPageWithLayout = () => {
                   <p className="mb-0">
                     {t("Already have an account")} ?{" "}
                     <Link
-                      href="/login"
+                      href="/auth/login"
                       className="fw-semibold text-primary text-decoration-underline"
                     >
                       {" "}

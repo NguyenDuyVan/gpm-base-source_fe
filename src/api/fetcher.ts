@@ -43,13 +43,13 @@ api.interceptors.response.use(
       // Có thể xử lý lỗi toàn cục ở đây
       const rawMessage =
         err?.response?.data?.message || err.message || "Network Error";
-      if (err?.status === 401 && window.location.pathname !== "/login") {
+      if (err?.status === 401 && window.location.pathname !== "/auth/login") {
         const hasToken = localStorage.getItem("accessToken");
         if (hasToken) {
           return await api.get("/v1/auth/refresh");
         }
         localStorage.removeItem("accessToken");
-        window.location.href = "/login";
+        window.location.href = "/auth/login";
       }
 
       if (toast) {
@@ -71,8 +71,8 @@ api.interceptors.response.use(
       console.error("Error refreshing token:", error);
       localStorage.removeItem("accessToken");
 
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
+      if (window.location.pathname !== "/auth/login") {
+        window.location.href = "/auth/login";
       }
     }
   }

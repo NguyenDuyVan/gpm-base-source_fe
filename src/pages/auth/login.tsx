@@ -29,7 +29,7 @@ import Link from "next/link";
 import ParticlesAuth from "@/components/AuthenticationInner/ParticlesAuth";
 import { resetLoginFlag } from "@/slices/auth/login/thunk";
 import NonAuthLayout from "@/Layouts/NonAuthLayout";
-import { NextPageWithLayout } from "./_app";
+import { NextPageWithLayout } from "../_app";
 import { useRouter } from "next/router";
 import { useLoginMutation } from "@/api/mutations/useAuthMutation";
 import { apiError, loginSuccess } from "@/slices/auth/login/reducer";
@@ -90,7 +90,17 @@ const Login: NextPageWithLayout = () => {
     },
   });
 
-  const signIn = async (type: "google" | "facebook") => {};
+  const signIn = async (type: "google" | "facebook") => {
+    try {
+      setLoader(true);
+      // Redirect to the backend social auth endpoint
+      window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/${type}`;
+    } catch (error) {
+      console.error(`${type} login error:`, error);
+      dispatch(apiError(`${type} authentication failed`));
+      setLoader(false);
+    }
+  };
 
   //for facebook and google authentication
   const socialResponse = (type: "google" | "facebook") => {
@@ -177,7 +187,7 @@ const Login: NextPageWithLayout = () => {
                           <div className="float-end">
                             {" "}
                             <Link
-                              href="/forgot-password"
+                              href="/auth/forgot-password"
                               className="text-muted"
                             >
                               {t("Forgot password")}?
@@ -284,7 +294,7 @@ const Login: NextPageWithLayout = () => {
                   <p className="mb-0">
                     Chưa có tài khoản?{" "}
                     <Link
-                      href="/register"
+                      href="/auth/register"
                       className="fw-semibold text-primary text-decoration-underline"
                     >
                       {" "}

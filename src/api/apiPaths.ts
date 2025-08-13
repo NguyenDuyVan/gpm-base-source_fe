@@ -12,8 +12,7 @@ export const AUTH_PATH_LOGIN = `/v1/auth/login`;
 export const AUTH_PATH_REGISTER = `/v1/auth/register`;
 export const AUTH_PATH_LOGOUT = `/v1/auth/logout`;
 export const AUTH_PATH_SOCIAL_LOGIN = `/v1/auth/social-login`;
-export const AUTH_PATH_CURRENT_USER = `/v1/auth/me`;
-export const AUTH_PATH_ACCOUNT = `/v1/auth/account`;
+export const AUTH_PATH_ACCOUNT = `/v1/auth/current-user`;
 export const AUTH_PATH_FORGOT_PASSWORD = `/v1/auth/forgot-password`;
 export const AUTH_PATH_RESET_PASSWORD = `/v1/auth/reset-password`;
 

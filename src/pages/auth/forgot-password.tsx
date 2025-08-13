@@ -4,7 +4,7 @@ import Head from "next/head";
 import { useTranslation } from "react-i18next";
 import ParticlesAuth from "@/components/AuthenticationInner/ParticlesAuth";
 import NonAuthLayout from "@/Layouts/NonAuthLayout";
-import { NextPageWithLayout } from "./_app";
+import { NextPageWithLayout } from "../_app";
 import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
 import Link from "next/link";
 

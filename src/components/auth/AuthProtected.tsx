@@ -22,7 +22,8 @@ const AuthProtected = (props: any) => {
   }
 
   if (!userProfile && loading && !token) {
-    return router.push("/login");
+    router.push("/auth/login");
+    return null;
   }
 
   return <>{props.children}</>;

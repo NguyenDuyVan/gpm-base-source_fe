@@ -75,7 +75,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           />
           <div className="mt-2 text-right">
             <a
-              href="/forgot-password"
+              href="/auth/forgot-password"
               className="text-sm text-blue-500 hover:text-blue-700"
             >
               Forgot Password?

@@ -4,7 +4,7 @@ import Head from "next/head";
 import { useTranslation } from "react-i18next";
 import ParticlesAuth from "@/components/AuthenticationInner/ParticlesAuth";
 import NonAuthLayout from "@/Layouts/NonAuthLayout";
-import { NextPageWithLayout } from "./_app";
+import { NextPageWithLayout } from "../_app";
 import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -51,7 +51,7 @@ const ResetPassword: NextPageWithLayout = () => {
                       </Alert>
                       <div className="mt-4">
                         <Link
-                          href="/forgot-password"
+                          href="/auth/forgot-password"
                           className="btn btn-primary"
                         >
                           {t("Request New Link")}

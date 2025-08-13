@@ -33,14 +33,12 @@ import { NextPageWithLayout } from "./_app";
 import { useRouter } from "next/router";
 import { useLoginMutation } from "@/api/mutations/useAuthMutation";
 import { apiError, loginSuccess } from "@/slices/auth/login/reducer";
-import { useSocialAuth } from "@/hooks/useSocialAuth";
 
 const Login: NextPageWithLayout = () => {
   const { t } = useTranslation();
   const dispatch: any = useDispatch();
   const router = useRouter();
   const { mutateAsync: handleLogin } = useLoginMutation();
-  const { handleSocialLogin, loading: socialLoading } = useSocialAuth();
 
   const selectLayoutState = (state: any) => state;
   const loginpageData = createSelector(selectLayoutState, (state) => ({
@@ -92,9 +90,7 @@ const Login: NextPageWithLayout = () => {
     },
   });
 
-  const signIn = async (type: "google" | "facebook") => {
-    await handleSocialLogin(type);
-  };
+  const signIn = async (type: "google" | "facebook") => {};
 
   //for facebook and google authentication
   const socialResponse = (type: "google" | "facebook") => {
@@ -266,7 +262,6 @@ const Login: NextPageWithLayout = () => {
                             <Button
                               color="primary"
                               className="btn-icon me-1"
-                              disabled={socialLoading}
                               onClick={() => socialResponse("facebook")}
                             >
                               <i className="ri-facebook-fill fs-16" />
@@ -274,7 +269,6 @@ const Login: NextPageWithLayout = () => {
                             <Button
                               color="danger"
                               className="btn-icon me-1"
-                              disabled={socialLoading}
                               onClick={() => socialResponse("google")}
                             >
                               <i className="ri-google-fill fs-16" />

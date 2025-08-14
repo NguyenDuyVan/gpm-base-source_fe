@@ -82,6 +82,15 @@ export const useSidebar = () => {
       stateVariables: true,
       isShow: hasPermission("/api/v1/blogs"),
     },
+    {
+      id: "email-management",
+      label: "Email Management",
+      icon: "ri-mail-line",
+      link: "/admin/email-management",
+      isShow:
+        hasPermission("/api/v1/email-templates") ||
+        hasPermission("/api/v1/email-campaigns"),
+    },
   ];
 
   return {

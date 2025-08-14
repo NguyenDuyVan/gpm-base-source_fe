@@ -28,6 +28,18 @@ export const USERS_PATH_CHANGE_PASSWORD = `/v1/users/change-password`;
 export const USERS_PATH_UPDATE_LANGUAGE = `/v1/users/update-language`;
 
 // Blog paths
+
+// Email management paths
+export const EMAIL_TEMPLATES_PATH = `/v1/email-templates`;
+export const EMAIL_TEMPLATES_PATH_BY_ID = (id: string | number) =>
+  `/v1/email-templates/${id}`;
+export const EMAIL_TEMPLATES_PATH_BY_KEY = (key: string) =>
+  `/v1/email-templates/key/${key}`;
+export const EMAIL_CAMPAIGNS_PATH = `/v1/email-campaigns`;
+export const EMAIL_CAMPAIGNS_PATH_BY_ID = (id: string | number) =>
+  `/v1/email-campaigns/${id}`;
+export const EMAIL_SEND_PATH = `/v1/emails/send`;
+export const EMAIL_SEND_BULK_PATH = `/v1/emails/send-bulk`;
 export const BLOGS_PATH = `/v1/blogs`;
 export const BLOGS_PATH_BY_ID = (id: string | number) => `/v1/blogs/${id}`;
 export const BLOGS_PATH_BY_SLUG = (slug: string) => `/v1/blogs/slug/${slug}`;

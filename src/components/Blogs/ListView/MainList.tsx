@@ -236,7 +236,7 @@ const MainList = () => {
                   ? t(`No results found for "${searchInput}"`)
                   : t("Create your first blog post to get started.")}
               </p>
-              <Link href="/admin/blog/add" className="btn btn-success">
+              <Link href="/admin/blog/create" className="btn btn-success">
                 <i className="ri-add-line align-bottom me-1"></i>{" "}
                 {t("Add New Blog")}
               </Link>

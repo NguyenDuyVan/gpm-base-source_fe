@@ -279,7 +279,7 @@ const TableContainer = ({
       <div className={divClass}>
         <Table hover className={tableClass}>
           <thead className={theadClass}>
-            {getHeaderGroups().map((headerGroup: any) => (
+            {getHeaderGroups()?.map((headerGroup: any) => (
               <tr className={trClass} key={headerGroup.id}>
                 {headerGroup.headers.map((header: any) => (
                   <th
@@ -313,7 +313,7 @@ const TableContainer = ({
           </thead>
 
           <tbody>
-            {getRowModel().rows.map((row: any) => {
+            {getRowModel()?.rows.map((row: any) => {
               return (
                 <tr key={row.id}>
                   {row.getVisibleCells().map((cell: any) => {

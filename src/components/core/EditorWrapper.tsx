@@ -16,10 +16,6 @@ const EditorWrapper = ({
     <CKEditor
       editor={ClassicEditor as any}
       data={value}
-      onReady={(editor: any) => {
-        // You can store the "editor" and use when it is needed.
-        console.log("Editor is ready to use!", editor);
-      }}
       onChange={(event: any, editor: any) => {
         const data = editor.getData();
         if (onChange) {

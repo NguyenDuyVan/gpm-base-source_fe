@@ -25,14 +25,15 @@ const LanguageDropdown = () => {
   }, []);
 
   const changeLanguageAction = async (lang: any) => {
+    const availableLang = Object.keys(languages).includes(lang) ? lang : "en";
     //set language as i18n
-    i18n.changeLanguage(lang);
-    localStorage.setItem("I18N_LANGUAGE", lang);
-    setSelectedLang(lang);
+    i18n.changeLanguage(availableLang);
+    localStorage.setItem("I18N_LANGUAGE", availableLang);
+    setSelectedLang(availableLang);
 
     // Call API to update user's language preference
     if (accountData) {
-      await updateLanguage(lang);
+      await updateLanguage(availableLang);
     }
   };
 

@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/slices/auth/login/reducer";
 import { useUpdateLanguageMutation } from "@/api/mutations/useUserMutation";
 import { detectUserLanguage } from "@/utils/geoLocation";
+import languages from "@/common/languages";
 
 const AuthProtected = (props: any) => {
   const dispatch = useDispatch();
@@ -22,7 +23,11 @@ const AuthProtected = (props: any) => {
   const handleSetLanguage = useCallback(async () => {
     try {
       const detectedLang = await detectUserLanguage();
-      await updateLanguage(detectedLang);
+      const availableLang = Object.keys(languages).includes(detectedLang)
+        ? detectedLang
+        : "en";
+
+      await updateLanguage(availableLang);
     } catch (error) {
       console.error("Error setting language:", error);
     }

@@ -68,12 +68,6 @@ const ProfileDropdown = () => {
             {t("Welcome Back")} {userName}!
           </h6>
           <DropdownItem className="p-0">
-            <Link href="/profile" className="dropdown-item">
-              <i className="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i>
-              <span className="align-middle">{t("Profile")}</span>
-            </Link>
-          </DropdownItem>
-          <DropdownItem className="p-0">
             <Link href="/admin/profile/setting" className="dropdown-item">
               <span className="badge bg-success-subtle text-success mt-1 float-end">
                 {t("New")}

@@ -1,22 +1,38 @@
-import { setAuthorization } from "@/helpers/api_helper";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useProfile } from "../Hooks/UserHooks";
 import { useRouter } from "next/navigation";
 import { useAuthHooks } from "../Hooks/AuthHooks";
 import { URL_MANAGEMENT } from "@/constants";
+import { useAccountQuery } from "@/api/queries/useAuthQuery";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "@/slices/auth/login/reducer";
+import { useUpdateLanguageMutation } from "@/api/mutations/useUserMutation";
+import { detectUserLanguage } from "@/utils/geoLocation";
 
 const AuthProtected = (props: any) => {
+  const dispatch = useDispatch();
+
   const { userProfile, loading, token } = useProfile();
   const { logoutUser } = useAuthHooks();
   const router = useRouter();
+  const { data: accountData } = useAccountQuery();
+  const { mutateAsync: updateLanguage } = useUpdateLanguageMutation();
+
+  // Handle language setting
+  const handleSetLanguage = useCallback(async () => {
+    try {
+      const detectedLang = await detectUserLanguage();
+      await updateLanguage(detectedLang);
+    } catch (error) {
+      console.error("Error setting language:", error);
+    }
+  }, [updateLanguage]);
 
   useEffect(() => {
-    if (userProfile && !loading && token) {
-      setAuthorization(token);
-    } else if (!userProfile && loading && !token) {
-      logoutUser();
-    }
-  }, [token, userProfile, loading, logoutUser]);
+    if (!accountData) return;
+    dispatch(loginSuccess(accountData));
+    if (!accountData.lang) handleSetLanguage();
+  }, [accountData, dispatch, handleSetLanguage, logoutUser, updateLanguage]);
 
   if (process.env.NEXT_PUBLIC_SKIP_BUILD_AUTH === "true") {
     return <>{props.children}</>;

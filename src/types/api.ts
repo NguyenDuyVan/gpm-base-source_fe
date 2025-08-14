@@ -33,6 +33,7 @@ export interface User {
     apiPath: string;
     method: string;
   }[];
+  lang?: string;
   createdAt?: string;
   updatedAt?: string;
   createdBy?: number | null;

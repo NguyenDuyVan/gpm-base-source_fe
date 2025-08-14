@@ -10,21 +10,30 @@ import { get } from "lodash";
 //i18n
 import i18n from "@/i18n";
 import languages from "../../common/languages";
+import { useUpdateLanguageMutation } from "@/api/mutations/useUserMutation";
+import { useAccountQuery } from "@/api/queries/useAuthQuery";
 
 const LanguageDropdown = () => {
   // Declare a new state variable, which we'll call "menu"
   const [selectedLang, setSelectedLang] = useState("");
+  const { mutateAsync: updateLanguage } = useUpdateLanguageMutation();
+  const { data: accountData } = useAccountQuery();
 
   useEffect(() => {
     const currentLanguage: any = localStorage.getItem("I18N_LANGUAGE");
     setSelectedLang(currentLanguage);
   }, []);
 
-  const changeLanguageAction = (lang: any) => {
+  const changeLanguageAction = async (lang: any) => {
     //set language as i18n
     i18n.changeLanguage(lang);
     localStorage.setItem("I18N_LANGUAGE", lang);
     setSelectedLang(lang);
+
+    // Call API to update user's language preference
+    if (accountData) {
+      await updateLanguage(lang);
+    }
   };
 
   const [isLanguageDropdown, setIsLanguageDropdown] = useState<boolean>(false);

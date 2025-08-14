@@ -25,6 +25,7 @@ export const ROLES_PATH_BY_ID = (id: string | number) => `/v1/roles/${id}`;
 export const USERS_PATH = `/v1/users`;
 export const USERS_PATH_BY_ID = (id: string | number) => `/v1/users/${id}`;
 export const USERS_PATH_CHANGE_PASSWORD = `/v1/users/change-password`;
+export const USERS_PATH_UPDATE_LANGUAGE = `/v1/users/update-language`;
 
 // Blog paths
 export const BLOGS_PATH = `/v1/blogs`;
